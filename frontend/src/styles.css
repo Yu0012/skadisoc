@@ -1,0 +1,1078 @@
+@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+
+/* 🌍 Global Styling */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f7fb;
+  margin: 0;
+  padding: 0;
+}
+
+/* 📦 General Container */
+.container {
+  padding: 20px;
+}
+
+/* 📊 Dashboard Layout */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.welcome-message {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  margin: 10px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.subtitle {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* 🏠 Navbar Styling */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 🔷 Logo Styling */
+.logo {
+  height: 70px;
+  margin-right: auto;
+}
+
+/* 🔗 Navigation Links */
+.nav-links {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  gap: 60px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-weight: 600;
+  color: #0a0f5c;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+/* Active navbar link */
+.nav-links a.active {
+  color: black;
+  font-weight: bold;
+}
+
+.nav-links a:hover {
+  color: black;
+}
+
+/* 🔔 Right Side Icons */
+.nav-icons {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-left: auto;
+  position: relative;
+}
+
+/* 🔕 Notification Bell */
+.bell-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.bell-icon {
+  width: 30px;
+  height: 30px;
+}
+
+/* 🛎 Notification Dropdown */
+.notification-dropdown {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  width: 250px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.notification-item {
+  padding: 10px;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+/* 👤 User Profile & Dropdown */
+.user-menu {
+  position: relative;
+  display: inline-block;
+}
+
+/* 🏵 User Icon */
+.user-icon {
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+/* 📂 Dropdown Menu */
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 50px;
+  width: 200px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.dropdown-menu a {
+  padding: 10px;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.3s;
+  
+}
+
+.dropdown-menu a:hover {
+  background: #f5f5f5;
+}
+
+.dropdown-menu hr {
+  margin: 5px 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+/* Dropdown Menu Variant for editing Client */
+.dropdown-menu.client {
+  position: absolute;
+  right: 10px;
+  top: 40px;
+  width: 100px;
+  background: white;
+  border: 1px solid black;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.dropdown-menu.client a {
+  padding: 10px;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+
+.dropdown-menu.client a:hover {
+  background: #f5f5f5;
+}
+
+.dropdown-menu.client hr {
+  margin: 5px 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+/* For the Delete option within menu */
+.dropdown-menu.client a#Delete{
+  color: red;
+  font-weight: bold;
+}
+
+.dropdown-menu.client a#Delete:hover {
+  background: #ffe6e6; 
+}
+/* 🚪 Logout Link */
+.logout {
+  color: red;
+  font-weight: bold;
+}
+
+/* 📌 **Posts Page Styles** */
+.posts-container {
+  padding: 20px;
+}
+
+/* 🏠 **Header Section (Welcome, Refresh, Create Post)** */
+.posts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.welcome-message p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.user-name {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+  color: #0a0f5c;
+  text-shadow: 2px 2px 2px rgba(0,0,0, 0.25);
+}
+
+.posts-actions {
+  display: flex;
+  align-items: center;
+  gap: 0px; /* Reduced gap between buttons */
+}
+
+
+/* Refresh Button */
+.refresh-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #0a0f5c;
+  margin-right: 10px;
+  padding: 8px;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+}
+
+.refresh-btn:hover {
+  color: black;
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu */
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.action-icon {
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+}
+
+.dropdown-menu button {
+  background: none;
+  border: none;
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 14px;
+}
+
+.dropdown-menu button:hover {
+  background: #f5f5f5;
+}
+
+.delete-btn {
+  color: red;
+  font-weight: bold;
+}
+
+/* ➕ Create Post Button */
+.create-post-btn {
+  background-color: #0a0f5c;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.create-post-btn:hover {
+  background-color: black;
+}
+
+.create-user-btn {
+  background-color: white;
+  color: #0D286E;
+  padding: 5px 20px;
+  border: solid;
+  border-radius: 5px;
+  border-color: #ADB5BD;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: bold;
+}
+
+.create-user-btn:hover{
+  background-color: #0D286E;
+  color: white;
+  border-color: black;
+}
+
+
+/* 🔍 Search Bar + Dropdown + Export in One Line */
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-bottom: 10px;
+}
+
+/* 🟦 Category Dropdown */
+.dropdown {
+  background-color: #0a0f5c;
+  color: white;
+  font-weight: bold;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.dropdown:focus {
+  outline: none;
+}
+
+/* 🔍 Search Box */
+.search-box {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 8px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  width: 300px;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 8px;
+  font-size: 16px;
+  background-color: transparent;
+  color: #555;
+}
+
+.search-box input::placeholder {
+  color: #ccc;
+}
+
+/* 🔍 Search Icon */
+.search-icon {
+  color: #0a0f5c;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+/* 🔽 Export Button Styling */
+.export-btn {
+  background-color: #0a0f5c;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.export-btn:hover {
+  background-color: black;
+}
+
+/* 📄 Posts Table */
+.posts-table {
+  width: 100%;
+  background: white;
+  border-spacing: 0;
+  border: solid 1px;
+  border-color: #0D286E;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.posts-table tr{
+  border: solid 1px #0D286E;
+  border-top-left-radius: 20px;
+}
+
+
+.posts-table th,
+.posts-table td {
+  padding: 12px;
+  text-align: left;
+  color: #0D286E;
+}
+
+.posts-table th{
+  border-bottom: solid 1px #0D286E;
+}
+
+
+.posts-table th {
+  background: #f5f5f5;
+}
+
+.posts-table tr:hover {
+  background: #f9f9f9;
+}
+
+/* FullCalendar Section */
+/* Calendar Design */
+.fc {
+  color: #0D286E !important;
+  border-color: #0D286E solid !important;
+  max-width: 1500px; 
+  height: 500px;     
+  font-size: 14px;    
+  margin: auto;     
+}
+
+.fc-theme-standard td{
+  border-color: #0D286E !important;
+}
+
+.fc-scroller{
+  overflow-y: hidden !important;
+}
+
+.fc-scrollgrid th{
+  border: 1px solid #0D286E !important;
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+}
+
+.fc-scrollgrid td {
+  border-left: 1px solid #0D286E !important;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.fc-daygrid-day-frame {
+  display:flex;
+  flex-direction: column;
+  margin-top: 5px;
+  justify-content: flex-start;
+  align-items: center;
+}
+.fc-day-today .fc-daygrid-day-number {
+  background-color: #0D286E !important; 
+  color: white !important;
+  border-radius: 6px;
+  padding: 3px 6px; 
+  font-size: 14px; 
+  font-weight: bold; 
+  display: inline-block;
+  line-height: 1; 
+  width: fit-content; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fc-col-header-cell {
+  font-size: 16px;
+}
+
+.fc-col-header-cell .fc-scrollgrid-sync-inner {
+  text-align: center;
+  padding: 10px; 
+}
+
+/* Center date numbers in month view */
+.fc-daygrid-day-number {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  font-weight: bold; 
+}
+
+/* Displays current day on the calendar*/
+.fc-day-today{
+  background: none !important;
+}
+
+/* "Today", button and the navigational buttons */
+.fc-today-button, .fc-prev-button, .fc-next-button {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background-color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.fc-today-button{
+  padding: 10px 25px;
+  border: 1px solid #ccc;
+  background-color: #0D286E;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.3s;
+  font-size: 16px;
+}
+
+.fc-nav-button {
+  padding: 1px;
+  margin: 1px;
+  cursor: pointer;
+}
+
+/* The rounded border for the current date */
+.fc-current-date {
+  color: #0D286E;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: white;
+  padding: 10px 25px;
+  border: 2px solid #0D286E;
+  border-radius: 10px; 
+}
+
+/* Organizes the toolbars */
+.fc-toolbar-left{
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Spacing between elements */
+}
+.fc-toolbar-right{
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  gap: 10px;
+  justify-content: flex-end; /* Moves the navigation buttons to the right */
+  flex-grow: 1; /* Makes sure it takes available space */
+}
+
+/* Events within the calendar */
+.fc-event{
+  background-color: transparent !important;
+  color: black !important;
+  border-radius: 5px;
+  border-color: #0D286E;
+  padding: 5px;
+  font-weight: bold;
+}
+
+.fc-event-title{
+  color:black;
+}
+
+/* Client List (Wrap to Next Line When Full) */
+.client-list {
+  display: flex;
+  flex-wrap: wrap; /* Allows wrapping to a new row */
+  gap: 15px;
+}
+
+/* Button to add new clients*/
+.add-client-btn {
+  background-color: #0D286E; 
+  border-radius: 10px;
+  display: flex;
+  gap: 3px;
+  padding-top: 10px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  width: 210px; 
+  height: 170px; 
+  cursor: pointer;
+}
+
+
+/* Client Object */
+.client-object {
+  background-color: white; 
+  border: solid 2px;
+  border-radius: 10px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #0D286E;
+  width: 150px;
+  height: 110px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position:relative;
+}
+
+/* Client Name */
+.client-name {
+  font-weight: bold;
+  font-size: 1rem;
+  margin: 5px auto;
+}
+
+/* Client Description */
+.client-description {
+  color: #0D286E;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+/* Client profile picture*/
+.client-profile{
+  padding-bottom: 5px;
+  width: 56px;
+  height:56px;
+  border-radius: 50%;
+
+}
+
+/* Client menu*/
+.client-Ellipsis{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Adjust size of list and adjustment icon */
+.list-adjust-size{
+  width: 30px;
+  height:40px;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px; /* Ensures space around modal */
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between; /* Align title to left, close button to right */
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+/* Close Button */
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #333;
+  transition: 0.3s;
+}
+
+.modal-close:hover {
+  color: red;
+}
+ 
+/* Modal Content */
+.modal-content {
+  background: white;
+  width: 850px;
+  max-width: 90vw;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal Body */
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* More spacing between sections */
+}
+
+/* Content Input */
+.content-input {
+  width: 100%;
+  height: 80px; /* Decreased height */
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  resize: none;
+}
+
+/* Hashtags & Client Layout */
+.flex-row {
+  display: flex;
+  gap: 40px; /* Increased spacing between Hashtags & Client */
+}
+
+/* Hashtags & Client Inputs */
+.input-field, .dropdown-field {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+/* Schedule Post */
+.schedule-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Platform Selection */
+.platform-container {
+  display: flex;
+  gap: 15px;
+}
+
+/* Submit Button */
+.post-submit-btn {
+  background: #0a0f5c;
+  color: white;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.post-submit-btn:hover {
+  background: black;
+}
+
+/* Dropdown Menu */
+/* Ensure the action column has relative positioning */
+.actions-column {
+  position: relative;
+}
+
+/* Style the dropdown container */
+.dropdown-container {
+  display: inline-block;
+  position: relative;
+}
+
+/* Style the dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  top: 0;
+  right: -80px; /* Adjust to position beside the 3 dots */
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  width: 150px;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Style dropdown buttons */
+.dropdown-menu button {
+  background: none;
+  border: none;
+  padding: 10px 15px;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.dropdown-menu button:hover {
+  background-color: #f5f5f5;
+}
+
+/* Style delete button */
+.dropdown-menu .delete-btn {
+  color: red;
+  font-weight: bold;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 97%;
+  padding: 10px 20px;
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+}
+
+.category-dropdown {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination {
+  display: flex;
+  gap: 5px;
+}
+
+.pagination button {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background: #f8f9fa;
+  cursor: pointer;
+}
+
+.pagination button.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+
+
+.create-post-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.export-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* ============================= */
+/* 📌 Dropdown Button (Dark Blue) */
+/* ============================= */
+
+.dropdown {
+  background-color: #0a0f5c;
+  color: white;
+  font-weight: bold;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dropdown:hover {
+  background-color: black;
+}
+
+.dropdown:focus {
+  outline: none;
+}
+
+/* ============================= */
+/* 🔄 Refresh Button */
+/* ============================= */
+
+.refresh-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #0a0f5c;
+  padding: 8px;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+}
+
+.refresh-btn:hover {
+  color: black;
+  transform: rotate(180deg);
+}
+
+/* ============================= */
+/* 🔍 Search Box Improvements */
+/* ============================= */
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 8px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  width: 300px;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 8px;
+  font-size: 16px;
+  background-color: transparent;
+  color: #555;
+}
+
+.search-box input::placeholder {
+  color: #ccc;
+}
+
+/* ============================= */
+/* 📌 Pagination (Bottom-Right) */
+/* ============================= */
+
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 97%;
+  padding: 10px 20px;
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+}
+
+.pagination {
+  display: flex;
+  gap: 5px;
+}
+
+.pagination button {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background: #f8f9fa;
+  cursor: pointer;
+}
+
+.pagination button.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+/* ============================= */
+/* 🔽 Adjustments for Mobile View */
+/* ============================= */
+
+@media screen and (max-width: 768px) {
+  .posts-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-box {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .posts-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pagination-container {
+    flex-direction: column;
+    align-items: center;
+  }
+}
