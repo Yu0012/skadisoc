@@ -32,6 +32,21 @@ const Navbar = () => {
     return () => clearInterval(interval); // Cleanup interval on unmount
   }, []);
 
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".notification-menu")) {
+        setNotifDropdownOpen(false);
+      }
+      if (!event.target.closest(".user-menu")) {
+        setUserDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
   return (
     <nav className="navbar">
       {/* Left Side: Logo */}
@@ -93,20 +108,19 @@ const Navbar = () => {
             className="user-icon" 
             onClick={() => setUserDropdownOpen(!userDropdownOpen)} 
           />
+          {/* User Profile Dropdown */}
+        {userDropdownOpen && (
+        <div className="user-dropdown">
+            <a href="/profile">User Profile</a>
+            <a href="/personalization">Personalization</a>
+            <hr />
+            <a href="/settings">User Settings</a>
+            <a href="/support">Help & Support</a>
+            <hr />
+        <a href="/logout" className="logout">Sign Out</a>
+        </div>
+)}
 
-          {/* User Dropdown Menu */}
-          {userDropdownOpen && (
-            <div className="dropdown-menu">
-              <Link to="/profile">User Profile</Link>
-              <Link to="/personalization">Personalization</Link>
-              <hr />
-              <Link to="/settings">User Settings</Link>
-              <Link to="/preferences">Settings</Link>
-              <Link to="/support">Help & Support</Link>
-              <hr />
-              <Link to="/logout" className="logout">Sign Out</Link>
-            </div>
-          )}
         </div>
       </div>
     </nav>

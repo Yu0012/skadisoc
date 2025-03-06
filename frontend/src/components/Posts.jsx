@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import "../styles.css"; // Import global styles
-import { FaSearch, FaDownload, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa"; // Icons
-import postsData from "../data/posts.json"; // Example data
+import "../styles.css";
+import { FaSearch, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa";
+import postsData from "../data/posts.json";
+import CreatePostModal from "./CreatePostModal";
 import { createPortal } from "react-dom";
 
 const Posts = () => {
@@ -10,37 +11,37 @@ const Posts = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
-  const [accountMenuDropdown, setAccountMenuDropdown] = useState(null);  // Triggers dropdown menu
-  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 }); // Handles positioning for dropdown menu
+  const [postMenuDropdown, setPostMenuDropdown] = useState(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    setPosts(postsData); // Fetch data from JSON (simulate API call)
+    setPosts(postsData); // Simulating API data fetch
   }, []);
 
   // Toggle dropdown menu & set its position
-    const menuDropdown = (event, accountID) => {
-      event.stopPropagation(); // Prevents event bubbling
-      if (accountMenuDropdown === accountID) {
-        setAccountMenuDropdown(null); // Close menu if it's already open
-      } else {
-        const rect = event.currentTarget.getBoundingClientRect();
-        setMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left });
-        setAccountMenuDropdown(accountID);
+  const menuDropdown = (event, postID) => {
+    event.stopPropagation();
+    if (postMenuDropdown === postID) {
+      setPostMenuDropdown(null); // Close menu if already open
+    } else {
+      const rect = event.currentTarget.getBoundingClientRect();
+      setMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left });
+      setPostMenuDropdown(postID);
+    }
+  };
+
+  // Close dropdown if clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".post-actions-dropdown")) {
+        setPostMenuDropdown(null);
       }
     };
-  
-    // Close dropdown if clicking outside
-    useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (!event.target.closest(".dropdown-menu")) {
-          setAccountMenuDropdown(null);
-        }
-      };
-  
-      document.addEventListener("click", handleClickOutside);
-      return () => document.removeEventListener("click", handleClickOutside);
-    }, []);
 
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
 
   // Handle search input
   const handleSearch = (e) => {
@@ -52,10 +53,14 @@ const Posts = () => {
     window.location.reload();
   };
 
-  // Create Post Function (Placeholder for real functionality)
-  const handleCreatePost = () => {
-    console.log("Redirecting to Create Post Page...");
-    // You can add navigation logic here
+  // Open Create Post Modal
+  const openCreatePostModal = () => {
+    setIsModalOpen(true);
+  };
+
+  // Close Create Post Modal
+  const closeCreatePostModal = () => {
+    setIsModalOpen(false);
   };
 
   // Filtered posts based on search query
@@ -67,25 +72,18 @@ const Posts = () => {
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
   return (
     <div className="posts-container">
-      {/* Top Section (Welcome Message, Refresh & Create Post) */}
+      {/* Top Section */}
       <div className="posts-header">
-        <div className="welcome-message">
-          <p>Welcome,</p>
-          <h2 className="user-name">Amber Broos</h2>
-        </div>
-
+        <h2>Posts</h2>
         <div className="posts-actions">
-          <FaSyncAlt className="refresh-icon" onClick={handleRefresh} title="Refresh Data" />
-          <button className="create-post-btn" onClick={handleCreatePost}>
+          <FaSyncAlt className="refresh-btn" onClick={handleRefresh} title="Refresh Data" />
+          <button className="create-post-btn" onClick={openCreatePostModal}>
             <FaPlus /> Create Post
           </button>
-          <div className="search-box">
-            <input type="text" placeholder="Tap to Search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-            <FaSearch className="search-icon" />
-          </div>
         </div>
       </div>
 
@@ -111,72 +109,71 @@ const Posts = () => {
           />
           <FaSearch className="search-icon" />
         </div>
-
-        <button className="export-btn">
-          Export <FaDownload />
-        </button>
       </div>
 
       {/* Posts Table */}
       <table className="posts-table">
         <thead>
           <tr>
-            <th><input type="checkbox" /></th>
             <th>ID</th>
             <th>Status</th>
             <th>Content</th>
-            <th>Media</th>
-            <th>Accounts</th>
             <th>Author</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {currentPosts.map((post) => (
-            <tr key={post.id} className="account-row">
-              <td><input type="checkbox" /></td>
+            <tr key={post.id} className="post-row">
               <td>{post.id}</td>
               <td>{post.status}</td>
               <td>{post.content}</td>
-              <td>{post.media}</td>
-              <td>{post.accounts}</td>
               <td>{post.author}</td>
-              <td><FaEllipsisV className="account-Ellipsis" onClick={(e) => menuDropdown(e, post.id)} /></td>
+              <td>
+                <FaEllipsisV className="action-icon" onClick={(e) => menuDropdown(e, post.id)} />
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {accountMenuDropdown !== null &&
+      {/* Pagination Section */}
+      <div className="pagination-container">
+        <p>Showing {indexOfFirstPost + 1} to {Math.min(indexOfLastPost, filteredPosts.length)} of {filteredPosts.length} entries</p>
+        <div className="pagination">
+          <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
+            «
+          </button>
+          <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+            ‹
+          </button>
+          {[...Array(totalPages).keys()].slice(Math.max(0, currentPage - 3), currentPage + 2).map((number) => (
+            <button key={number + 1} onClick={() => setCurrentPage(number + 1)} className={currentPage === number + 1 ? "active" : ""}>
+              {number + 1}
+            </button>
+          ))}
+          <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
+            ›
+          </button>
+          <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>
+            »
+          </button>
+        </div>
+      </div>
+
+      {/* Post Actions Dropdown */}
+      {postMenuDropdown !== null &&
         createPortal(
-          <div className="dropdown-menu action" style={{ top: menuPosition.top, left: menuPosition.left }}>
-            <a>Edit</a>
-            <a id="Delete">Delete</a>
+          <div className="post-actions-dropdown" style={{ top: menuPosition.top, left: menuPosition.left }}>
+            <button>Edit</button>
+            <button>Duplicate</button>
+            <button className="delete-btn">Delete</button>
           </div>,
           document.body
         )}
 
-      {/* Pagination */}
-      <div className="pagination">
-        <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
-          &laquo;
-        </button>
-        {Array.from({ length: Math.ceil(filteredPosts.length / postsPerPage) }, (_, i) => (
-          <button
-            key={i + 1}
-            onClick={() => setCurrentPage(i + 1)}
-            className={currentPage === i + 1 ? "active" : ""}
-          >
-            {i + 1}
-          </button>
-        ))}
-        <button
-          onClick={() => setCurrentPage(currentPage + 1)}
-          disabled={currentPage === Math.ceil(filteredPosts.length / postsPerPage)}
-        >
-          &raquo;
-        </button>
-      </div>
+      {/* Create Post Modal */}
+      {isModalOpen && <CreatePostModal isOpen={isModalOpen} onClose={closeCreatePostModal} />}
     </div>
   );
 };
