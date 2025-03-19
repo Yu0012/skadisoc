@@ -1,45 +1,44 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../styles.css"; // Import global styles
 import { FaSearch, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa"; // Icons
-import accountsData from "../data/accounts.json";
+import { ImCross } from "react-icons/im"; 
 import { createPortal } from "react-dom";
 
-
 const Accounts = () => {
-  const [accounts, setAccounts] = useState([]); // Store accounts data
-  const [category, setCategory] = useState("All Categories");
+  const [accounts, setAccounts] = useState([]); // Store accounts from DB
+  const [category, setCategory] = useState("Username"); // Default search category
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [accountsPerPage] = useState(10);
-  const [accountMenuDropdown, setAccountMenuDropdown] = useState(null);  // Triggers dropdown menu
-  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 }); // Handles positioning for dropdown menu
+  const [createUserDropdown, setCreateUserDropdown] = useState(false);
 
-  useEffect(() => {
-    setAccounts(accountsData); // Fetch data from JSON (simulate API call)
-  }, []);
+  const modalRef = useRef(null);
+  const mainContentRef = useRef(null);
 
-  // Toggle dropdown menu & set its position
-  const menuDropdown = (event, accountID) => {
-    event.stopPropagation(); // Prevents event bubbling
-    if (accountMenuDropdown === accountID) {
-      setAccountMenuDropdown(null); // Close menu if it's already open
-    } else {
-      const rect = event.currentTarget.getBoundingClientRect();
-      setMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left });
-      setAccountMenuDropdown(accountID);
-    }
-  };
-  
-  // Close dropdown if clicking outside
+  // Account details 
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNum, setPhoneNum] = useState("");
+  const [address, setAddress] = useState("");
+  const [password, setPassword] = useState("");
+
+  // Fetch accounts from MongoDB
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!event.target.closest(".dropdown-menu")) {
-        setAccountMenuDropdown(null);
+    const fetchAccounts = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/accounts");
+        if (response.ok) {
+          const data = await response.json();
+          setAccounts(data);
+        } else {
+          console.error("Failed to fetch accounts");
+        }
+      } catch (error) {
+        console.error("Error fetching accounts:", error);
       }
     };
 
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    fetchAccounts();
   }, []);
 
   // Handle search input
@@ -47,21 +46,82 @@ const Accounts = () => {
     setSearchQuery(e.target.value);
   };
 
-  // Refresh Function - Reloads data
-  const handleRefresh = () => {
-    window.location.reload();
+  // Handle category change
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
   };
 
-  // Create Post Function (Placeholder for real functionality)
-  const handleCreatePost = () => {
-    console.log("Redirecting to Create Post Page...");
-    // You can add navigation logic here
+  // Toggle "Add User" popup
+  const toggleCreateUserDropdown = () => {
+    setCreateUserDropdown(!createUserDropdown);
   };
 
-  // Filtered accounts based on search query
-  const filteredAccounts = accounts.filter((account) =>
-    account.username.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Close popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setCreateUserDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Save new account to MongoDB
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const newAccount = {
+      name,
+      email,
+      phoneNum,
+      address,
+      password,
+    };
+
+    try {
+      const response = await fetch("http://localhost:5000/api/accounts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newAccount),
+      });
+
+      if (response.ok) {
+        const savedAccount = await response.json();
+        setAccounts([...accounts, savedAccount]); // Update UI
+        setCreateUserDropdown(false); // Close modal
+        setName(""); setEmail(""); setPhoneNum(""); setAddress(""); setPassword(""); // Reset form
+      } else {
+        console.error("Failed to save account");
+      }
+    } catch (error) {
+      console.error("Error saving account:", error);
+    }
+  };
+
+  // Filter accounts based on search query and selected category
+  const filteredAccounts = accounts.filter((account) => {
+    if (!searchQuery) return true; // Show all if search query is empty
+
+    switch (category) {
+      case "ID":
+        return account._id.toString().includes(searchQuery);
+      case "Username":
+        return account.name.toLowerCase().includes(searchQuery.toLowerCase());
+      case "Email":
+        return account.email.toLowerCase().includes(searchQuery.toLowerCase());
+      case "Phone":
+        return account.phoneNum.toLowerCase().includes(searchQuery.toLowerCase());
+      case "Address":
+        return account.address.toLowerCase().includes(searchQuery.toLowerCase());
+      default:
+        return true;
+    }
+  });
 
   // Pagination Logic
   const indexOfLastAccount = currentPage * accountsPerPage;
@@ -69,8 +129,8 @@ const Accounts = () => {
   const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
 
   return (
-    <div className="posts-container">
-      {/* Top Section (Welcome Message, Refresh & Create Post) */}
+    <div ref={mainContentRef} className={`posts-container ${createUserDropdown ? "blurred" : ""}`}>
+      {/* Top Section */}
       <div className="posts-header">
         <div className="welcome-message">
           <p>Welcome,</p>
@@ -78,114 +138,79 @@ const Accounts = () => {
         </div>
 
         <div className="posts-actions">
-          <FaSyncAlt className="refresh-icon" onClick={handleRefresh} title="Refresh Data" />
-          <button className="create-post-btn" onClick={handleCreatePost}>
+          <FaSyncAlt className="refresh-icon" title="Refresh Data" />
+          <button className="create-post-btn">
             <FaPlus /> Create Post
           </button>
-          <div className="search-box">
-          <input
-            type="text"
-            placeholder="Tap to Search"
-            value={searchQuery}
-            onChange={handleSearch}
-          />
-          <FaSearch className="search-icon" />
-        </div>
         </div>
       </div>
 
-      {/* Filter & Search Section */}
+      {/* Search & Filter */}
       <div className="search-container">
-        <select
-          className="dropdown"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          <option>Account</option>
-          <option>ID</option>
-          <option>Username</option>
-          <option>Email</option>
+        {/* Search Category Dropdown */}
+        <select className="dropdown" value={category} onChange={handleCategoryChange}>
+          <option value="ID">ID</option>
+          <option value="Username">Username</option>
+          <option value="Email">Email</option>
+          <option value="Phone">Phone</option>
+          <option value="Address">Address</option>
         </select>
 
+        {/* Search Box */}
         <div className="search-box">
           <input
             type="text"
-            placeholder="Search by ID/Name"
+            placeholder={`Search by ${category}`}
             value={searchQuery}
             onChange={handleSearch}
           />
           <FaSearch className="search-icon" />
         </div>
 
-        <div className="fc-toolbar-right">
-        <button className="create-user-btn" onClick={handleCreatePost}>
-            <FaPlus /> User
-          </button>
-        </div>
+        <button className="create-user-btn" onClick={toggleCreateUserDropdown}>
+          <FaPlus /> Add User
+        </button>
       </div>
+
+      {/* Add User Popup */}
+      {createUserDropdown &&
+        createPortal(
+          <div className="newUserMenu" ref={modalRef}>
+            <ImCross className="exitButton" onClick={toggleCreateUserDropdown} />
+            <form className="form-group" onSubmit={handleSubmit}>
+              <a className="form-title">Create New User</a>
+              <label>Name: <input type="text" value={name} onChange={(e) => setName(e.target.value)} required /></label>
+              <label>Email: <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
+              <label>Phone: <input type="number" value={phoneNum} onChange={(e) => setPhoneNum(e.target.value)} required /></label>
+              <label>Address: <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} required /></label>
+              <label>Password: <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required /></label>
+              <input className="create-post-btn" type="submit" value="Save" />
+            </form>
+          </div>,
+          document.body
+        )}
 
       {/* Accounts Table */}
       <table className="posts-table">
         <thead>
           <tr>
-            <th><input type="checkbox" /></th>
-            <th></th>
-            <th>ID</th>
             <th>Username</th>
             <th>Email</th>
             <th>Phone No.</th>
             <th>Address</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {currentAccounts.map((account) => (
-            <tr key={account.id} className="account-row">
-              <td><input type="checkbox" /></td>
-              <td>{account.entry}</td>
-              <td>{account.id}</td>
-              <td>{account.username}</td>
+            <tr key={account._id}>
+              <td>{account.name}</td>
               <td>{account.email}</td>
-              <td>{account.tele_num}</td>
-              <td className="ellipsis-cell">{account.address}</td>
-              <td><FaEllipsisV className="account-Ellipsis" onClick={(e) => menuDropdown(e, account.id)} /></td>
+              <td>{account.phoneNum}</td>
+              <td>{account.address}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      
-      {/* Menu Dropdown content */}
-      {accountMenuDropdown !== null &&
-        createPortal(
-          <div className="dropdown-menu action" style={{ top: menuPosition.top, left: menuPosition.left }}>
-            <a>Edit</a>
-            <a id="Delete">Delete</a>
-          </div>,
-          document.body
-        )}
-      
-
-      {/* Pagination */}
-      <div className="pagination">
-        <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
-          &laquo;
-        </button>
-        {Array.from({ length: Math.ceil(filteredAccounts.length / accountsPerPage) }, (_, i) => (
-          <button
-            key={i + 1}
-            onClick={() => setCurrentPage(i + 1)}
-            className={currentPage === i + 1 ? "active" : ""}
-          >
-            {i + 1}
-          </button>
-        ))}
-        <button
-          onClick={() => setCurrentPage(currentPage + 1)}
-          disabled={currentPage === Math.ceil(filteredAccounts.length / accountsPerPage)}
-        >
-          &raquo;
-        </button>
-      </div>
     </div>
   );
 };

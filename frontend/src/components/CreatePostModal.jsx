@@ -11,20 +11,18 @@ const CreatePostModal = ({ isOpen, onClose }) => {
   const [scheduledDate, setScheduledDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
-  const [attachedFile, setAttachedFile] = useState(null); // Store uploaded file
+  const [attachedFile, setAttachedFile] = useState(null);
 
   const datePickerRef = useRef(null);
-  const fileInputRef = useRef(null); // Reference for file input
+  const fileInputRef = useRef(null);
 
   if (!isOpen) return null;
 
-  // Toggle the date picker without closing the modal
   const toggleDatePicker = (e) => {
     e.stopPropagation();
     setShowDatePicker((prev) => !prev);
   };
 
-  // Close Date Picker when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (datePickerRef.current && !datePickerRef.current.contains(event.target)) {
@@ -37,18 +35,6 @@ const CreatePostModal = ({ isOpen, onClose }) => {
     };
   }, []);
 
-  // Handle scheduling the post
-  const handleSchedulePost = (e) => {
-    e.stopPropagation();
-    if (scheduledDate) {
-      alert(`Post scheduled for: ${scheduledDate}`);
-      setShowDatePicker(false);
-    } else {
-      alert("Please select a date and time to schedule the post.");
-    }
-  };
-
-  // Handle file attachment
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -56,12 +42,58 @@ const CreatePostModal = ({ isOpen, onClose }) => {
     }
   };
 
-  // Open file input when the icon is clicked
+  const handlePlatformChange = (platformId) => {
+    setSelectedPlatforms((prev) => {
+      if (prev.includes(platformId)) {
+        return prev.filter((p) => p !== platformId);
+      } else {
+        return [...prev, platformId];
+      }
+    });
+  };
+  
+
+
   const triggerFileInput = () => {
     fileInputRef.current.click();
   };
 
-  // Define platforms
+  const handleSubmit = async () => {
+    if (!content.trim()) {
+      alert("Post content cannot be empty!");
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append("content", content);
+    formData.append("hashtags", hashtags);
+    formData.append("client", client);
+    formData.append("scheduledDate", scheduledDate ? scheduledDate.toISOString() : "");
+    formData.append("selectedPlatforms", JSON.stringify(selectedPlatforms)); // Convert array to JSON string
+  
+    if (attachedFile) {
+      formData.append("file", attachedFile);
+    }
+  
+    try {
+      const response = await fetch("http://localhost:5000/api/posts", {
+        method: "POST",
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to submit post");
+      }
+  
+      alert("Post submitted successfully!");
+      onClose();
+    } catch (error) {
+      console.error("Error submitting post:", error);
+      alert("An error occurred. Please try again.");
+    }
+  };
+  
+
   const platforms = [
     { id: "facebook", name: "Facebook" },
     { id: "instagram", name: "Instagram" },
@@ -78,7 +110,6 @@ const CreatePostModal = ({ isOpen, onClose }) => {
         </div>
 
         <div className="modal-body">
-          {/* Content Input */}
           <label>Content</label>
           <div className="content-container">
             <textarea
@@ -87,7 +118,6 @@ const CreatePostModal = ({ isOpen, onClose }) => {
               onChange={(e) => setContent(e.target.value)}
               placeholder="What's on your mind?"
             />
-            {/* Attach File Button */}
             <button className="attach-file-btn" onClick={triggerFileInput}>
               <FaPaperclip />
             </button>
@@ -101,7 +131,6 @@ const CreatePostModal = ({ isOpen, onClose }) => {
             />
           </div>
 
-          {/* Display Attached File */}
           {attachedFile && (
             <div className="attached-file-preview">
               {attachedFile.type.startsWith("image/") ? (
@@ -112,7 +141,6 @@ const CreatePostModal = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* Hashtags & Client Selection */}
           <div className="flex-row">
             <div className="half-width">
               <label>Hashtags</label>
@@ -138,7 +166,6 @@ const CreatePostModal = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Schedule Post Section */}
           <div className="schedule-container">
             <button className="schedule-btn" onClick={toggleDatePicker}>
               <FaCalendarAlt /> Schedule Post
@@ -155,14 +182,10 @@ const CreatePostModal = ({ isOpen, onClose }) => {
                   calendarClassName="custom-calendar"
                   popperPlacement="bottom"
                 />
-                <button className="confirm-schedule-btn" onClick={handleSchedulePost}>
-                  Confirm Schedule Post
-                </button>
               </div>
             )}
           </div>
 
-          {/* Platform Selection */}
           <label>Platforms</label>
           <div className="platform-container">
             {platforms.map((platform) => (
@@ -172,13 +195,7 @@ const CreatePostModal = ({ isOpen, onClose }) => {
                   <input
                     type="checkbox"
                     checked={selectedPlatforms.includes(platform.id)}
-                    onChange={() =>
-                      setSelectedPlatforms((prev) =>
-                        prev.includes(platform.id)
-                          ? prev.filter((p) => p !== platform.id)
-                          : [...prev, platform.id]
-                      )
-                    }
+                    onChange={() => handlePlatformChange(platform.id)}
                   />
                   <span className="slider"></span>
                 </label>
@@ -186,8 +203,7 @@ const CreatePostModal = ({ isOpen, onClose }) => {
             ))}
           </div>
 
-          {/* Submit Button */}
-          <button className="post-submit-btn">Post</button>
+          <button className="post-submit-btn" onClick={handleSubmit}>Post</button>
         </div>
       </div>
     </div>

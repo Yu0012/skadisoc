@@ -50,33 +50,39 @@ const EventCalendar = () => {
     updateTitle(calendarApi.getDate());
   };
 
-  //Goes back a month, two months backwards, goes forward a month, two months forward
-  const goToPrev = () => {
-    const calendarApi = calendarRef.current.getApi();
+ //Goes back a month
+ const goToPrev = () => {
+  const calendarApi = calendarRef.current.getApi();
+  calendarApi.prev();
+  updateTitle(calendarApi.getDate());
+};
+
+//Goes back a year
+const goToPrevDouble = () => {
+  const calendarApi = calendarRef.current.getApi();
+  for (let i = 0; i < 12; i++)
+  {
     calendarApi.prev();
-    updateTitle(calendarApi.getDate());
-  };
+  }
+  updateTitle(calendarApi.getDate());
+};
 
-  const goToPrevDouble = () => {
-    const calendarApi = calendarRef.current.getApi();
-    calendarApi.prev();
-    calendarApi.prev();
-    updateTitle(calendarApi.getDate());
-  };
+//Goes forward a month
+const goToNext = () => {
+  const calendarApi = calendarRef.current.getApi();
+  calendarApi.next();
+  updateTitle(calendarApi.getDate());
+};
 
-
-  const goToNext = () => {
-    const calendarApi = calendarRef.current.getApi();
-    calendarApi.next();
-    updateTitle(calendarApi.getDate());
-  };
-
-  const goToNextDouble = () => {
-    const calendarApi = calendarRef.current.getApi();
-    calendarApi.next();
-    calendarApi.next();
-    updateTitle(calendarApi.getDate());
-  };
+//Goes forward a year
+const goToNextDouble = () => {
+  const calendarApi = calendarRef.current.getApi();
+  for (let i = 0; i < 12; i++)
+    {
+      calendarApi.next();
+    }
+  updateTitle(calendarApi.getDate());
+};
 
   // Handle search input
   const handleSearch = (e) => {
