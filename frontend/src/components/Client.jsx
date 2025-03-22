@@ -6,121 +6,89 @@ import AddClientModal from "./AddClientModal";
 
 const Client = () => {
   const [clients, setClients] = useState([]);
-  const [category, setCategory] = useState("All Categories");
   const [searchQuery, setSearchQuery] = useState("");
   const [showClientModal, setShowClientModal] = useState(false);
   const [editClient, setEditClient] = useState(null);
-  const [createClientDropdown, setCreateClientDropdown] = useState(false);
   const [popupOpen, setPopupOpen] = useState(null);
   const popupRef = useRef(null);
-
-  // Client Details
-  const [companyName, setCompanyName] = useState("");
-  const [companyDetail, setCompanyDetail] = useState("");
-  const [socialMedia, setSocialMedia] = useState("Facebook");
-
-  // Store API tokens and Page IDs for each social media platform
-  const [socialMediaAccounts, setSocialMediaAccounts] = useState({
-    Facebook: { companyToken: "", pageId: "" },
-    Twitter: { companyToken: "", pageId: "" },
-    LinkedIn: { companyToken: "", pageId: "" },
-    Instagram: { companyToken: "", pageId: "" },
-  });
 
   // Load clients from database
   useEffect(() => {
     const fetchClients = async () => {
       try {
         const response = await fetch("http://localhost:5000/api/clients");
-        if (!response.ok) throw new Error("Failed to fetch clients");
         const data = await response.json();
         setClients(data);
       } catch (error) {
         console.error("Error fetching clients:", error);
       }
     };
-
     fetchClients();
   }, []);
 
-  const createClientMenuDropdown = () => {
-    setCreateClientDropdown((prev) => !prev);
-  };
-
+  // Toggle popup menu
   const togglePopup = (clientId) => {
     setPopupOpen(popupOpen === clientId ? null : clientId);
   };
 
-  // Close popup when clicking outside
+  // Close popup on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
         setPopupOpen(null);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  // Open Add modal
+  const handleAddClient = () => {
+    setEditClient(null);
+    setShowClientModal(true);
+  };
 
-    const socialAccounts = Object.entries(socialMediaAccounts)
-      .filter(([_, data]) => data.companyToken || data.pageId) // skip empty ones
-      .map(([platform, data]) => ({
-        platform,
-        companyToken: data.companyToken,
-        pageId: data.pageId,
-      }));
+  // Open Edit modal
+  const handleEditClient = (client) => {
+    setEditClient(client);
+    setShowClientModal(true);
+    setPopupOpen(null);
+  };
 
-    const newClient = {
-      companyName,
-      companyDetail,
-      socialAccounts,
-    };
-
+  // Save (Add or Update)
+  const handleSaveClient = async (clientData) => {
     try {
-      const response = await fetch("http://localhost:5000/api/clients", {
-        method: "POST",
+      const url = editClient
+        ? `http://localhost:5000/api/clients/${editClient._id}`
+        : "http://localhost:5000/api/clients";
+
+      const method = editClient ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newClient),
+        body: JSON.stringify(clientData),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to add client");
+      if (!response.ok) throw new Error("Save failed");
+      const result = await response.json();
+
+      if (editClient) {
+        // update local state
+        setClients((prev) =>
+          prev.map((c) => (c._id === editClient._id ? result.client : c))
+        );
+      } else {
+        setClients((prev) => [...prev, result.client]);
       }
 
-      const savedClient = await response.json();
-      setClients((prevClients) => [...prevClients, savedClient]); // Update state
-      setCreateClientDropdown(false); // Close modal
-
-      alert("Client successfully added!");
+      setShowClientModal(false);
+      setEditClient(null);
     } catch (error) {
-      console.error("Error adding client:", error);
-      alert("Failed to add client. Please try again.");
+      console.error("Error saving client:", error);
+      alert("Something went wrong. Please try again.");
     }
   };
-
-  const handleInputChange = (platform, field, value) => {
-    setSocialMediaAccounts((prev) => ({
-      ...prev,
-      [platform]: {
-        ...prev[platform],
-        [field]: value,
-      },
-    }));
-  };
-
-  const handleEditClient = (client) => {
-    console.log("Edit client:", client);
-    alert(`Editing client: ${client.companyName}`);
-    // Add logic here to open an edit modal
-  };
-
-  
 
   const handleDeleteClient = async (clientId) => {
     if (window.confirm("Are you sure you want to delete this client?")) {
@@ -128,10 +96,9 @@ const Client = () => {
         const response = await fetch(`http://localhost:5000/api/clients/${clientId}`, {
           method: "DELETE",
         });
+        if (!response.ok) throw new Error("Delete failed");
 
-        if (!response.ok) throw new Error("Failed to delete client");
-
-        setClients(clients.filter((client) => client._id !== clientId));
+        setClients((prev) => prev.filter((c) => c._id !== clientId));
       } catch (error) {
         console.error("Error deleting client:", error);
       }
@@ -139,8 +106,7 @@ const Client = () => {
   };
 
   return (
-    
-    <div className="posts-container">
+    <div className={`posts-container ${showClientModal ? "blurred" : ""}`}>
       {/* Top Section */}
       <div className="posts-header">
         <div className="welcome-message">
@@ -150,7 +116,7 @@ const Client = () => {
 
         <div className="posts-actions">
           <FaSyncAlt className="refresh-icon" title="Refresh Data" />
-          <button className="create-post-btn">
+          <button className="create-post-btn" onClick={handleAddClient}>
             <FaPlus /> Create Post
           </button>
 
@@ -168,30 +134,14 @@ const Client = () => {
 
       {/* Client List */}
       <div className="client-list">
-        {/* Add new Clients */}
-        <button className="add-client-btn" onClick={createClientMenuDropdown}>
+        <button className="add-client-btn" onClick={handleAddClient}>
           <FaPlus />
           <p>Add Client</p>
         </button>
 
-        {createClientDropdown && (
-          <AddClientModal
-            onClose={() => setCreateClientDropdown(false)}
-            onSubmit={handleSubmit}
-            companyName={companyName} 
-            setCompanyName={setCompanyName}
-            companyDetail={companyDetail}
-            setCompanyDetail={setCompanyDetail}
-            socialMedia={socialMedia}
-            setSocialMedia={setSocialMedia}
-            socialMediaAccounts={socialMediaAccounts}
-            handleInputChange={handleInputChange}
-          />
-        )}
-
         {clients.map((client) => (
           <div key={client._id} className="client-object">
-            {/* Popup Menu */}
+            {/* Menu Icon */}
             <div className="popup-container">
               <FaEllipsisV className="popup-icon" onClick={() => togglePopup(client._id)} />
               {popupOpen === client._id && (
@@ -202,15 +152,24 @@ const Client = () => {
               )}
             </div>
 
-            {/* Client Details */}
+            {/* Client Info */}
             <h3 className="client-name">{client.companyName}</h3>
             <p className="client-description">{client.companyDetail}</p>
           </div>
         ))}
       </div>
 
-
-      
+      {/* Add/Edit Modal */}
+      {showClientModal && (
+        <AddClientModal
+          onClose={() => {
+            setShowClientModal(false);
+            setEditClient(null);
+          }}
+          onSubmit={handleSaveClient}
+          clientData={editClient}
+        />
+      )}
     </div>
   );
 };
