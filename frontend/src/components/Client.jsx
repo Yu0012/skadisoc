@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FaSearch, FaDownload, FaSyncAlt, FaPlus, FaEllipsisV } from "react-icons/fa";
+import { FaSearch, FaDownload, FaSyncAlt, FaPlus, FaEllipsisV} from "react-icons/fa";
+import { CiViewTable } from "react-icons/ci";
 import { HiOutlineAdjustmentsVertical } from "react-icons/hi2";
 import { CiBoxList } from "react-icons/ci";
 import AddClientModal from "./AddClientModal";
@@ -13,6 +14,7 @@ const Client = () => {
   const [createClientDropdown, setCreateClientDropdown] = useState(false);
   const [popupOpen, setPopupOpen] = useState(null);
   const popupRef = useRef(null);
+  const [changeView, setChangeView] = useState(false);
 
   // Client Details
   const [companyName, setCompanyName] = useState("");
@@ -42,6 +44,15 @@ const Client = () => {
 
     fetchClients();
   }, []);
+
+  const setClientView = () => {
+    if (changeView === true){
+      setChangeView(false)
+    }
+    if (changeView === false){
+      setChangeView(true)
+    }
+  }
 
   const createClientMenuDropdown = () => {
     setCreateClientDropdown((prev) => !prev);
@@ -139,7 +150,6 @@ const Client = () => {
   };
 
   return (
-    
     <div className="posts-container">
       {/* Top Section */}
       <div className="posts-header">
@@ -150,35 +160,15 @@ const Client = () => {
 
         <div className="posts-actions">
           <FaSyncAlt className="refresh-icon" title="Refresh Data" />
-          <button className="create-post-btn">
-            <FaPlus /> Create Post
-          </button>
-
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder="Tap to Search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <FaSearch className="search-icon" />
-          </div>
+          <CiViewTable className="view-icon" title="Change View" onClick={setClientView} />
         </div>
       </div>
 
-      {/* Client List */}
-      <div className="client-list">
-        {/* Add new Clients */}
-        <button className="add-client-btn" onClick={createClientMenuDropdown}>
-          <FaPlus />
-          <p>Add Client</p>
-        </button>
-
-        {createClientDropdown && (
+      {createClientDropdown && (
           <AddClientModal
             onClose={() => setCreateClientDropdown(false)}
             onSubmit={handleSubmit}
-            companyName={companyName} 
+            companyName={companyName}
             setCompanyName={setCompanyName}
             companyDetail={companyDetail}
             setCompanyDetail={setCompanyDetail}
@@ -189,26 +179,61 @@ const Client = () => {
           />
         )}
 
-        {clients.map((client) => (
-          <div key={client._id} className="client-object">
-            {/* Popup Menu */}
-            <div className="popup-container">
-              <FaEllipsisV className="popup-icon" onClick={() => togglePopup(client._id)} />
-              {popupOpen === client._id && (
-                <div className="popup-menu" ref={popupRef}>
-                  <button onClick={() => handleEditClient(client)}>Edit</button>
-                  <button onClick={() => handleDeleteClient(client._id)}>Delete</button>
-                </div>
-              )}
+      {/* Block View - Default */}
+      {changeView === false && (
+        <div>
+        {/* Client List */}
+        <div className="client-list">
+          {/* Add new Clients */}
+          <button className="add-client-btn" onClick={createClientMenuDropdown}>
+            <FaPlus />
+            <p>Add Client</p>
+          </button>
+
+          {clients.map((client) => (
+            <div key={client._id} className="client-object">
+              {/* Popup Menu */}
+              <div className="popup-container">
+                <FaEllipsisV className="popup-icon" onClick={() => togglePopup(client._id)} />
+                {popupOpen === client._id && (
+                  <div className="popup-menu" ref={popupRef}>
+                    <button onClick={() => handleEditClient(client)}>Edit</button>
+                    <button onClick={() => handleDeleteClient(client._id)}>Delete</button>
+                  </div>
+                )}
+              </div>
+
+              {/* Client Details */}
+              <h3 className="client-name">{client.companyName}</h3>
+              <p className="client-description">{client.companyDetail}</p>
             </div>
-
-            {/* Client Details */}
-            <h3 className="client-name">{client.companyName}</h3>
-            <p className="client-description">{client.companyDetail}</p>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
+      )}
+    
 
+      {/* Table View - Alternate View */}
+      {changeView === true && (
+        <div>
+          <table className="posts-table">
+            <thead>
+              <tr>
+                <th>Client Name</th>
+                <th>Client Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {clients.map((client) => (
+                <tr key={client._id}>
+                  <td>{client.companyName}</td>
+                  <td>{client.companyDetail}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       
     </div>
