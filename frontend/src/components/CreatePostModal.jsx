@@ -6,12 +6,13 @@ import { FaTimes, FaCalendarAlt, FaPaperclip } from "react-icons/fa";
 
 const CreatePostModal = ({ isOpen, onClose }) => {
   const [content, setContent] = useState("");
-  const [hashtags, setHashtags] = useState("");
+  const [hashtags, setHashtags] = useState("#");
   const [client, setClient] = useState("JYP Entertainment");
   const [scheduledDate, setScheduledDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
   const [attachedFile, setAttachedFile] = useState(null);
+  const [clients, setClients] = useState([]);
 
   const datePickerRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -33,6 +34,22 @@ const CreatePostModal = ({ isOpen, onClose }) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
+  }, []);
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/clients");
+        if (!response.ok) {
+          throw new Error("Failed to fetch clients");
+        }
+        const data = await response.json();
+        setClients(data);
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+      }
+    };
+    fetchClients();
   }, []);
 
   const handleFileChange = (e) => {
@@ -159,9 +176,13 @@ const CreatePostModal = ({ isOpen, onClose }) => {
                 value={client}
                 onChange={(e) => setClient(e.target.value)}
               >
-                <option>JYP Entertainment</option>
-                <option>SM Entertainment</option>
-                <option>YG Entertainment</option>
+                <option value="">Select a Client</option>
+                {clients.map((c) => (
+                  <option key={c._id} value={c.companyName}>
+                    {c.companyName}
+                  </option>
+                ))}
+                
               </select>
             </div>
           </div>

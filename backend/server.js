@@ -5,6 +5,7 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { platform } = require('os');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -55,9 +56,15 @@ const Post = mongoose.model("Post", postSchema);
 const clientSchema = new mongoose.Schema({
   companyName: { type: String, required: true },
   companyDetail: String,
-  companyToken: String,
-  apiToken: Boolean,
+  socialAccounts: [
+    {
+      platform: { type: String, required: true }, // Example: "Facebook"
+      companyToken: String,
+      pageId: String
+    }
+  ]
 });
+
 const Client = mongoose.model("Client", clientSchema);
 
 // ✅ **Account Schema**
@@ -127,16 +134,21 @@ app.get('/api/posts', async (req, res) => {
 // ✅ Add a new client
 app.post('/api/clients', async (req, res) => {
   try {
-    const { companyName, companyDetail, companyToken, apiToken } = req.body;
+    const { companyName, companyDetail, socialAccounts } = req.body;
 
     if (!companyName) {
       return res.status(400).json({ error: "Company name is required" });
     }
 
-    const newClient = new Client({ companyName, companyDetail, companyToken, apiToken });
-    await newClient.save();
+    const newClient = new Client({
+      companyName,
+      companyDetail,
+      socialAccounts  // expects array of { platform, companyToken, pageId }
+    });
 
+    await newClient.save();
     res.status(201).json({ message: "Client added successfully", client: newClient });
+
   } catch (error) {
     console.error("Error adding client:", error);
     res.status(500).json({ error: "Failed to add client" });
@@ -153,6 +165,49 @@ app.get('/api/clients', async (req, res) => {
     res.status(500).json({ error: "Failed to fetch clients" });
   }
 });
+
+// ✅ Edit Client
+app.put('/api/clients/:id', async (req, res) => {
+  try {
+    const { companyName, companyDetail, socialAccounts } = req.body;
+
+    if (!companyName) {
+      return res.status(400).json({ error: "Company name is required" });
+    }
+
+    const updatedClient = await Client.findByIdAndUpdate(
+      req.params.id,
+      { companyName, companyDetail, socialAccounts },
+      { new: true }
+    );
+
+    if (!updatedClient) {
+      return res.status(404).json({ error: "Client not found" });
+    }
+
+    res.status(200).json({ message: "Client updated successfully", client: updatedClient });
+  } catch (error) {
+    console.error("Error updating client:", error);
+    res.status(500).json({ error: "Failed to update client" });
+  }
+});
+
+// ✅ Delete Client
+app.delete('/api/clients/:id', async (req, res) => {
+  try {
+    const deletedClient = await Client.findByIdAndDelete(req.params.id);
+
+    if (!deletedClient) {
+      return res.status(404).json({ error: "Client not found" });
+    }
+
+    res.status(200).json({ message: "Client deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting client:", error);
+    res.status(500).json({ error: "Failed to delete client" });
+  }
+});
+
 
 // ===============================
 // 📌 **Accounts API Routes**
@@ -187,10 +242,6 @@ app.get('/api/accounts', async (req, res) => {
     res.status(500).json({ error: "Failed to fetch accounts" });
   }
 });
-
-
-
-
 
 
 // ===============================

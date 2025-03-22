@@ -1390,3 +1390,49 @@ input::-webkit-inner-spin-button {
   font-weight: bold;
   font-size: 14px;
 }
+
+/* Position popup in the top-right corner */
+.popup-container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+/* Three-dot menu icon */
+.popup-icon {
+  font-size: 18px;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Popup menu styles */
+.popup-menu {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  min-width: 100px;
+}
+
+.popup-menu button {
+  border: none;
+  background: none;
+  padding: 8px 10px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  font-size: 14px;
+}
+
+.popup-menu button:hover {
+  background: #f0f0f0;
+}
+

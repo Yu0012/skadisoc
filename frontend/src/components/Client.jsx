@@ -1,28 +1,31 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FaSearch, FaDownload, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa";
+import { FaSearch, FaDownload, FaSyncAlt, FaPlus, FaEllipsisV } from "react-icons/fa";
 import { HiOutlineAdjustmentsVertical } from "react-icons/hi2";
-import { ImCross } from "react-icons/im";
 import { CiBoxList } from "react-icons/ci";
-import { createPortal } from "react-dom";
+import AddClientModal from "./AddClientModal";
 
 const Client = () => {
   const [clients, setClients] = useState([]);
   const [category, setCategory] = useState("All Categories");
   const [searchQuery, setSearchQuery] = useState("");
-  const [clientMenuDropdown, setClientMenuDropdown] = useState(null);
+  const [showClientModal, setShowClientModal] = useState(false);
+  const [editClient, setEditClient] = useState(null);
   const [createClientDropdown, setCreateClientDropdown] = useState(false);
-  const [editClientDropdown, setEditClientDropdown] = useState(false);
-  const [socialMedia, setSocialMedia] = useState("All Social Media");
-  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
-
-  const modalRef = useRef(null);
-  const mainContentRef = useRef(null);
+  const [popupOpen, setPopupOpen] = useState(null);
+  const popupRef = useRef(null);
 
   // Client Details
   const [companyName, setCompanyName] = useState("");
   const [companyDetail, setCompanyDetail] = useState("");
-  const [companyToken, setCompanyToken] = useState("");
-  const [apiToken, setApiToken] = useState(false);
+  const [socialMedia, setSocialMedia] = useState("Facebook");
+
+  // Store API tokens and Page IDs for each social media platform
+  const [socialMediaAccounts, setSocialMediaAccounts] = useState({
+    Facebook: { companyToken: "", pageId: "" },
+    Twitter: { companyToken: "", pageId: "" },
+    LinkedIn: { companyToken: "", pageId: "" },
+    Instagram: { companyToken: "", pageId: "" },
+  });
 
   // Load clients from database
   useEffect(() => {
@@ -44,32 +47,45 @@ const Client = () => {
     setCreateClientDropdown((prev) => !prev);
   };
 
-  useEffect(() => {
-    if (!createClientDropdown) {
-      setCompanyName("");
-      setCompanyDetail("");
-      setCompanyToken("");
-    }
-  }, [createClientDropdown]);
+  const togglePopup = (clientId) => {
+    setPopupOpen(popupOpen === clientId ? null : clientId);
+  };
 
-  // Function to add new client to database
+  // Close popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setPopupOpen(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    const socialAccounts = Object.entries(socialMediaAccounts)
+      .filter(([_, data]) => data.companyToken || data.pageId) // skip empty ones
+      .map(([platform, data]) => ({
+        platform,
+        companyToken: data.companyToken,
+        pageId: data.pageId,
+      }));
 
     const newClient = {
       companyName,
       companyDetail,
-      companyToken,
-      apiToken,
-      socialMedia,
+      socialAccounts,
     };
 
     try {
       const response = await fetch("http://localhost:5000/api/clients", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newClient),
       });
 
@@ -88,24 +104,43 @@ const Client = () => {
     }
   };
 
-  // Close dropdown if clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        setCreateClientDropdown(false);
-        setEditClientDropdown(false);
-        setClientMenuDropdown(null);
-      }
-    };
+  const handleInputChange = (platform, field, value) => {
+    setSocialMediaAccounts((prev) => ({
+      ...prev,
+      [platform]: {
+        ...prev[platform],
+        [field]: value,
+      },
+    }));
+  };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const handleEditClient = (client) => {
+    console.log("Edit client:", client);
+    alert(`Editing client: ${client.companyName}`);
+    // Add logic here to open an edit modal
+  };
+
+  
+
+  const handleDeleteClient = async (clientId) => {
+    if (window.confirm("Are you sure you want to delete this client?")) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/clients/${clientId}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) throw new Error("Failed to delete client");
+
+        setClients(clients.filter((client) => client._id !== clientId));
+      } catch (error) {
+        console.error("Error deleting client:", error);
+      }
+    }
+  };
 
   return (
-    <div ref={mainContentRef} className={`posts-container ${createClientDropdown || editClientDropdown ? "blurred" : ""}`}>
+    
+    <div className="posts-container">
       {/* Top Section */}
       <div className="posts-header">
         <div className="welcome-message">
@@ -120,33 +155,14 @@ const Client = () => {
           </button>
 
           <div className="search-box">
-            <input type="text" placeholder="Tap to Search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+            <input
+              type="text"
+              placeholder="Tap to Search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
             <FaSearch className="search-icon" />
           </div>
-        </div>
-      </div>
-
-      {/* Filter & Search Section */}
-      <div className="search-container">
-        <select className="dropdown" value={category} onChange={(e) => setCategory(e.target.value)}>
-          <option>All Categories</option>
-          <option>Name</option>
-          <option>Description</option>
-          <option>Email</option>
-        </select>
-
-        <div className="search-box">
-          <input type="text" placeholder="Search by keywords" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-          <FaSearch className="search-icon" />
-        </div>
-
-        <button className="export-btn">
-          Export <FaDownload />
-        </button>
-
-        <div className="fc-toolbar-right">
-          <CiBoxList className="list-adjust-size" />
-          <HiOutlineAdjustmentsVertical className="list-adjust-size" />
         </div>
       </div>
 
@@ -158,51 +174,43 @@ const Client = () => {
           <p>Add Client</p>
         </button>
 
-        {createClientDropdown &&
-          createPortal(
-            <div className="newUserMenu" ref={modalRef}>
-              <ImCross className="exitButton" onClick={() => setCreateClientDropdown(false)} />
-              <form className="form-group" onSubmit={handleSubmit}>
-                <a className="form-title">Create New Client</a>
-                <label>
-                  Company Name
-                  <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Type company name here" required />
-                </label>
-                <label>
-                  Company Details
-                  <input type="text" value={companyDetail} onChange={(e) => setCompanyDetail(e.target.value)} placeholder="Type company details here" />
-                </label>
-                <select className="dropdown" value={socialMedia} onChange={(e) => setSocialMedia(e.target.value)}>
-                  <option>All Social Media</option>
-                  <option>Facebook</option>
-                  <option>Twitter</option>
-                  <option>LinkedIn</option>
-                  <option>Instagram</option>
-                </select>
-                <label id="client-API-Token">
-                  <a>API Token</a>
-                  <div className="api-token-row">
-                    <span>Token:</span>
-                    <input className="api-token-group" type="password" value={companyToken} placeholder="Enter API token here" onChange={(e) => setCompanyToken(e.target.value)} />
-                  </div>
-                  <div className="checkbox-wrapper">
-                    <span>Enabled</span>
-                    <input className="api-checkbox" type="checkbox" checked={apiToken} onChange={(e) => setApiToken(e.target.checked)} />
-                  </div>
-                </label>
-                <input className="create-post-btn" type="submit" value="Save" />
-              </form>
-            </div>,
-            document.body
-          )}
+        {createClientDropdown && (
+          <AddClientModal
+            onClose={() => setCreateClientDropdown(false)}
+            onSubmit={handleSubmit}
+            companyName={companyName} 
+            setCompanyName={setCompanyName}
+            companyDetail={companyDetail}
+            setCompanyDetail={setCompanyDetail}
+            socialMedia={socialMedia}
+            setSocialMedia={setSocialMedia}
+            socialMediaAccounts={socialMediaAccounts}
+            handleInputChange={handleInputChange}
+          />
+        )}
 
         {clients.map((client) => (
-          <div key={client.id} className="client-object">
+          <div key={client._id} className="client-object">
+            {/* Popup Menu */}
+            <div className="popup-container">
+              <FaEllipsisV className="popup-icon" onClick={() => togglePopup(client._id)} />
+              {popupOpen === client._id && (
+                <div className="popup-menu" ref={popupRef}>
+                  <button onClick={() => handleEditClient(client)}>Edit</button>
+                  <button onClick={() => handleDeleteClient(client._id)}>Delete</button>
+                </div>
+              )}
+            </div>
+
+            {/* Client Details */}
             <h3 className="client-name">{client.companyName}</h3>
             <p className="client-description">{client.companyDetail}</p>
           </div>
         ))}
       </div>
+
+
+      
     </div>
   );
 };
