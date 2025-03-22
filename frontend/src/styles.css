@@ -1397,6 +1397,7 @@ input::-webkit-inner-spin-button {
 .post-actions-dropdown button {
   padding: 6px 10px;
   font-size: 14px;
+  border-radius: 5px;
   text-align: left;
   cursor: pointer;
   border: none;
@@ -1411,6 +1412,13 @@ input::-webkit-inner-spin-button {
 /* Delete Button - Keep it bold but smaller */
 .post-actions-dropdown .delete-btn {
   color: red;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.post-actions-dropdown .delete-btn:hover {
+  background-color: #fc3d47;
+  color: white;
   font-weight: bold;
   font-size: 14px;
 }
@@ -1453,10 +1461,16 @@ input::-webkit-inner-spin-button {
   padding: 8px 10px;
   cursor: pointer;
   text-align: left;
+  border-radius: 5px;
   width: 100%;
   font-size: 14px;
 }
 
 .popup-menu button:hover {
   background: #f0f0f0;
+}
+
+.popup-menu .delete-button:hover{
+  background-color: #fc3d47;
+  color: white;
 }
