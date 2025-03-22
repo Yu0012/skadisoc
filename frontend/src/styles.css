@@ -277,10 +277,12 @@ body {
 
 /* 🔄 Refresh Button */
 .refresh-icon {
-  font-size: 20px;
+  font-size: 30px;
   cursor: pointer;
   color: #0a0f5c;
   transition: 0.3s;
+  margin-right: 0px;
+  margin-left: auto;
 }
 
 .refresh-icon:hover {
@@ -404,10 +406,24 @@ body {
   background-color: black;
 }
 
+.delete-selected-btn{
+  background-color: red;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
 .create-user-btn {
   background-color: white;
   color: #0D286E;
-  padding: 5px 20px;
+  padding: 10px 20px;
   border: solid;
   border-radius: 5px;
   border-color: #ADB5BD;
@@ -1122,6 +1138,15 @@ input:checked + .slider:before {
   outline: none;
 }
 
+.view-icon{
+  font-size: 40px;
+  cursor: pointer;
+  color: #0a0f5c;
+  transition: 0.3s;
+  margin-right: 0px;
+  margin-left: auto;
+}
+
 /* ============================= */
 /* 🔄 Refresh Button */
 /* ============================= */
@@ -1137,7 +1162,6 @@ input:checked + .slider:before {
   display: flex;
   align-items: center;
   position: relative; /* Ensure it moves properly */
-  left: -10px; /* Moves it 10px to the left */
 }
 
 .refresh-btn:hover {
@@ -1391,6 +1415,7 @@ input::-webkit-inner-spin-button {
   font-size: 14px;
 }
 
+
 /* Position popup in the top-right corner */
 .popup-container {
   position: absolute;
@@ -1435,4 +1460,3 @@ input::-webkit-inner-spin-button {
 .popup-menu button:hover {
   background: #f0f0f0;
 }
-
