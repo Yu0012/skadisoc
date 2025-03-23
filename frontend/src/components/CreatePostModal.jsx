@@ -4,25 +4,17 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../styles.css";
 import { FaTimes, FaCalendarAlt, FaPaperclip } from "react-icons/fa";
 
-const CreatePostModal = ({ isOpen, onClose }) => {
-  const [content, setContent] = useState("");
-  const [hashtags, setHashtags] = useState("#");
-  const [client, setClient] = useState("JYP Entertainment");
-  const [scheduledDate, setScheduledDate] = useState(null);
+const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
+  const [content, setContent] = useState(initialData.content || "");
+  const [hashtags, setHashtags] = useState(initialData.hashtags || "");
+  const [client, setClient] = useState(initialData.client || "JYP Entertainment");
+  const [scheduledDate, setScheduledDate] = useState(initialData.scheduledDate || null);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedPlatforms, setSelectedPlatforms] = useState([]);
+  const [selectedPlatforms, setSelectedPlatforms] = useState(initialData.platforms || []);
   const [attachedFile, setAttachedFile] = useState(null);
-  const [clients, setClients] = useState([]);
 
   const datePickerRef = useRef(null);
   const fileInputRef = useRef(null);
-
-  if (!isOpen) return null;
-
-  const toggleDatePicker = (e) => {
-    e.stopPropagation();
-    setShowDatePicker((prev) => !prev);
-  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -31,85 +23,26 @@ const CreatePostModal = ({ isOpen, onClose }) => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/api/clients");
-        if (!response.ok) {
-          throw new Error("Failed to fetch clients");
-        }
-        const data = await response.json();
-        setClients(data);
-      } catch (error) {
-        console.error("Error fetching clients:", error);
-      }
+  const handleSubmit = () => {
+    const updatedPost = {
+      ...initialData,
+      content,
+      hashtags,
+      client,
+      scheduledDate,
+      platforms: selectedPlatforms,
     };
-    fetchClients();
-  }, []);
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setAttachedFile(file);
-    }
+    onSave?.(updatedPost);
+    onClose();
   };
 
-  const handlePlatformChange = (platformId) => {
-    setSelectedPlatforms((prev) => {
-      if (prev.includes(platformId)) {
-        return prev.filter((p) => p !== platformId);
-      } else {
-        return [...prev, platformId];
-      }
-    });
+  const toggleDatePicker = (e) => {
+    e.stopPropagation();
+    setShowDatePicker((prev) => !prev);
   };
-  
-
-
-  const triggerFileInput = () => {
-    fileInputRef.current.click();
-  };
-
-  const handleSubmit = async () => {
-    if (!content.trim()) {
-      alert("Post content cannot be empty!");
-      return;
-    }
-  
-    const formData = new FormData();
-    formData.append("content", content);
-    formData.append("hashtags", hashtags);
-    formData.append("client", client);
-    formData.append("scheduledDate", scheduledDate ? scheduledDate.toISOString() : "");
-    formData.append("selectedPlatforms", JSON.stringify(selectedPlatforms)); // Convert array to JSON string
-  
-    if (attachedFile) {
-      formData.append("file", attachedFile);
-    }
-  
-    try {
-      const response = await fetch("http://localhost:5000/api/posts", {
-        method: "POST",
-        body: formData,
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to submit post");
-      }
-  
-      alert("Post submitted successfully!");
-      onClose();
-    } catch (error) {
-      console.error("Error submitting post:", error);
-      alert("An error occurred. Please try again.");
-    }
-  };
-  
 
   const platforms = [
     { id: "facebook", name: "Facebook" },
@@ -118,11 +51,22 @@ const CreatePostModal = ({ isOpen, onClose }) => {
     { id: "twitter", name: "Twitter" },
   ];
 
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) setAttachedFile(file);
+  };
+
+  if (!isOpen) return null;
+
   return (
     <div className="modal-overlay">
       <div className="modal-content large-modal">
         <div className="modal-header">
-          <h2>Create Post</h2>
+          <h2>{initialData?.id ? "Edit Post" : "Create Post"}</h2>
           <FaTimes className="close-icon" onClick={onClose} />
         </div>
 
@@ -176,18 +120,19 @@ const CreatePostModal = ({ isOpen, onClose }) => {
                 value={client}
                 onChange={(e) => setClient(e.target.value)}
               >
-                <option value="">Select a Client</option>
-                {clients.map((c) => (
-                  <option key={c._id} value={c.companyName}>
-                    {c.companyName}
-                  </option>
-                ))}
-                
+                <option>JYP Entertainment</option>
+                <option>SM Entertainment</option>
+                <option>YG Entertainment</option>
               </select>
             </div>
           </div>
 
           <div className="schedule-container">
+            {scheduledDate && (
+              <span className="selected-datetime">
+                {scheduledDate.toLocaleString()}
+              </span>
+            )}
             <button className="schedule-btn" onClick={toggleDatePicker}>
               <FaCalendarAlt /> Schedule Post
             </button>
@@ -200,9 +145,10 @@ const CreatePostModal = ({ isOpen, onClose }) => {
                   showTimeSelect
                   dateFormat="Pp"
                   className="date-picker"
-                  calendarClassName="custom-calendar"
-                  popperPlacement="bottom"
                 />
+                <button className="confirm-schedule-btn" onClick={() => setShowDatePicker(false)}>
+                  Confirm Schedule Post
+                </button>
               </div>
             )}
           </div>
@@ -216,7 +162,13 @@ const CreatePostModal = ({ isOpen, onClose }) => {
                   <input
                     type="checkbox"
                     checked={selectedPlatforms.includes(platform.id)}
-                    onChange={() => handlePlatformChange(platform.id)}
+                    onChange={() =>
+                      setSelectedPlatforms((prev) =>
+                        prev.includes(platform.id)
+                          ? prev.filter((p) => p !== platform.id)
+                          : [...prev, platform.id]
+                      )
+                    }
                   />
                   <span className="slider"></span>
                 </label>
@@ -224,7 +176,9 @@ const CreatePostModal = ({ isOpen, onClose }) => {
             ))}
           </div>
 
-          <button className="post-submit-btn" onClick={handleSubmit}>Post</button>
+          <button className="post-submit-btn" onClick={handleSubmit}>
+            {initialData?.id ? "Save Changes" : "Create Post"}
+          </button>
         </div>
       </div>
     </div>
