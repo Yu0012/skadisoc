@@ -1,106 +1,97 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { ImCross } from "react-icons/im";
 import { createPortal } from "react-dom";
 
 const AddClientModal = ({
   onClose,
   onSubmit,
-  clientData
+  clientData, // New: Will hold data when editing
+  companyName,
+  setCompanyName,
+  companyDetail,
+  setCompanyDetail,
+  socialMedia,
+  setSocialMedia,
+  socialMediaAccounts,
+  handleInputChange
 }) => {
   const modalRef = useRef(null);
-  const [companyName, setCompanyName] = useState("");
-  const [companyDetail, setCompanyDetail] = useState("");
-  const [socialMedia, setSocialMedia] = useState("Facebook");
-  const [socialMediaAccounts, setSocialMediaAccounts] = useState({
-    Facebook: { companyToken: "", pageId: "" },
-    Twitter: { companyToken: "", pageId: "" },
-    LinkedIn: { companyToken: "", pageId: "" },
-    Instagram: { companyToken: "", pageId: "" },
-  });
 
+  // Pre-fill form fields if editing an existing client
   useEffect(() => {
     if (clientData) {
       setCompanyName(clientData.companyName || "");
       setCompanyDetail(clientData.companyDetail || "");
 
-      const updated = { ...socialMediaAccounts };
-      clientData.socialAccounts?.forEach((acc) => {
-        updated[acc.platform] = {
-          companyToken: acc.companyToken || "",
-          pageId: acc.pageId || ""
-        };
-      });
-      setSocialMediaAccounts(updated);
-    }
-  }, [clientData]);
-
-  const handleInputChange = (platform, field, value) => {
-    setSocialMediaAccounts((prev) => ({
-      ...prev,
-      [platform]: {
-        ...prev[platform],
-        [field]: value
+      if (clientData.socialAccounts && clientData.socialAccounts.length > 0) {
+        const firstAccount = clientData.socialAccounts[0]; // Assuming one account for now
+        setSocialMedia(firstAccount.platform || "Facebook");
       }
-    }));
-  };
+    }
+  }, [clientData, setCompanyName, setCompanyDetail, setSocialMedia]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const socialAccounts = Object.entries(socialMediaAccounts)
-      .filter(([_, v]) => v.companyToken || v.pageId)
-      .map(([platform, data]) => ({
-        platform,
-        ...data
-      }));
+  // Close modal when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
 
-    onSubmit({
-      companyName,
-      companyDetail,
-      socialAccounts
-    });
-  };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
 
   return createPortal(
     <div className="newUserMenu" ref={modalRef}>
       <ImCross className="exitButton" onClick={onClose} />
-      <form className="form-group" onSubmit={handleSubmit}>
-        <a className="form-title">{clientData ? "Edit Client" : "Add Client"}</a>
-
+      <form className="form-group" onSubmit={onSubmit}>
+        <a className="form-title">{clientData ? "Edit Client" : "Create New Client"}</a>
         <label>
           Company Name
-          <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} required />
+          <input
+            type="text"
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
+            placeholder="Type company name here"
+            required
+          />
         </label>
-
         <label>
           Company Details
-          <input type="text" value={companyDetail} onChange={(e) => setCompanyDetail(e.target.value)} />
+          <input
+            type="text"
+            value={companyDetail}
+            onChange={(e) => setCompanyDetail(e.target.value)}
+            placeholder="Type company details here"
+          />
         </label>
-
         <select className="dropdown" value={socialMedia} onChange={(e) => setSocialMedia(e.target.value)}>
           <option value="Facebook">Facebook</option>
           <option value="Twitter">Twitter</option>
           <option value="LinkedIn">LinkedIn</option>
           <option value="Instagram">Instagram</option>
         </select>
-
         <label>
           API Token
           <input
             type="text"
-            value={socialMediaAccounts[socialMedia].companyToken}
+            value={socialMediaAccounts[socialMedia]?.companyToken || ""}
             onChange={(e) => handleInputChange(socialMedia, "companyToken", e.target.value)}
+            placeholder="Enter API token"
           />
         </label>
-
         <label>
           Page ID
           <input
             type="text"
-            value={socialMediaAccounts[socialMedia].pageId}
+            value={socialMediaAccounts[socialMedia]?.pageId || ""}
             onChange={(e) => handleInputChange(socialMedia, "pageId", e.target.value)}
+            placeholder="Enter Page ID"
           />
         </label>
-
         <input className="create-post-btn" type="submit" value={clientData ? "Update" : "Save"} />
       </form>
     </div>,

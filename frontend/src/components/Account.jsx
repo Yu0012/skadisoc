@@ -14,6 +14,7 @@ const Accounts = () => {
 
   const modalRef = useRef(null);
   const mainContentRef = useRef(null);
+  const [selectedAccounts, setSelectedAccounts] = useState([]);
 
   // Account details 
   const [name, setName] = useState("");
@@ -40,6 +41,14 @@ const Accounts = () => {
 
     fetchAccounts();
   }, []);
+
+  const handleCheckboxChange = (accountId) => {
+    setSelectedAccounts((prevSelected) =>
+      prevSelected.includes(accountId)
+        ? prevSelected.filter((id) => id !== accountId)
+        : [...prevSelected, accountId]
+    );
+  };
 
   // Handle search input
   const handleSearch = (e) => {
@@ -127,7 +136,7 @@ const Accounts = () => {
   const indexOfLastAccount = currentPage * accountsPerPage;
   const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
   const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
-
+  
   return (
     <div ref={mainContentRef} className={`posts-container ${createUserDropdown ? "blurred" : ""}`}>
       {/* Top Section */}
@@ -135,13 +144,6 @@ const Accounts = () => {
         <div className="welcome-message">
           <p>Welcome,</p>
           <h2 className="user-name">Amber Broos</h2>
-        </div>
-
-        <div className="posts-actions">
-          <FaSyncAlt className="refresh-icon" title="Refresh Data" />
-          <button className="create-post-btn">
-            <FaPlus /> Create Post
-          </button>
         </div>
       </div>
 
@@ -170,6 +172,7 @@ const Accounts = () => {
         <button className="create-user-btn" onClick={toggleCreateUserDropdown}>
           <FaPlus /> Add User
         </button>
+        <FaSyncAlt className="refresh-icon" title="Refresh Data" />
       </div>
 
       {/* Add User Popup */}
@@ -194,6 +197,7 @@ const Accounts = () => {
       <table className="posts-table">
         <thead>
           <tr>
+            <th/>
             <th>Username</th>
             <th>Email</th>
             <th>Phone No.</th>
@@ -203,6 +207,13 @@ const Accounts = () => {
         <tbody>
           {currentAccounts.map((account) => (
             <tr key={account._id}>
+              <td>
+              <input
+                type="checkbox"
+                checked={selectedAccounts.includes(account._id)}
+                onChange={() => handleCheckboxChange(account._id)}
+                />
+              </td>
               <td>{account.name}</td>
               <td>{account.email}</td>
               <td>{account.phoneNum}</td>
@@ -210,7 +221,14 @@ const Accounts = () => {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table>  
+      <div>
+        {selectedAccounts.length > 0 && (
+          <button className="delete-selected-btn">
+            Delete Selected Accounts
+          </button>
+        )}
+      </div>
     </div>
   );
 };
