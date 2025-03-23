@@ -102,8 +102,9 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
             </div>
           )}
 
-          <div className="flex-row">
-            <div className="half-width">
+          <div className="two-column-layout">
+            {/* Left */}
+            <div className="left-column">
               <label>Hashtags</label>
               <input
                 type="text"
@@ -112,8 +113,33 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
                 onChange={(e) => setHashtags(e.target.value)}
                 placeholder="#socialmedia #marketing"
               />
+
+              <label>Platforms</label>
+              <div className="platform-container">
+                {platforms.map((platform) => (
+                  <div key={platform.id} className="platform-item">
+                    <span className="platform-name">{platform.name}</span>
+                    <label className="switch">
+                      <input
+                        type="checkbox"
+                        checked={selectedPlatforms.includes(platform.id)}
+                        onChange={() =>
+                          setSelectedPlatforms((prev) =>
+                            prev.includes(platform.id)
+                              ? prev.filter((p) => p !== platform.id)
+                              : [...prev, platform.id]
+                          )
+                        }
+                      />
+                      <span className="slider"></span>
+                    </label>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="half-width">
+
+            {/* Right */}
+            <div className="right-column">
               <label>Client</label>
               <select
                 className="dropdown-field"
@@ -124,56 +150,45 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
                 <option>SM Entertainment</option>
                 <option>YG Entertainment</option>
               </select>
-            </div>
-          </div>
 
-          <div className="schedule-container">
-            {scheduledDate && (
-              <span className="selected-datetime">
-                {scheduledDate.toLocaleString()}
-              </span>
-            )}
-            <button className="schedule-btn" onClick={toggleDatePicker}>
-              <FaCalendarAlt /> Schedule Post
-            </button>
-
-            {showDatePicker && (
-              <div className="date-picker-container" ref={datePickerRef}>
-                <DatePicker
-                  selected={scheduledDate}
-                  onChange={(date) => setScheduledDate(date)}
-                  showTimeSelect
-                  dateFormat="Pp"
-                  className="date-picker"
-                />
-                <button className="confirm-schedule-btn" onClick={() => setShowDatePicker(false)}>
-                  Confirm Schedule Post
+              <div className="schedule-row">
+                <button className="schedule-btn" onClick={toggleDatePicker}>
+                  <FaCalendarAlt /> Schedule Post
                 </button>
+                {scheduledDate && (
+                  <span className="selected-date">
+                    {scheduledDate.toLocaleString()}
+                  </span>
+                )}
+                {showDatePicker && (
+                  <div
+                    ref={datePickerRef}
+                    style={{
+                      position: "absolute",
+                      top: "-370px",
+                      right: "0",
+                      zIndex: 9999,
+                      backgroundColor: "white",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+                      padding: "10px"
+                    }}
+                  >
+                    <DatePicker
+                      selected={scheduledDate}
+                      onChange={(date) => {
+                        setScheduledDate(date);
+                        setShowDatePicker(false);
+                      }}
+                      showTimeSelect
+                      timeIntervals={30}
+                      dateFormat="MMMM d, yyyy h:mm aa"
+                      inline
+                    />
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-
-          <label>Platforms</label>
-          <div className="platform-container">
-            {platforms.map((platform) => (
-              <div key={platform.id} className="platform-item">
-                <span className="platform-name">{platform.name}</span>
-                <label className="switch">
-                  <input
-                    type="checkbox"
-                    checked={selectedPlatforms.includes(platform.id)}
-                    onChange={() =>
-                      setSelectedPlatforms((prev) =>
-                        prev.includes(platform.id)
-                          ? prev.filter((p) => p !== platform.id)
-                          : [...prev, platform.id]
-                      )
-                    }
-                  />
-                  <span className="slider"></span>
-                </label>
-              </div>
-            ))}
+            </div>
           </div>
 
           <button className="post-submit-btn" onClick={handleSubmit}>

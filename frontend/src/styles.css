@@ -525,7 +525,7 @@ body {
 .fc {
   color: #0D286E !important;
   border-color: #0D286E solid !important;
-  background-color: #e5f0fa;
+  background-color: white; /* ✅ changed to white */
   max-width: 1500px; 
   height: 500px;     
   font-size: 14px;    
@@ -825,135 +825,168 @@ body {
   border-radius: 8px;
 }
 
-/* 📅 Make "Schedule Post" Button Match "Post" Button */
-.schedule-btn {
-  background-color: #0a0f5c; /* Same as Post button */
-  color: white;
-  padding: 12px 20px; /* Adjust padding to match */
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: bold;
-  text-align: center;
-  cursor: pointer;
-  transition: 0.3s;
-  display: flex;
-  align-items: center;
-  gap: 8px; /* Add spacing for icon */
-}
-
-.schedule-btn:hover {
-  background-color: #080c44; /* Darker on hover */
-}
-
-/* 🏗️ Ensure Icon is Aligned */
-.schedule-btn svg {
-  font-size: 18px;
-}
-
-
 /* 🔹 Schedule Post Button - Align to the Right */
 .schedule-container {
+  position: relative;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.date-picker-container {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  z-index: 1000;
+  background-color: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.schedule-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+  position: relative;
+}
+
+.schedule-button-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.schedule-row-full {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  width: 100%;
+  margin-top: 16px;
+  gap: 12px;
   position: relative;
 }
 
-/* 📅 Date Picker Container - Keep inside modal */
-.date-picker-container {
-  position: absolute;
-  bottom: 0px; /* Move it upwards */
-  right: -20px; /* Shift slightly left for better visibility */
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  padding: 12px;
-  z-index: 1000;
+.date-display-group {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 320px; /* Adjust width for better fit */
+  align-items: center;
+  gap: 12px;
 }
 
-/* 📅 Ensure Date & Time Pickers are Side by Side */
-.custom-calendar {
-  display: flex !important;
-  flex-direction: row !important;
-  width: auto !important;
-  min-width: 370px !important;
-  max-width: 420px !important;
+.schedule-btn {
+  background-color: #0a0a80;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.schedule-btn:hover {
+  background-color: #1a1abf;
+}
+
+.selected-date {
+  font-size: 0.85rem;
+  color: #333;
 }
 
 /* 📅 Make Date Section Bigger */
-.react-datepicker__month-container {
-  width: 65% !important; /* Increase date area for better visibility */
-}
-
-/* ⏰ Remove Scrollbar & Allow Smooth Scrolling */
-.react-datepicker__time-container {
-  width: 35% !important;
-  border-left: 1px solid #ddd;
-  position: relative;
-  overflow: hidden !important; /* Hides the scrollbar */
-}
-
-/* ⏰ Enable Smooth Scrolling */
-.react-datepicker__time-list {
-  max-height: none !important; /* Remove fixed height */
-  overflow-y: auto !important; /* Enable mouse scroll */
-  scrollbar-width: none !important; /* Hide scrollbar for Firefox */
-  -ms-overflow-style: none !important; /* Hide scrollbar for IE/Edge */
-}
-
-/* Hide scrollbar for Chrome, Safari */
-.react-datepicker__time-list::-webkit-scrollbar {
-  display: none !important;
-}
-
-/* 📝 Make Input Field Same Size as Button */
-.date-picker-container input {
-  width: 100% !important; /* Same width as button */
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box; /* Ensures width includes padding */
-}
-
-/* ✅ Confirm Schedule Post Button */
-.confirm-schedule-btn {
-  background-color: #0a0f5c;
-  color: white;
-  padding: 8px 12px;
+.react-datepicker {
+  display: flex !important;
+  flex-direction: row !important;
   border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: 0.3s;
-  width: 100%; /* Make it align properly */
-  text-align: center;
+  font-family: inherit;
+  box-shadow: none;
 }
 
-.confirm-schedule-btn:hover {
-  background-color: #080c44;
+.react-datepicker__month-container,
+.react-datepicker__time-container {
+  border: none;
+}
+
+.react-datepicker__time-container {
+  margin-left: 8px;
+}
+
+.react-datepicker__header {
+  background-color: white;
+  border-bottom: 1px solid #eee;
+}
+
+.react-datepicker__day--selected {
+  background-color: #0a0a80 !important;
+  color: white !important;
+}
+
+.react-datepicker__time-list-item--selected {
+  background-color: #0a0a80 !important;
+  color: white !important;
+}
+
+
+.two-column-layout {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.left-column,
+.right-column {
+  flex: 1;
+  min-width: 260px;
+}
+
+.dropdown-field,
+.input-field {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.date-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.floating-datepicker {
+  position: absolute;
+  bottom: 110%; /* places it above the button */
+  left: 0;
+  z-index: 999;
+  background: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  border-radius: 8px;
 }
 
 
 /* 🔹 Platform Selection - Side by Side */
 .platform-container {
   display: flex;
-  flex-wrap: wrap;
-  gap: 20px; /* Adjust spacing between items */
+  flex-direction: row;
+  flex-wrap: nowrap; /* Don't wrap to next line */
+  gap: 24px; /* Adjust spacing between items */
+  align-items: center;
 }
 
-/* Individual Platform Item */
 .platform-item {
   display: flex;
   align-items: center;
-  gap: 10px; /* Space between name and toggle */
+  gap: 8px;
+  white-space: nowrap; /* Prevent label wrapping */
 }
+
 
 /* Platform Name */
 .platform-name {
@@ -1434,13 +1467,6 @@ input::-webkit-inner-spin-button {
 
 .popup-menu button:hover {
   background: #f0f0f0;
-}
-
-.selected-datetime {
-  margin-right: 15px; /* space between date & button */
-  color: #333;
-  font-weight: 500;
-  font-size: 14px;
 }
 
 .theme-icon {

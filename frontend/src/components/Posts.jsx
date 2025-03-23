@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "../styles.css";
 import { FaSearch, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa";
-import postsData from "../data/posts.json";
-import CreatePostModal from "./CreatePostModal";
 import { createPortal } from "react-dom";
+import axios from "axios";
+import CreatePostModal from "./CreatePostModal";
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
@@ -17,8 +17,17 @@ const Posts = () => {
   const [editingPost, setEditingPost] = useState({});
 
   useEffect(() => {
-    setPosts(postsData);
+    fetchPosts();
   }, []);
+
+  const fetchPosts = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/posts");
+      setPosts(response.data);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  };
 
   const menuDropdown = (event, postID) => {
     event.stopPropagation();
@@ -43,7 +52,7 @@ const Posts = () => {
 
   const handleSearch = (e) => setSearchQuery(e.target.value);
 
-  const handleRefresh = () => window.location.reload();
+  const handleRefresh = () => fetchPosts();
 
   const openCreatePostModal = () => {
     setEditingPost({});
@@ -60,42 +69,33 @@ const Posts = () => {
     setIsModalOpen(true);
   };
 
-  const handleSavePost = (postData) => {
+  const handleSavePost = async (postData) => {
     if (!postData || !postData.content?.trim()) {
       alert("Post content cannot be empty.");
       return;
     }
 
-    const now = new Date();
-    const isScheduled =
-      postData.scheduledDate && new Date(postData.scheduledDate) > now;
-
-    const status = isScheduled ? "Scheduled" : "Published";
-
-    if (postData.id) {
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postData.id ? { ...postData, status } : post
-        )
-      );
-    } else {
-      const newPost = {
-        ...postData,
-        id: posts.length ? Math.max(...posts.map((p) => p.id)) + 1 : 1,
-        author: "Francis Hill",
-        status,
-      };
-      setPosts((prevPosts) => [newPost, ...prevPosts]);
+    try {
+      let savedPost;
+      if (postData._id) {
+        const response = await axios.put(`http://localhost:5000/api/posts/${postData._id}`, postData);
+        savedPost = response.data.post;
+        setPosts(posts.map(p => (p._id === savedPost._id ? savedPost : p)));
+      } else {
+        const response = await axios.post("http://localhost:5000/api/posts", postData);
+        savedPost = response.data.post;
+        setPosts([savedPost, ...posts]);
+      }
+      closeCreatePostModal();
+    } catch (error) {
+      console.error("Error saving post:", error);
     }
-
-    closeCreatePostModal();
   };
 
-  // 🔍 Filter by search + category
   const filteredPosts = posts.filter((post) => {
+    const status = post.scheduledDate && new Date(post.scheduledDate) > new Date() ? "Scheduled" : "Published";
     const matchesSearch = post.content.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      category === "All Categories" || post.status === category;
+    const matchesCategory = category === "All Categories" || category === status;
     return matchesSearch && matchesCategory;
   });
 
@@ -117,11 +117,7 @@ const Posts = () => {
       </div>
 
       <div className="search-container">
-        <select
-          className="dropdown"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
+        <select className="dropdown" value={category} onChange={(e) => setCategory(e.target.value)}>
           <option>All Categories</option>
           <option>Published</option>
           <option>Scheduled</option>
@@ -141,90 +137,63 @@ const Posts = () => {
       <table className="posts-table">
         <thead>
           <tr>
-            <th>ID</th>
             <th>Status</th>
             <th>Content</th>
             <th>Hashtags</th>
             <th>Platforms</th>
-            <th>Author</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {currentPosts.map((post) => (
-            <tr key={post.id}>
-              <td>{post.id}</td>
-              <td>{post.status}</td>
-              <td>{post.content}</td>
-              <td>{post.hashtags || "-"}</td>
-              <td>{post.platforms?.join(", ") || "-"}</td>
-              <td>{post.author}</td>
-              <td>
-                <FaEllipsisV onClick={(e) => menuDropdown(e, post.id)} />
-                {postMenuDropdown === post.id &&
-                  createPortal(
-                    <div
-                      className="post-actions-dropdown"
-                      style={{
-                        top: menuPosition.top,
-                        left: menuPosition.left,
-                      }}
-                    >
-                      <button onClick={() => handleEditPost(post)}>Edit</button>
-                      <button>Duplicate</button>
-                      <button className="delete-btn">Delete</button>
-                    </div>,
-                    document.body
-                  )}
-              </td>
-            </tr>
-          ))}
+          {currentPosts.map((post) => {
+            const status = post.scheduledDate && new Date(post.scheduledDate) > new Date() ? "Scheduled" : "Published";
+            return (
+              <tr key={post._id}>
+                <td>{status}</td>
+                <td>{post.content}</td>
+                <td>{post.hashtags || "-"}</td>
+                <td>{post.selectedPlatforms?.join(", ") || "-"}</td>
+                <td>
+                  <FaEllipsisV onClick={(e) => menuDropdown(e, post._id)} />
+                  {postMenuDropdown === post._id &&
+                    createPortal(
+                      <div
+                        className="post-actions-dropdown"
+                        style={{ top: menuPosition.top, left: menuPosition.left }}
+                      >
+                        <button onClick={() => handleEditPost(post)}>Edit</button>
+                        <button className="delete-btn">Delete</button>
+                      </div>,
+                      document.body
+                    )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
       <div className="pagination-container">
         <p>
-          Showing {indexOfFirstPost + 1} to{" "}
-          {Math.min(indexOfLastPost, filteredPosts.length)} of{" "}
-          {filteredPosts.length} entries
+          Showing {indexOfFirstPost + 1} to {Math.min(indexOfLastPost, filteredPosts.length)} of {filteredPosts.length} entries
         </p>
         <div className="pagination">
-          <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
-            «
-          </button>
-          <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            ‹
-          </button>
-          {[...Array(totalPages).keys()]
-            .slice(Math.max(0, currentPage - 3), currentPage + 2)
-            .map((number) => (
-              <button
-                key={number + 1}
-                onClick={() => setCurrentPage(number + 1)}
-                className={currentPage === number + 1 ? "active" : ""}
-              >
-                {number + 1}
-              </button>
-            ))}
-          <button
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            ›
-          </button>
-          <button
-            onClick={() => setCurrentPage(totalPages)}
-            disabled={currentPage === totalPages}
-          >
-            »
-          </button>
+          <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>«</button>
+          <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>‹</button>
+          {[...Array(totalPages).keys()].slice(Math.max(0, currentPage - 3), currentPage + 2).map((number) => (
+            <button
+              key={number + 1}
+              onClick={() => setCurrentPage(number + 1)}
+              className={currentPage === number + 1 ? "active" : ""}
+            >
+              {number + 1}
+            </button>
+          ))}
+          <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>›</button>
+          <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>»</button>
         </div>
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
         <CreatePostModal
           isOpen={isModalOpen}
