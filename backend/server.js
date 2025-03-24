@@ -49,6 +49,7 @@ const postSchema = new mongoose.Schema({
   scheduledDate: Date,
   selectedPlatforms: [String],
   filePath: String, // Store file path if uploaded
+  posted: { type: Boolean, default: false },
 });
 const Post = mongoose.model("Post", postSchema);
 
@@ -106,6 +107,7 @@ app.post('/api/posts', upload.single('file'), async (req, res) => {
       scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
       selectedPlatforms, // Now correctly stored as an array
       filePath: req.file ? `/uploads/${req.file.filename}` : null,
+      posted: false,
     });
 
     await newPost.save();
@@ -243,6 +245,66 @@ app.get('/api/accounts', async (req, res) => {
   }
 });
 
+// Function to post to Facebook
+const postToFacebook = async (post, client) => {
+  try {
+    const facebookAccount = client.socialAccounts.find(acc => acc.platform === "Facebook");
+
+    if (!facebookAccount || !facebookAccount.companyToken || !facebookAccount.pageId) {
+      console.error(`No valid Facebook account for client: ${client.companyName}`);
+      return false;
+    }
+
+    const pageAccessToken = facebookAccount.companyToken;
+    const pageId = facebookAccount.pageId;
+    console.log("Page Access Token:", pageAccessToken);
+
+    const url = `https://graph.facebook.com/${pageId}/feed`;
+
+    const postData = {
+      message: `${post.content}\n\n${post.hashtags || ""}`,
+      access_token: pageAccessToken,
+    };
+
+    const response = await axios.post(url, postData);
+    
+    if (response.data.id) {
+      console.log(`Post successful: ${response.data.id}`);
+      return true;
+    }
+  } catch (error) {
+    console.error("Error posting to Facebook:", error.response?.data || error.message);
+  }
+  return false;
+};
+
+const checkAndPostScheduledPosts = async () => {
+  try {
+    const now = new Date();
+    const posts = await Post.find({ scheduledDate: { $lte: now }, posted: false });
+
+    for (const post of posts) {
+      const client = await Client.findOne({ companyName: post.client });
+
+      if (!client) {
+        console.error(`Client not found for post: ${post._id}`);
+        continue;
+      }
+
+      const success = await postToFacebook(post, client);
+
+      if (success) {
+        post.posted = true;
+        await post.save();
+      }
+    }
+  } catch (error) {
+    console.error("Error checking scheduled posts:", error);
+  }
+};
+
+// Run the function every minute
+setInterval(checkAndPostScheduledPosts, 60 * 1000);
 
 // ===============================
 // 📌 **Start Server**
