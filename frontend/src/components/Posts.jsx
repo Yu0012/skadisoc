@@ -14,6 +14,7 @@ const Posts = () => {
   const [postMenuDropdown, setPostMenuDropdown] = useState(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const dropdownRef = React.useRef(null);
 
   // 📌 Fetch Posts from MongoDB
   useEffect(() => {
@@ -35,11 +36,30 @@ const Posts = () => {
     try {
       await axios.delete(`http://localhost:5000/api/posts/${postId}`);
       setPosts(posts.filter((post) => post._id !== postId)); // Remove from UI
-    } catch (error) {
+    } 
+    
+    catch (error) {
       console.error("Error deleting post:", error);
     }
+
+    setPostMenuDropdown(null); // Close popup after delete
+    alert("Post deleted successfully!");
   };
 
+    // Close dropdown when clicking outside
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+          setPostMenuDropdown(null); // Close dropdown
+        }
+      };
+  
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
+  
   // 📌 Handle Post Creation - Update UI After New Post
   const handlePostCreated = () => {
     fetchPosts(); // Reload posts after a new post is added
@@ -116,6 +136,7 @@ const Posts = () => {
             <th>Hashtags</th>
             <th>Client</th>
             <th>Platforms</th>
+            <th>Media</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -127,6 +148,22 @@ const Posts = () => {
               <td>{post.hashtags}</td>  
               <td>{post.client}</td>
               <td>{post.selectedPlatforms.join(", ")}</td>
+              <td>
+              {post.filePath ? (
+                  <img
+                    src={`http://localhost:5000${post.filePath}`}
+                    alt="Post media"
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      objectFit: "cover",
+                      borderRadius: "6px",
+                    }}
+                  />
+                ) : (
+                  <span style={{ color: "#999" }}>-</span>
+                )}
+              </td>
               <td>
                 <FaEllipsisV className="action-icon" onClick={(e) => menuDropdown(e, post._id)} />
               </td>
@@ -150,9 +187,8 @@ const Posts = () => {
       {/* Post Actions Dropdown */}
       {postMenuDropdown !== null &&
         createPortal(
-          <div className="post-actions-dropdown" style={{ top: menuPosition.top, left: menuPosition.left }}>
+          <div className="post-actions-dropdown" style={{ top: menuPosition.top, left: menuPosition.left }} ref={dropdownRef}>
             <button>Edit</button>
-            <button>Duplicate</button>
             <button className="delete-btn" onClick={() => handleDeletePost(postMenuDropdown)}>Delete</button>
           </div>,
           document.body

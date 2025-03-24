@@ -143,7 +143,7 @@ const CreatePostModal = ({ isOpen, onClose }) => {
               ref={fileInputRef}
               className="file-input"
               onChange={handleFileChange}
-              accept="image/*, .pdf, .docx"
+              accept="image/*,image/*, video/*"
               style={{ display: "none" }}
             />
           </div>
@@ -151,7 +151,15 @@ const CreatePostModal = ({ isOpen, onClose }) => {
           {attachedFile && (
             <div className="attached-file-preview">
               {attachedFile.type.startsWith("image/") ? (
-                <img src={URL.createObjectURL(attachedFile)} alt="Attachment Preview" />
+                <img
+                  src={URL.createObjectURL(attachedFile)}
+                  alt="Attachment Preview"
+                  className="preview-image"
+                />
+              ) : attachedFile.type.startsWith("video/") ? (
+                <video controls width="250">
+                  <source src={URL.createObjectURL(attachedFile)} type={attachedFile.type} />
+                </video>
               ) : (
                 <p>{attachedFile.name}</p>
               )}
