@@ -1,141 +1,51 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect, useRef } from "react";
 import "../styles.css";
-import { FaSearch, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa";
-import postsData from "../data/posts.json";
-import CreatePostModal from "./CreatePostModal";
+import { FaSearch, FaSyncAlt } from "react-icons/fa";
 
 const Posts = () => {
-  const [posts, setPosts] = useState([]); // Store posts from database
-  const [category, setCategory] = useState("All Categories");
+  const [posts, setPosts] = useState([]);
+  const [category, setCategory] = useState("Content");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
-  const [postMenuDropdown, setPostMenuDropdown] = useState(null);
-  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [selectedPosts, setSelectedPosts] = useState([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
 
-  // 📌 Fetch Posts from MongoDB
+  // Modal-related states (if needed)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
+
   useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/posts");
+        if (response.ok) {
+          const data = await response.json();
+          setPosts(data);
+        } else {
+          console.error("Failed to fetch posts");
+        }
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
+
     fetchPosts();
   }, []);
 
-  const fetchPosts = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/api/posts");
-      setPosts(response.data);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    }
-  };
-
-  const fetchPosts = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/api/posts");
-      setPosts(response.data);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    }
-  };
-
-  // 📌 Handle Post Deletion
-  const handleDeletePost = async (postId) => {
-    if (!window.confirm("Are you sure you want to delete this post?")) return;
-    try {
-      await axios.delete(`http://localhost:5000/api/posts/${postId}`);
-      setPosts(posts.filter((post) => post._id !== postId)); // Remove from UI
-    } catch (error) {
-      console.error("Error deleting post:", error);
-    }
-  };
-
-  // 📌 Handle Post Creation - Update UI After New Post
-  const handlePostCreated = () => {
-    fetchPosts(); // Reload posts after a new post is added
-    setIsModalOpen(false);
-  };
-
-  // 📌 Toggle dropdown menu
-  const menuDropdown = (event, postID) => {
-    event.stopPropagation();
-    if (postMenuDropdown === postID) {
-      setPostMenuDropdown(null);
-    } else {
-      const rect = event.currentTarget.getBoundingClientRect();
-      setMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left });
-      setPostMenuDropdown(postID);
-    }
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!event.target.closest(".post-actions-dropdown")) {
-        setPostMenuDropdown(null);
-      }
-    };
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
-
-  const handleSearch = (e) => setSearchQuery(e.target.value);
-
-  const handleRefresh = () => window.location.reload();
-
-  const openCreatePostModal = () => {
-    setEditingPost({});
-    setIsModalOpen(true);
-  };
-
-  const closeCreatePostModal = () => {
-    setIsModalOpen(false);
-    setEditingPost({});
-  };
-
-  const handleEditPost = (post) => {
-    setEditingPost(post);
-    setIsModalOpen(true);
-  };
-
-  const handleSavePost = (postData) => {
-    if (!postData || !postData.content?.trim()) {
-      alert("Post content cannot be empty.");
-      return;
-    }
-
-    const now = new Date();
-    const isScheduled =
-      postData.scheduledDate && new Date(postData.scheduledDate) > now;
-
-    const status = isScheduled ? "Scheduled" : "Published";
-
-    if (postData.id) {
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postData.id ? { ...postData, status } : post
-        )
-      );
-    } else {
-      const newPost = {
-        ...postData,
-        id: posts.length ? Math.max(...posts.map((p) => p.id)) + 1 : 1,
-        author: "Francis Hill",
-        status,
-      };
-      setPosts((prevPosts) => [newPost, ...prevPosts]);
-    }
-
-    closeCreatePostModal();
-  };
-
-  // 🔍 Filter by search + category
   const filteredPosts = posts.filter((post) => {
-    const matchesSearch = post.content.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      category === "All Categories" || post.status === category;
-    return matchesSearch && matchesCategory;
+    if (!searchQuery) return true;
+    switch (category) {
+      case "ID":
+        return post._id.toString().includes(searchQuery);
+      case "Content":
+        return post.content.toLowerCase().includes(searchQuery.toLowerCase());
+      case "Hashtags":
+        return post.hashtags?.toLowerCase().includes(searchQuery.toLowerCase());
+      default:
+        return true;
+    }
   });
 
   const indexOfLastPost = currentPage * postsPerPage;
@@ -143,99 +53,138 @@ const Posts = () => {
   const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
+  // Checkbox Logic
+  const handleCheckboxChange = (postID) => {
+    setSelectedPosts((prevSelected) =>
+      prevSelected.includes(postID)
+        ? prevSelected.filter((id) => id !== postID)
+        : [...prevSelected, postID]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedPosts([]);
+    } else {
+      setSelectedPosts(currentPosts.map((post) => post._id));
+    }
+    setIsAllSelected(!isAllSelected);
+  };
+
+  const handleDeselectAll = () => {
+    setSelectedPosts([]);
+  };
+
+  useEffect(() => {
+    const allChecked =
+      filteredPosts.length > 0 &&
+      selectedPosts.length === filteredPosts.length;
+    setIsAllSelected(allChecked);
+  }, [selectedPosts, filteredPosts]);
+
+  // Optional Modal Handlers
+  const openCreatePostModal = () => {
+    setEditingPost(null);
+    setIsModalOpen(true);
+  };
+
+  const closeCreatePostModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleSavePost = (newPostData) => {
+    console.log("Saving post:", newPostData);
+    // Your logic to create/update a post
+    closeCreatePostModal();
+  };
+
   return (
     <div className="posts-container">
-      {/* Top Section */}
+      {/* Header */}
       <div className="posts-header">
-        <h2>Posts</h2>
-        <div className="posts-actions">
-          <FaSyncAlt className="refresh-btn" onClick={fetchPosts} title="Refresh Data" />
-          <button className="create-post-btn" onClick={() => setIsModalOpen(true)}>
-            <FaPlus /> Create Post
-          </button>
-        </div>
+        <h2>Manage Posts</h2>
       </div>
 
-      {/* Search Section */}
+      {/* Search and Filter */}
       <div className="search-container">
-        <select className="dropdown" value={category} onChange={(e) => setCategory(e.target.value)}>
-          <option>All Categories</option>
-          <option>Published</option>
-          <option>Draft</option>
-          <option>Scheduled</option>
+        <select
+          className="dropdown"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        >
+          <option value="ID">ID</option>
+          <option value="Content">Content</option>
+          <option value="Hashtags">Hashtags</option>
         </select>
 
         <div className="search-box">
           <input
             type="text"
-            placeholder="Search by keywords"
+            placeholder={`Search by ${category}`}
             value={searchQuery}
-            onChange={handleSearch}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
           <FaSearch className="search-icon" />
         </div>
+
+        <FaSyncAlt
+          className="refresh-icon"
+          title="Refresh"
+          onClick={() => window.location.reload()}
+        />
       </div>
 
       {/* Posts Table */}
       <table className="posts-table">
         <thead>
           <tr>
+            <th>
+              <input
+                type="checkbox"
+                checked={isAllSelected}
+                onChange={handleSelectAll}
+              />
+            </th>
             <th>ID</th>
-            <th>Status</th>
             <th>Content</th>
             <th>Hashtags</th>
-            <th>Client</th>
-            <th>Platforms</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {currentPosts.map((post) => (
-            <tr key={post.id}>
-              <td>{post.id}</td>
-              <td>{post.status}</td>
-              <td>{post.content}</td>
-              <td>{post.hashtags || "-"}</td>
-              <td>{post.platforms?.join(", ") || "-"}</td>
-              <td>{post.author}</td>
+            <tr key={post._id} className="post-row">
               <td>
-                <FaEllipsisV onClick={(e) => menuDropdown(e, post.id)} />
-                {postMenuDropdown === post.id &&
-                  createPortal(
-                    <div
-                      className="post-actions-dropdown"
-                      style={{
-                        top: menuPosition.top,
-                        left: menuPosition.left,
-                      }}
-                    >
-                      <button onClick={() => handleEditPost(post)}>Edit</button>
-                      <button>Duplicate</button>
-                      <button className="delete-btn">Delete</button>
-                    </div>,
-                    document.body
-                  )}
+                <input
+                  type="checkbox"
+                  className="checkbox-rowSelection"
+                  checked={selectedPosts.includes(post._id)}
+                  onChange={() => handleCheckboxChange(post._id)}
+                />
               </td>
+              <td>{post._id}</td>
+              <td>{post.content}</td>
+              <td>{post.hashtags}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <div>
-        {selectedPosts.length > 0 && (
-          <div className="checkbox-selection">
-            <button className="unselect-selected-btn" onClick={handleDeselectAll}>
-              Deselect All
-            </button>
-            <button className="delete-selected-btn">
+
+      {/* Action Buttons */}
+      {selectedPosts.length > 0 && (
+        <div className="checkbox-selection">
+          <button className="unselect-selected-btn" onClick={handleDeselectAll}>
+            Deselect All
+          </button>
+          <button
+            className="delete-selected-btn"
+            onClick={() => console.log("Delete posts:", selectedPosts)}
+          >
             Delete Selected Posts
-            </button>
-          </div>
-        )}
-      </div>
+          </button>
+        </div>
+      )}
 
-
-
-      {/* Pagination Section */}
+      {/* Pagination */}
       <div className="pagination-container">
         <p>
           Showing {indexOfFirstPost + 1} to{" "}
@@ -253,7 +202,7 @@ const Posts = () => {
             ‹
           </button>
           {[...Array(totalPages).keys()]
-            .slice(Math.max(0, currentPage - 3), currentPage + 2)
+            .slice(Math.max(0, currentPage - 2), currentPage + 1)
             .map((number) => (
               <button
                 key={number + 1}
@@ -278,14 +227,13 @@ const Posts = () => {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Placeholder Modal */}
       {isModalOpen && (
-        <CreatePostModal
-          isOpen={isModalOpen}
-          onClose={closeCreatePostModal}
-          initialData={editingPost}
-          onSave={handleSavePost}
-        />
+        <div className="modal">
+          <h3>Create or Edit Post</h3>
+          {/* Replace with your form */}
+          <button onClick={closeCreatePostModal}>Close</button>
+        </div>
       )}
     </div>
   );
