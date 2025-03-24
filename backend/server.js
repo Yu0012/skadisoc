@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs');
 const { platform } = require('os');
 const axios = require('axios');
+const { TwitterApi } = require('twitter-api-v2');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -340,6 +341,29 @@ const checkAndPostScheduledPosts = async () => {
     console.error("Error checking scheduled posts:", error);
   }
 };
+
+// const twitterClient = new TwitterApi({
+//   appKey: process.env.TWITTER_API_KEY,
+//   appSecret: process.env.TWITTER_API_SECRET,
+//   accessToken: process.env.TWITTER_ACCESS_TOKEN,
+//   accessSecret: process.env.TWITTER_ACCESS_SECRET,
+// });
+
+// const postToTwitter = async (post) => {
+//   try {
+//     const tweetContent = `${post.content}\n${post.hashtags || ""}`;
+    
+//     const response = await twitterClient.v2.tweet(tweetContent);
+    
+//     if (response.data) {
+//       console.log(`Tweet posted successfully: ${response.data.id}`);
+//       return true;
+//     }
+//   } catch (error) {
+//     console.error("Error posting to Twitter:", error);
+//   }
+//   return false;
+// };
 
 // Run the function every minute
 setInterval(checkAndPostScheduledPosts, 60 * 1000);
