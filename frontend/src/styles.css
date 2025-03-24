@@ -1772,3 +1772,129 @@ input::-webkit-inner-spin-button {
   margin-top: 10px;
   font-weight: 500;
 }
+
+.unselect-selected-btn{
+  background-color: #555;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+.popup-menu .delete-button:hover{
+  background-color: #fc3d47;
+  color: white;
+}
+
+#selectAll {
+  display: flex;
+  align-items: center;
+
+}
+
+#checkbox-selectAll {
+  cursor: pointer; /* Enhances user interaction /
+  margin-right: 15px; / Moves text to the right */
+}
+
+.checkbox-rowSelection {
+  cursor: pointer;
+}
+
+.checkbox-selection{
+  display: flex;
+  column-gap: 10px;
+  justify-content: center;
+  padding-left: 10px;
+}
+
+.posts-container {
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: #f5f7fb;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.post-actions-dropdown button {
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  text-align: left;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+}
+
+.post-actions-dropdown .delete-btn:hover {
+  background-color: #fc3d47;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.popup-menu button {
+  border: none;
+  background: none;
+  padding: 8px 10px;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 5px;
+  width: 100%;
+  font-size: 14px;
+}
+
+.popup-menu .delete-button:hover{
+  background-color: #fc3d47;
+  color: white;
+}
+
+.refresh-icon {
+  font-size: 20px;
+  font-size: 30px;
+  cursor: pointer;
+  color: #0a0f5c;
+  transition: 0.3s;
+  margin-right: 0px;
+  margin-left: auto;
+}
+
+.delete-selected-btn{
+  background-color: red;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+.create-user-btn {
+  background-color: white;
+  color: #0D286E;
+  padding: 5px 20px;
+  padding: 10px 20px;
+  border: solid;
+  border-radius: 5px;
+  border-color: #ADB5BD;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: bold;
+}

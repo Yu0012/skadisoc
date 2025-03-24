@@ -33,6 +33,54 @@ const Posts = () => {
     fetchPosts();
   }, []);
 
+  const handleSearch = (e) => setSearchQuery(e.target.value);
+  const handleRefresh = () => window.location.reload();
+
+  const openCreatePostModal = () => {
+    setEditingPost(null);
+    setIsModalOpen(true);
+  };
+
+  const closeCreatePostModal = () => {
+    setIsModalOpen(false);
+    setEditingPost(null);
+  };
+
+  const handleEditPost = (post) => {
+    setEditingPost(post);
+    setIsModalOpen(true);
+  };
+
+  const handleSavePost = (postData) => {
+    if (!postData || !postData.content?.trim()) {
+      alert("Post content cannot be empty.");
+      return;
+    }
+
+    const now = new Date();
+    const isScheduled =
+      postData.scheduledDate && new Date(postData.scheduledDate) > now;
+    const status = isScheduled ? "Scheduled" : "Published";
+
+    if (postData._id) {
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === postData._id ? { ...postData, status } : post
+        )
+      );
+    } else {
+      const newPost = {
+        ...postData,
+        _id: crypto.randomUUID(),
+        author: "Francis Hill",
+        status,
+      };
+      setPosts((prevPosts) => [newPost, ...prevPosts]);
+    }
+
+    closeCreatePostModal();
+  };
+
   const menuDropdown = (event, postID) => {
     event.stopPropagation();
     if (postMenuDropdown === postID) {
@@ -54,6 +102,24 @@ const Posts = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
+  const filteredPosts = posts.filter((post) => {
+    const matchesSearch = post.content?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = category === "All Categories" || post.status === category;
+    return matchesSearch && matchesCategory;
+  });
+
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+
+  useEffect(() => {
+    const allChecked =
+      currentPosts.length > 0 &&
+      currentPosts.every((post) => selectedPosts.includes(post._id));
+    setIsAllSelected(allChecked);
+  }, [selectedPosts, currentPosts]);
+
   const handleCheckboxChange = (postID) => {
     setSelectedPosts((prevSelected) =>
       prevSelected.includes(postID)
@@ -74,48 +140,6 @@ const Posts = () => {
   const handleDeselectAll = () => {
     setSelectedPosts([]);
   };
-
-  useEffect(() => {
-    const allChecked =
-      currentPosts.length > 0 &&
-      currentPosts.every((post) => selectedPosts.includes(post._id));
-    setIsAllSelected(allChecked);
-  }, [selectedPosts, currentPosts]);
-
-  const handleSearch = (e) => setSearchQuery(e.target.value);
-
-  const handleRefresh = () => window.location.reload();
-
-  const openCreatePostModal = () => {
-    setEditingPost(null);
-    setIsModalOpen(true);
-  };
-
-  const closeCreatePostModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleEditPost = (post) => {
-    setEditingPost(post);
-    setIsModalOpen(true);
-  };
-
-  const handleSavePost = (postData) => {
-    // Replace with actual save logic
-    console.log("Saving post:", postData);
-    closeCreatePostModal();
-  };
-
-  const filteredPosts = posts.filter((post) => {
-    const matchesSearch = post.content?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = category === "All Categories" || post.status === category;
-    return matchesSearch && matchesCategory;
-  });
-
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
   return (
     <div className="posts-container">

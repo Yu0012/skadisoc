@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import "../styles.css"; // Import global styles
-import { FaSearch, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa"; // Icons
-import { ImCross } from "react-icons/im"; 
+import "../styles.css";
+import { FaSearch, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa";
+import { ImCross } from "react-icons/im";
 import { createPortal } from "react-dom";
 
 const Accounts = () => {
-  const [accounts, setAccounts] = useState([]); // Store accounts from DB
-  const [category, setCategory] = useState("Username"); // Default search category
+  const [accounts, setAccounts] = useState([]);
+  const [category, setCategory] = useState("Username");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [accountsPerPage] = useState(10);
@@ -15,6 +15,7 @@ const Accounts = () => {
   const modalRef = useRef(null);
   const mainContentRef = useRef(null);
   const [selectedAccounts, setSelectedAccounts] = useState([]);
+  const [isAllSelected, setIsAllSelected] = useState(false);
 
   // Account details 
   const [name, setName] = useState("");
@@ -50,7 +51,20 @@ const Accounts = () => {
     );
   };
 
-  // Handle search input
+  const handleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedAccounts([]);
+    } else {
+      const allAccountIds = filteredAccounts.map((account) => account._id);
+      setSelectedAccounts(allAccountIds);
+    }
+    setIsAllSelected(!isAllSelected);
+  };
+
+  const handleDeselectAll = () => {
+    setSelectedAccounts([]);
+  };
+
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
@@ -101,9 +115,13 @@ const Accounts = () => {
 
       if (response.ok) {
         const savedAccount = await response.json();
-        setAccounts([...accounts, savedAccount]); // Update UI
-        setCreateUserDropdown(false); // Close modal
-        setName(""); setEmail(""); setPhoneNum(""); setAddress(""); setPassword(""); // Reset form
+        setAccounts([...accounts, savedAccount]);
+        setCreateUserDropdown(false);
+        setName("");
+        setEmail("");
+        setPhoneNum("");
+        setAddress("");
+        setPassword("");
       } else {
         console.error("Failed to save account");
       }
@@ -114,7 +132,7 @@ const Accounts = () => {
 
   // Filter accounts based on search query and selected category
   const filteredAccounts = accounts.filter((account) => {
-    if (!searchQuery) return true; // Show all if search query is empty
+    if (!searchQuery) return true;
 
     switch (category) {
       case "ID":
@@ -136,7 +154,14 @@ const Accounts = () => {
   const indexOfLastAccount = currentPage * accountsPerPage;
   const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
   const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
-  
+
+  useEffect(() => {
+    const allChecked =
+      filteredAccounts.length > 0 &&
+      selectedAccounts.length === filteredAccounts.length;
+    setIsAllSelected(allChecked);
+  }, [selectedAccounts, filteredAccounts]);
+
   return (
     <div ref={mainContentRef} className={`posts-container ${createUserDropdown ? "blurred" : ""}`}>
       {/* Top Section */}
@@ -175,7 +200,7 @@ const Accounts = () => {
         <FaSyncAlt className="refresh-icon" title="Refresh Data" />
       </div>
 
-      {/* Add User Popup */}
+      {/* Add User Modal */}
       {createUserDropdown &&
         createPortal(
           <div className="newUserMenu" ref={modalRef}>
@@ -197,7 +222,14 @@ const Accounts = () => {
       <table className="posts-table">
         <thead>
           <tr>
-            <th/>
+            <th>
+              <input
+                type="checkbox"
+                id="checkbox-selectAll"
+                checked={isAllSelected}
+                onChange={handleSelectAll}
+              />
+            </th>
             <th>Username</th>
             <th>Email</th>
             <th>Phone No.</th>
@@ -208,10 +240,11 @@ const Accounts = () => {
           {currentAccounts.map((account) => (
             <tr key={account._id}>
               <td>
-              <input
-                type="checkbox"
-                checked={selectedAccounts.includes(account._id)}
-                onChange={() => handleCheckboxChange(account._id)}
+                <input
+                  type="checkbox"
+                  className="checkbox-rowSelection"
+                  checked={selectedAccounts.includes(account._id)}
+                  onChange={() => handleCheckboxChange(account._id)}
                 />
               </td>
               <td>{account.name}</td>
@@ -221,14 +254,19 @@ const Accounts = () => {
             </tr>
           ))}
         </tbody>
-      </table>  
-      <div>
-        {selectedAccounts.length > 0 && (
+      </table>
+
+      {/* Actions for selected checkboxes */}
+      {selectedAccounts.length > 0 && (
+        <div className="checkbox-selection">
+          <button className="unselect-selected-btn" onClick={handleDeselectAll}>
+            Deselect All
+          </button>
           <button className="delete-selected-btn">
             Delete Selected Accounts
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
