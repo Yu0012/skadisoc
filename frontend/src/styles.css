@@ -1711,3 +1711,69 @@ input::-webkit-inner-spin-button {
   margin-top: 10px;
   font-weight: 500;
 }
+
+/* Delete Button - Keep it bold but smaller */
+.post-actions-dropdown .delete-btn {
+  color: red;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.post-actions-dropdown .delete-btn:hover {
+  background-color: #fc3d47;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+
+/* Position popup in the top-right corner */
+.popup-container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+/* Three-dot menu icon */
+.popup-icon {
+  font-size: 18px;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Popup menu styles */
+.popup-menu {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  min-width: 100px;
+}
+
+.popup-menu button {
+  border: none;
+  background: none;
+  padding: 8px 10px;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 5px;
+  width: 100%;
+  font-size: 14px;
+}
+
+.popup-menu button:hover {
+  background: #f0f0f0;
+}
+
+.popup-menu .delete-button:hover{
+  background-color: #fc3d47;
+  color: white;
+}
