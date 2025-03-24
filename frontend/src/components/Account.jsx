@@ -15,8 +15,6 @@ const Accounts = () => {
   const modalRef = useRef(null);
   const mainContentRef = useRef(null);
   const [selectedAccounts, setSelectedAccounts] = useState([]);
-  const [isAllSelected, setIsAllSelected] = useState(false);
-
 
   // Account details 
   const [name, setName] = useState("");
@@ -51,22 +49,6 @@ const Accounts = () => {
         : [...prevSelected, accountId]
     );
   };
-
-  const handleSelectAll = () => {
-    if (isAllSelected) {
-      setSelectedAccounts([]); // Uncheck all
-    } else {
-      const allAccountIds = filteredAccounts.map((account) => account._id);
-      setSelectedAccounts(allAccountIds); // Check all
-    }
-    setIsAllSelected(!isAllSelected); // Toggle "Select All"
-  };
-
-  const handleDeselectAll = () => {
-    setSelectedAccounts([]);
-  }
-
-  
 
   // Handle search input
   const handleSearch = (e) => {
@@ -154,13 +136,6 @@ const Accounts = () => {
   const indexOfLastAccount = currentPage * accountsPerPage;
   const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
   const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
-
-  useEffect(() => {
-    const allChecked = filteredAccounts.length > 0 && 
-                       selectedAccounts.length === filteredAccounts.length;
-    setIsAllSelected(allChecked);
-  }, [selectedAccounts, filteredAccounts]);
-  
   
   return (
     <div ref={mainContentRef} className={`posts-container ${createUserDropdown ? "blurred" : ""}`}>
@@ -222,15 +197,7 @@ const Accounts = () => {
       <table className="posts-table">
         <thead>
           <tr>
-            <th id="selectAll">
-              <input
-                type="checkbox"
-                id="checkbox-selectAll"
-                checked={isAllSelected}
-                onChange={handleSelectAll}
-              />
-              Select All
-            </th>
+            <th/>
             <th>Username</th>
             <th>Email</th>
             <th>Phone No.</th>
@@ -243,7 +210,6 @@ const Accounts = () => {
               <td>
               <input
                 type="checkbox"
-                className="checkbox-rowSelection"
                 checked={selectedAccounts.includes(account._id)}
                 onChange={() => handleCheckboxChange(account._id)}
                 />
@@ -258,14 +224,9 @@ const Accounts = () => {
       </table>  
       <div>
         {selectedAccounts.length > 0 && (
-          <div className="checkbox-selection">
-            <button className="unselect-selected-btn" onClick={handleDeselectAll}>
-              Deselect All
-            </button>
-            <button className="delete-selected-btn">
+          <button className="delete-selected-btn">
             Delete Selected Accounts
-            </button>
-          </div>
+          </button>
         )}
       </div>
     </div>
