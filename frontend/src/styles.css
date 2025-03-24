@@ -1777,3 +1777,26 @@ input::-webkit-inner-spin-button {
   background-color: #fc3d47;
   color: white;
 }
+
+.delete-selected-btn {
+  background-color: red;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+.view-icon {
+  font-size: 40px;
+  cursor: pointer;
+  color: #0a0f5c;
+  transition: 0.3s;
+  margin-right: 0px;
+  margin-left: auto;
+}
