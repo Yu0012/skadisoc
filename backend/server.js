@@ -49,6 +49,7 @@ const postSchema = new mongoose.Schema({
   scheduledDate: Date,
   selectedPlatforms: [String],
   filePath: String, // Store file path if uploaded
+  posted: { type: Boolean, default: false }
 });
 const Post = mongoose.model("Post", postSchema);
 
@@ -106,6 +107,7 @@ app.post('/api/posts', upload.single('file'), async (req, res) => {
       scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
       selectedPlatforms, // Now correctly stored as an array
       filePath: req.file ? `/uploads/${req.file.filename}` : null,
+      posted: false,
     });
 
     await newPost.save();
