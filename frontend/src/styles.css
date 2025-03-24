@@ -6,6 +6,7 @@ body {
   background-color: #f5f7fb;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 
 /* 📦 General Container */
@@ -153,40 +154,41 @@ body {
 /* 👤 User Profile Dropdown Menu */
 .user-dropdown {
   position: absolute;
-  top: 60px;
-  right: 10px;
-  width: 180px;
-  background-color: white;
-  border: 1px solid #ccc;
+  top: 50px; /* Moves it slightly lower */
+  right: 0px; /* Aligns to the right */
+  min-width: 180px; /* Adjust width */
+  background: white;
   border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
-  z-index: 999;
-  overflow: hidden;
+  border: 1px solid black;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  z-index: 9999;
 }
 
-.user-dropdown a,
-.user-dropdown div {
-  display: block;
-  padding: 10px 16px;
+/* User Dropdown Items */
+.user-dropdown a {
+  padding: 8px 12px;
   text-decoration: none;
-  color: #000;
+  color: #333;
   font-size: 14px;
-  cursor: pointer;
-  transition: background 0.2s ease;
+  font-weight: 500;
+  transition: 0.3s;
 }
 
-.user-dropdown a:hover,
-.user-dropdown div:hover {
-  background-color: #f0f0f0;
+.user-dropdown a:hover {
+  background: #f5f5f5;
 }
 
+/* Divider Line */
 .user-dropdown hr {
   margin: 5px 0;
   border: none;
   border-top: 1px solid #ddd;
 }
 
+/* Sign Out Link - Red Text */
 .user-dropdown .logout {
   color: red;
   font-weight: bold;
@@ -276,10 +278,12 @@ body {
 
 /* 🔄 Refresh Button */
 .refresh-icon {
-  font-size: 20px;
+  font-size: 30px;
   cursor: pointer;
   color: #0a0f5c;
   transition: 0.3s;
+  margin-right: 0px;
+  margin-left: auto;
 }
 
 .refresh-icon:hover {
@@ -324,6 +328,7 @@ body {
 /* 📌 **Posts Page Styles** */
 .posts-container {
   padding: 20px;
+  overflow-x: hidden;
 }
 
 /* 🏠 **Header Section (Welcome, Refresh, Create Post)** */
@@ -403,10 +408,38 @@ body {
   background-color: black;
 }
 
+.delete-selected-btn{
+  background-color: red;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+.unselect-selected-btn{
+  background-color: #555;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
 .create-user-btn {
   background-color: white;
   color: #0D286E;
-  padding: 5px 20px;
+  padding: 10px 20px;
   border: solid;
   border-radius: 5px;
   border-color: #ADB5BD;
@@ -1121,6 +1154,15 @@ input:checked + .slider:before {
   outline: none;
 }
 
+.view-icon{
+  font-size: 40px;
+  cursor: pointer;
+  color: #0a0f5c;
+  transition: 0.3s;
+  margin-right: 0px;
+  margin-left: auto;
+}
+
 /* ============================= */
 /* 🔄 Refresh Button */
 /* ============================= */
@@ -1136,7 +1178,6 @@ input:checked + .slider:before {
   display: flex;
   align-items: center;
   position: relative; /* Ensure it moves properly */
-  left: -10px; /* Moves it 10px to the left */
 }
 
 .refresh-btn:hover {
@@ -1372,6 +1413,7 @@ input::-webkit-inner-spin-button {
 .post-actions-dropdown button {
   padding: 6px 10px;
   font-size: 14px;
+  border-radius: 5px;
   text-align: left;
   cursor: pointer;
   border: none;
@@ -1386,6 +1428,13 @@ input::-webkit-inner-spin-button {
 /* Delete Button - Keep it bold but smaller */
 .post-actions-dropdown .delete-btn {
   color: red;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.post-actions-dropdown .delete-btn:hover {
+  background-color: #fc3d47;
+  color: white;
   font-weight: bold;
   font-size: 14px;
 }
@@ -1428,6 +1477,7 @@ input::-webkit-inner-spin-button {
   padding: 8px 10px;
   cursor: pointer;
   text-align: left;
+  border-radius: 5px;
   width: 100%;
   font-size: 14px;
 }
@@ -1436,252 +1486,29 @@ input::-webkit-inner-spin-button {
   background: #f0f0f0;
 }
 
-.selected-datetime {
-  margin-right: 15px; /* space between date & button */
-  color: #333;
-  font-weight: 500;
-  font-size: 14px;
+.popup-menu .delete-button:hover{
+  background-color: #fc3d47;
+  color: white;
 }
 
-.theme-icon {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
+#selectAll {
+  display: flex;
+  align-items: center;
+  
+}
+
+#checkbox-selectAll {
+  cursor: pointer; /* Enhances user interaction */
+  margin-right: 15px; /* Moves text to the right */
+}
+
+.checkbox-rowSelection {
   cursor: pointer;
 }
 
-.profile-container {
+.checkbox-selection{
   display: flex;
+  column-gap: 10px;
   justify-content: center;
-  margin-top: 50px;
-}
-
-.profile-card {
-  background: white;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  width: 100%;
-  max-width: 420px;
-  text-align: center;
-}
-
-.profile-avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 16px;
-  border: 3px solid #f0f0f0;
-}
-
-.profile-card h2 {
-  font-size: 22px;
-  margin-bottom: 8px;
-}
-
-.profile-card p {
-  margin: 4px 0;
-  font-size: 14px;
-  color: #333;
-}
-
-.edit-btn {
-  margin-top: 14px;
-  padding: 8px 16px;
-  background: #f0f0f0;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.edit-btn:hover {
-  background: #e4e4e4;
-}
-
-.user-stats {
-  margin-top: 28px;
-  background: #fafafa;
-  padding: 18px;
-  border-radius: 12px;
-  text-align: left;
-  font-size: 14px;
-  color: #333;
-}
-
-.user-stats h3 {
-  font-size: 15px;
-  margin-bottom: 10px;
-  color: #222;
-  display: flex;
-  align-items: center;
-}
-
-.user-stats h3::before {
-  content: "📊";
-  margin-right: 6px;
-}
-
-.user-stats ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.user-stats li {
-  margin: 6px 0;
-}
-
-/* Input fields inside edit mode */
-.profile-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.profile-input {
-  width: 100%;
-  max-width: 300px;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-/* Avatar file upload */
-.avatar-upload {
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 13px;
-  background-color: #f5f5f5;
-  cursor: pointer;
-  max-width: 300px;
-  width: 100%;
-  text-align: center;
-}
-
-/* Button group */
-.profile-btn-group {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.save-btn, .cancel-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.save-btn {
-  background-color: #007bff;
-  color: white;
-}
-
-.cancel-btn {
-  background-color: #ddd;
-  color: #333;
-}
-
-.settings-container {
-  max-width: 500px;
-  margin: 30px auto;
-  background: white;
-  padding: 50px;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
-
-.settings-form h3 {
-  margin-bottom: 10px;
-}
-
-.settings-input {
-  width: 100%;
-  margin-bottom: 12px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-}
-
-.reset-btn {
-  background-color: #001f7f;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.reset-message {
-  margin-top: 10px;
-  font-weight: 500;
-}
-
-.support-container {
-  max-width: 700px;
-  margin: 40px auto;
-  background: #fff;
-  padding: 25px 40px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
-}
-
-.faq-section, .contact-form {
-  margin-top: 30px;
-}
-
-.faq-item {
-  border-bottom: 1px solid #ddd;
-  padding: 10px 0;
-}
-
-.faq-question {
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-}
-
-.faq-answer {
-  padding-top: 8px;
-  color: #555;
-}
-
-.support-input,
-.support-textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
-
-.support-textarea {
-  min-height: 100px;
-  resize: vertical;
-}
-
-.support-btn {
-  background-color: #001f7f;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.support-feedback {
-  margin-top: 10px;
-  font-weight: 500;
+  padding-left: 10px;
 }
