@@ -5,6 +5,7 @@ import { ImCross } from "react-icons/im";
 import { createPortal } from "react-dom";
 
 const Accounts = () => {
+  // UI and data states
   const [accounts, setAccounts] = useState([]);
   const [category, setCategory] = useState("Username");
   const [searchQuery, setSearchQuery] = useState("");
@@ -12,19 +13,22 @@ const Accounts = () => {
   const [accountsPerPage] = useState(10);
   const [createUserDropdown, setCreateUserDropdown] = useState(false);
 
+  // Refs for modal and outside click detection
   const modalRef = useRef(null);
   const mainContentRef = useRef(null);
+
+  // Checkbox selection states
   const [selectedAccounts, setSelectedAccounts] = useState([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
 
-  // Account details 
+  // Form fields for new account
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNum, setPhoneNum] = useState("");
   const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
 
-  // Fetch accounts from MongoDB
+  // Fetch accounts from backend on mount
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
@@ -43,6 +47,7 @@ const Accounts = () => {
     fetchAccounts();
   }, []);
 
+  // Checkbox selection handlers
   const handleCheckboxChange = (accountId) => {
     setSelectedAccounts((prevSelected) =>
       prevSelected.includes(accountId)
@@ -65,21 +70,21 @@ const Accounts = () => {
     setSelectedAccounts([]);
   };
 
+  // Search input and category change handlers
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
 
-  // Handle category change
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
   };
 
-  // Toggle "Add User" popup
+  // Toggle Add User modal visibility
   const toggleCreateUserDropdown = () => {
     setCreateUserDropdown(!createUserDropdown);
   };
 
-  // Close popup when clicking outside
+  // Close modal if clicking outside of it
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -87,29 +92,19 @@ const Accounts = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Save new account to MongoDB
+  // Create a new account
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const newAccount = {
-      name,
-      email,
-      phoneNum,
-      address,
-      password,
-    };
+    const newAccount = { name, email, phoneNum, address, password };
 
     try {
       const response = await fetch("http://localhost:5000/api/accounts", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newAccount),
       });
 
@@ -130,7 +125,7 @@ const Accounts = () => {
     }
   };
 
-  // Filter accounts based on search query and selected category
+  // Filter accounts based on selected category and search query
   const filteredAccounts = accounts.filter((account) => {
     if (!searchQuery) return true;
 
@@ -150,11 +145,12 @@ const Accounts = () => {
     }
   });
 
-  // Pagination Logic
+  // Pagination logic
   const indexOfLastAccount = currentPage * accountsPerPage;
   const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
   const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
 
+  // Automatically update "select all" checkbox
   useEffect(() => {
     const allChecked =
       filteredAccounts.length > 0 &&
@@ -164,7 +160,7 @@ const Accounts = () => {
 
   return (
     <div ref={mainContentRef} className={`posts-container ${createUserDropdown ? "blurred" : ""}`}>
-      {/* Top Section */}
+      {/* Header Section */}
       <div className="posts-header">
         <div className="welcome-message">
           <p>Welcome,</p>
@@ -172,9 +168,9 @@ const Accounts = () => {
         </div>
       </div>
 
-      {/* Search & Filter */}
+      {/* Search + Filter Section */}
       <div className="search-container">
-        {/* Search Category Dropdown */}
+        {/* Category filter dropdown */}
         <select className="dropdown" value={category} onChange={handleCategoryChange}>
           <option value="ID">ID</option>
           <option value="Username">Username</option>
@@ -183,7 +179,7 @@ const Accounts = () => {
           <option value="Address">Address</option>
         </select>
 
-        {/* Search Box */}
+        {/* Search bar */}
         <div className="search-box">
           <input
             type="text"
@@ -194,6 +190,7 @@ const Accounts = () => {
           <FaSearch className="search-icon" />
         </div>
 
+        {/* Add user button + refresh */}
         <button className="create-user-btn" onClick={toggleCreateUserDropdown}>
           <FaPlus /> Add User
         </button>
@@ -256,7 +253,7 @@ const Accounts = () => {
         </tbody>
       </table>
 
-      {/* Actions for selected checkboxes */}
+      {/* Actions for selected users */}
       {selectedAccounts.length > 0 && (
         <div className="checkbox-selection">
           <button className="unselect-selected-btn" onClick={handleDeselectAll}>

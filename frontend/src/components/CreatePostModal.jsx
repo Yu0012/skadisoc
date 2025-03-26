@@ -5,6 +5,7 @@ import "../styles.css";
 import { FaTimes, FaCalendarAlt, FaPaperclip } from "react-icons/fa";
 
 const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
+  // State for form fields
   const [content, setContent] = useState(initialData.content || "");
   const [hashtags, setHashtags] = useState(initialData.hashtags || "");
   const [client, setClient] = useState(initialData.client || "JYP Entertainment");
@@ -13,9 +14,11 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
   const [selectedPlatforms, setSelectedPlatforms] = useState(initialData.platforms || []);
   const [attachedFile, setAttachedFile] = useState(null);
 
+  // Refs for closing date picker when clicking outside
   const datePickerRef = useRef(null);
   const fileInputRef = useRef(null);
 
+  // Close date picker if clicked outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (datePickerRef.current && !datePickerRef.current.contains(event.target)) {
@@ -26,6 +29,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Handle submit logic for creating/updating post
   const handleSubmit = () => {
     const updatedPost = {
       ...initialData,
@@ -35,15 +39,18 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
       scheduledDate,
       platforms: selectedPlatforms,
     };
-    onSave?.(updatedPost);
-    onClose();
+
+    onSave?.(updatedPost); // Save post through parent handler
+    onClose(); // Close modal
   };
 
+  // Toggle date picker visibility
   const toggleDatePicker = (e) => {
     e.stopPropagation();
     setShowDatePicker((prev) => !prev);
   };
 
+  // Platform options for toggles
   const platforms = [
     { id: "facebook", name: "Facebook" },
     { id: "instagram", name: "Instagram" },
@@ -51,26 +58,32 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
     { id: "twitter", name: "Twitter" },
   ];
 
+  // Trigger hidden file input
   const triggerFileInput = () => {
     fileInputRef.current.click();
   };
 
+  // Handle file selection
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) setAttachedFile(file);
   };
 
+  // Don’t render modal if not open
   if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">
       <div className="modal-content large-modal">
+        {/* Modal Header */}
         <div className="modal-header">
           <h2>{initialData?.id ? "Edit Post" : "Create Post"}</h2>
           <FaTimes className="close-icon" onClick={onClose} />
         </div>
 
+        {/* Modal Body */}
         <div className="modal-body">
+          {/* Post Content */}
           <label>Content</label>
           <div className="content-container">
             <textarea
@@ -79,6 +92,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
               onChange={(e) => setContent(e.target.value)}
               placeholder="What's on your mind?"
             />
+            {/* File Attachment Button */}
             <button className="attach-file-btn" onClick={triggerFileInput}>
               <FaPaperclip />
             </button>
@@ -92,6 +106,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
             />
           </div>
 
+          {/* File Preview */}
           {attachedFile && (
             <div className="attached-file-preview">
               {attachedFile.type.startsWith("image/") ? (
@@ -102,8 +117,9 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
             </div>
           )}
 
+          {/* Two Column Layout */}
           <div className="two-column-layout">
-            {/* Left */}
+            {/* Left Column: Hashtags & Platforms */}
             <div className="left-column">
               <label>Hashtags</label>
               <input
@@ -138,7 +154,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
               </div>
             </div>
 
-            {/* Right */}
+            {/* Right Column: Client & Date Picker */}
             <div className="right-column">
               <label>Client</label>
               <select
@@ -151,6 +167,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
                 <option>YG Entertainment</option>
               </select>
 
+              {/* Schedule Button and Date Picker */}
               <div className="schedule-row">
                 <button className="schedule-btn" onClick={toggleDatePicker}>
                   <FaCalendarAlt /> Schedule Post
@@ -191,6 +208,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
             </div>
           </div>
 
+          {/* Submit Button */}
           <button className="post-submit-btn" onClick={handleSubmit}>
             {initialData?.id ? "Save Changes" : "Create Post"}
           </button>

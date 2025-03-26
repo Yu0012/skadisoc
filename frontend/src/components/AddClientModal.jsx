@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 const AddClientModal = ({
   onClose,
   onSubmit,
-  clientData, // New: Will hold data when editing
+  clientData, // If editing, this will contain existing client info
   companyName,
   setCompanyName,
   companyDetail,
@@ -17,20 +17,21 @@ const AddClientModal = ({
 }) => {
   const modalRef = useRef(null);
 
-  // Pre-fill form fields if editing an existing client
+  // Prefill form fields when editing an existing client
   useEffect(() => {
     if (clientData) {
       setCompanyName(clientData.companyName || "");
       setCompanyDetail(clientData.companyDetail || "");
 
+      // Default to the first social account if available
       if (clientData.socialAccounts && clientData.socialAccounts.length > 0) {
-        const firstAccount = clientData.socialAccounts[0]; // Assuming one account for now
+        const firstAccount = clientData.socialAccounts[0];
         setSocialMedia(firstAccount.platform || "Facebook");
       }
     }
   }, [clientData, setCompanyName, setCompanyDetail, setSocialMedia]);
 
-  // Close modal when clicking outside
+  // Close modal when user clicks outside the form
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -44,11 +45,17 @@ const AddClientModal = ({
     };
   }, [onClose]);
 
+  // Render the modal using a portal (attached to body)
   return createPortal(
     <div className="newUserMenu" ref={modalRef}>
+      {/* Close icon */}
       <ImCross className="exitButton" onClick={onClose} />
+
+      {/* Client creation/edit form */}
       <form className="form-group" onSubmit={onSubmit}>
         <a className="form-title">{clientData ? "Edit Client" : "Create New Client"}</a>
+
+        {/* Company Name Input */}
         <label>
           Company Name
           <input
@@ -59,6 +66,8 @@ const AddClientModal = ({
             required
           />
         </label>
+
+        {/* Company Details Input */}
         <label>
           Company Details
           <input
@@ -68,12 +77,20 @@ const AddClientModal = ({
             placeholder="Type company details here"
           />
         </label>
-        <select className="dropdown" value={socialMedia} onChange={(e) => setSocialMedia(e.target.value)}>
+
+        {/* Social Media Platform Selector */}
+        <select
+          className="dropdown"
+          value={socialMedia}
+          onChange={(e) => setSocialMedia(e.target.value)}
+        >
           <option value="Facebook">Facebook</option>
           <option value="Twitter">Twitter</option>
           <option value="LinkedIn">LinkedIn</option>
           <option value="Instagram">Instagram</option>
         </select>
+
+        {/* API Token Field for Selected Platform */}
         <label>
           API Token
           <input
@@ -83,6 +100,8 @@ const AddClientModal = ({
             placeholder="Enter API token"
           />
         </label>
+
+        {/* Page ID Field for Selected Platform */}
         <label>
           Page ID
           <input
@@ -92,7 +111,13 @@ const AddClientModal = ({
             placeholder="Enter Page ID"
           />
         </label>
-        <input className="create-post-btn" type="submit" value={clientData ? "Update" : "Save"} />
+
+        {/* Submit Button */}
+        <input
+          className="create-post-btn"
+          type="submit"
+          value={clientData ? "Update" : "Save"}
+        />
       </form>
     </div>,
     document.body
