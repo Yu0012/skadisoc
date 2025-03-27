@@ -2,10 +2,16 @@ import React, { useState } from "react";
 import "../styles.css";
 
 const HelpSupport = () => {
+  // State to manage which FAQ item is expanded
   const [expanded, setExpanded] = useState(null);
+
+  // Form data for contact form
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+
+  // Feedback message after form submission
   const [feedback, setFeedback] = useState("");
 
+  // List of FAQs
   const faqs = [
     {
       question: "How do I reset my password?",
@@ -21,45 +27,57 @@ const HelpSupport = () => {
     },
   ];
 
+  // Toggle FAQ expand/collapse
   const toggleFAQ = (index) => {
     setExpanded(expanded === index ? null : index);
   };
 
+  // Handle contact form field changes
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  // Handle contact form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Basic validation
     if (!formData.name || !formData.email || !formData.message) {
       setFeedback("❌ Please fill in all fields.");
       return;
     }
-    // Simulate sending
+
+    // Simulate sending message (could be replaced with API call)
     setFeedback("✅ Your message has been sent!");
-    setFormData({ name: "", email: "", message: "" });
+    setFormData({ name: "", email: "", message: "" }); // Reset form
   };
 
   return (
     <div className="support-container">
       <h2>🆘 Help & Support</h2>
 
+      {/* FAQ Section */}
       <section className="faq-section">
         <h3>📚 Frequently Asked Questions</h3>
         {faqs.map((faq, index) => (
           <div key={index} className="faq-item">
+            {/* Question toggle */}
             <div className="faq-question" onClick={() => toggleFAQ(index)}>
               {faq.question}
               <span>{expanded === index ? "−" : "+"}</span>
             </div>
+
+            {/* Answer shown only if expanded */}
             {expanded === index && <div className="faq-answer">{faq.answer}</div>}
           </div>
         ))}
       </section>
 
+      {/* Contact Support Form */}
       <section className="contact-form">
         <h3>📩 Contact Support</h3>
         <form onSubmit={handleSubmit}>
+          {/* Name input */}
           <input
             type="text"
             name="name"
@@ -68,6 +86,8 @@ const HelpSupport = () => {
             onChange={handleChange}
             className="support-input"
           />
+
+          {/* Email input */}
           <input
             type="email"
             name="email"
@@ -76,6 +96,8 @@ const HelpSupport = () => {
             onChange={handleChange}
             className="support-input"
           />
+
+          {/* Message textarea */}
           <textarea
             name="message"
             placeholder="Your Message"
@@ -83,7 +105,11 @@ const HelpSupport = () => {
             onChange={handleChange}
             className="support-textarea"
           />
+
+          {/* Submit button */}
           <button type="submit" className="support-btn">Send Message</button>
+
+          {/* Feedback after submission */}
           {feedback && <p className="support-feedback">{feedback}</p>}
         </form>
       </section>

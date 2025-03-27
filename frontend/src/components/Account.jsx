@@ -5,6 +5,7 @@ import { ImCross } from "react-icons/im";
 import { createPortal } from "react-dom";
 
 const Accounts = () => {
+  //ui and data states
   const [accounts, setAccounts] = useState([]);
   const [category, setCategory] = useState("Username");
   const [searchQuery, setSearchQuery] = useState("");
@@ -12,6 +13,7 @@ const Accounts = () => {
   const [accountsPerPage] = useState(10);
   const [createUserDropdown, setCreateUserDropdown] = useState(false);
 
+  //refs for modal and outside click detection
   const modalRef = useRef(null);
   const mainContentRef = useRef(null);
   const [selectedAccounts, setSelectedAccounts] = useState([]);
@@ -43,6 +45,7 @@ const Accounts = () => {
     fetchAccounts();
   }, []);
 
+  //checkbox selection handlers
   const handleCheckboxChange = (accountId) => {
     setSelectedAccounts((prevSelected) =>
       prevSelected.includes(accountId)
@@ -65,6 +68,7 @@ const Accounts = () => {
     setSelectedAccounts([]);
   };
 
+  //search input and category changes handlers 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
@@ -155,6 +159,7 @@ const Accounts = () => {
   const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
   const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
 
+  //automatically updates "select all" checkbox
   useEffect(() => {
     const allChecked =
       filteredAccounts.length > 0 &&

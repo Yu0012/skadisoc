@@ -1423,6 +1423,19 @@ input::-webkit-inner-spin-button {
   font-size: 14px;
 }
 
+.posts-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.icon-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 5px;
+}
+
 
 /* Position popup in the top-right corner */
 .popup-container {
@@ -1897,4 +1910,41 @@ body {
   cursor: pointer;
   transition: 0.3s;
   font-weight: bold;
+}
+
+.popup-container-2 {
+  position: relative;
+  display: inline-block;
+}
+
+.popup-menu {
+  position: absolute;
+  top: 100%;       /* appear right below */
+  right: 0;
+  z-index: 9999;   /* ensures it's above other stuff */
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  min-width: 130px;
+  padding: 0.5rem 0;
+  white-space: nowrap;
+}
+
+.popup-menu button {
+  background: none;
+  border: none;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.popup-menu button:hover {
+  background-color: #f2f2f2;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }

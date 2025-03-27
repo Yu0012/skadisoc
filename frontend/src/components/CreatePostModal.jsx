@@ -12,6 +12,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState(initialData.platforms || []);
   const [attachedFile, setAttachedFile] = useState(null);
+  const [clients, setClients] = useState([]);
 
   const datePickerRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -146,9 +147,12 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
                 value={client}
                 onChange={(e) => setClient(e.target.value)}
               >
-                <option>JYP Entertainment</option>
-                <option>SM Entertainment</option>
-                <option>YG Entertainment</option>
+                <option value="">Select a Client</option>
+                {clients.map((c) => (
+                  <option key={c._id} value={c.companyName}>
+                    {c.companyName}
+                  </option>
+                ))}
               </select>
 
               <div className="schedule-row">
