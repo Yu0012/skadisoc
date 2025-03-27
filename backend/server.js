@@ -156,6 +156,83 @@ app.delete('/api/posts/:id', async (req, res) => {
   }
 });
 
+// Delete multiple posts
+app.post("/api/posts/bulk-delete", async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: "No IDs provided" });
+    }
+
+    await Post.deleteMany({ _id: { $in: ids } });
+
+    res.json({ message: "Posts deleted" });
+  } catch (error) {
+    console.error("Bulk delete failed:", error);
+    res.status(500).json({ error: "Bulk delete failed" });
+  }
+});
+
+
+// Edit post by ID
+app.get('/api/posts/:id', async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    res.json(post);
+  } catch (error) {
+    console.error('Error fetching post by ID:', error);
+    res.status(500).json({ error: 'Failed to fetch post' });
+  }
+});
+// ✅ Update post by ID
+app.put('/api/posts/:id', upload.single('file'), async (req, res) => {
+  try {
+    const { content, hashtags, client, scheduledDate } = req.body;
+
+    let selectedPlatforms = [];
+    if (req.body.selectedPlatforms) {
+      try {
+        selectedPlatforms = JSON.parse(req.body.selectedPlatforms);
+      } catch (error) {
+        console.error("Invalid Platform Data:", error);
+      }
+    }
+
+    const updatedFields = {
+      content,
+      hashtags,
+      client,
+      scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
+      selectedPlatforms,
+    };
+
+    if (req.file) {
+      updatedFields.filePath = `/uploads/${req.file.filename}`;
+    }
+
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.params.id,
+      updatedFields,
+      { new: true }
+    );
+
+    if (!updatedPost) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    res.status(200).json({ message: "Post updated", post: updatedPost });
+  } catch (error) {
+    console.error("Error updating post:", error);
+    res.status(500).json({ error: "Failed to update post" });
+  }
+});
+
+
+
+
 // ===============================
 // 📌 **Client API Routes**
 // ===============================
@@ -272,6 +349,29 @@ app.get('/api/accounts', async (req, res) => {
   }
 });
 
+// UPDATE account
+app.put('/api/accounts/:id', async (req, res) => {
+  try {
+    const updatedAccount = await Account.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updatedAccount) return res.status(404).json({ error: "Account not found" });
+    res.json({ account: updatedAccount });
+  } catch (error) {
+    console.error("Update failed:", error);
+    res.status(500).json({ error: "Failed to update account" });
+  }
+});
+
+// DELETE account
+app.delete('/api/accounts/:id', async (req, res) => {
+  try {
+    const deleted = await Account.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ error: "Account not found" });
+    res.json({ message: "Account deleted" });
+  } catch (error) {
+    console.error("Delete failed:", error);
+    res.status(500).json({ error: "Failed to delete account" });
+  }
+});
 
 
 // Function to post to Facebook

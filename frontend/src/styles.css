@@ -978,6 +978,8 @@ body {
   flex-wrap: nowrap; /* Don't wrap to next line */
   gap: 24px; /* Adjust spacing between items */
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .platform-item {
@@ -1948,3 +1950,5 @@ body {
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+

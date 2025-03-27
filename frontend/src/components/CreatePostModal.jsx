@@ -5,12 +5,12 @@ import "../styles.css";
 import { FaTimes, FaCalendarAlt, FaPaperclip } from "react-icons/fa";
 
 const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
-  const [content, setContent] = useState(initialData.content || "");
-  const [hashtags, setHashtags] = useState(initialData.hashtags || "");
-  const [client, setClient] = useState(initialData.client || "JYP Entertainment");
-  const [scheduledDate, setScheduledDate] = useState(initialData.scheduledDate || null);
+  const [content, setContent] = useState(initialData?.content || "");
+  const [hashtags, setHashtags] = useState(initialData?.hashtags || "");
+  const [client, setClient] = useState(initialData?.client || "No Client Selected");
+  const [scheduledDate, setScheduledDate] = useState(initialData?.scheduledDate || null);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedPlatforms, setSelectedPlatforms] = useState(initialData.platforms || []);
+  const [selectedPlatforms, setSelectedPlatforms] = useState(initialData?.selectedPlatforms || []);
   const [attachedFile, setAttachedFile] = useState(null);
   const [clients, setClients] = useState([]);
 
@@ -18,26 +18,83 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (datePickerRef.current && !datePickerRef.current.contains(event.target)) {
-        setShowDatePicker(false);
+    if (initialData) {
+      setContent(initialData.content || "");
+      setHashtags(initialData.hashtags || "");
+      setClient(initialData.client || "JYP Entertainment");
+      setScheduledDate(initialData.scheduledDate ? new Date(initialData.scheduledDate) : null);
+      setSelectedPlatforms(initialData.selectedPlatforms || []);
+    }
+  }, [initialData]);
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/clients");
+        if (!response.ok) {
+          throw new Error("Failed to fetch clients");
+        }
+        const data = await response.json();
+        setClients(data);
+      } catch (error) {
+        console.error("Error fetching clients:", error);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    fetchClients();
   }, []);
 
-  const handleSubmit = () => {
-    const updatedPost = {
-      ...initialData,
-      content,
-      hashtags,
-      client,
-      scheduledDate,
-      platforms: selectedPlatforms,
-    };
-    onSave?.(updatedPost);
-    onClose();
+  const handleSubmit = async () => {
+    if (!content.trim()) {
+      alert("Post content cannot be empty!");
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append("content", content);
+    formData.append("hashtags", hashtags);
+    formData.append("client", client);
+    formData.append("scheduledDate", scheduledDate ? scheduledDate.toISOString() : "");
+    // Convert array to JSON string
+    formData.append("selectedPlatforms", JSON.stringify(selectedPlatforms));
+    if (attachedFile) {
+      formData.append("file", attachedFile);
+    }
+  
+    const isEditing = initialData && initialData._id;
+    const url = isEditing
+      ? `http://localhost:5000/api/posts/${initialData._id}`
+      : "http://localhost:5000/api/posts";
+    const method = isEditing ? "PUT" : "POST";
+  
+    try {
+      const response = await fetch(url, {
+        method,
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to submit post");
+      }
+  
+      const result = await response.json();
+      alert(`Post ${isEditing ? "updated" : "created"} successfully!`);
+      onSave?.(result.post || result); // pass post back to parent
+      onClose();
+    } catch (error) {
+      console.error("Error submitting post:", error);
+      alert("An error occurred. Please try again.");
+    }
+  };
+  
+
+  const handlePlatformChange = (platformId) => {
+    setSelectedPlatforms((prev) => {
+      if (prev.includes(platformId)) {
+        return prev.filter((p) => p !== platformId);
+      } else {
+        return [...prev, platformId];
+      }
+    });
   };
 
   const toggleDatePicker = (e) => {
@@ -61,13 +118,14 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
     if (file) setAttachedFile(file);
   };
 
+  
   if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">
       <div className="modal-content large-modal">
         <div className="modal-header">
-          <h2>{initialData?.id ? "Edit Post" : "Create Post"}</h2>
+          <h2>{initialData?._id ? "Edit Post" : "Create Post"}</h2>
           <FaTimes className="close-icon" onClick={onClose} />
         </div>
 
@@ -125,10 +183,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
                         type="checkbox"
                         checked={selectedPlatforms.includes(platform.id)}
                         onChange={() =>
-                          setSelectedPlatforms((prev) =>
-                            prev.includes(platform.id)
-                              ? prev.filter((p) => p !== platform.id)
-                              : [...prev, platform.id]
+                          handlePlatformChange(platform.id
                           )
                         }
                       />
@@ -196,7 +251,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
           </div>
 
           <button className="post-submit-btn" onClick={handleSubmit}>
-            {initialData?.id ? "Save Changes" : "Create Post"}
+            {initialData?._id ? "Save Changes" : "Create Post"}
           </button>
         </div>
       </div>

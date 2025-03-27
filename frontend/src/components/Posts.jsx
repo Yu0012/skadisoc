@@ -10,13 +10,14 @@ const Posts = () => {
   const [category, setCategory] = useState("All Categories"); // Category filter
   const [searchQuery, setSearchQuery] = useState("");//search input
   const [currentPage, setCurrentPage] = useState(1);// current pagination page
-  const [postsPerPage] = useState(10); //number of post per page
+  const [postsPerPage] = useState(7); //number of post per page
   const [postMenuDropdown, setPostMenuDropdown] = useState(null);//current opened dropdown
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 }) //positon for dorpdown menu
   const [selectedPosts, setSelectedPosts] = useState([]);// selected post IDs
   const [isAllSelected, setIsAllSelected] = useState(false);// whether all visible posts are selected
   const [isModalOpen, setIsModalOpen] = useState(false); //modal open state
-  const [editingPost, setEditingPost] = useState(null);// post being edited
+  const [editingPost, setEditingPost] = useState(null);
+
 
   // Fetch posts from backend
   useEffect(() => {
@@ -31,22 +32,7 @@ const Posts = () => {
     };
     fetchPosts();
   }, []);
-
-  // 📌 Handle Post Deletion
-  const handleDeletePost = async (postId) => {
-    if (!window.confirm("Are you sure you want to delete this post?")) return;
-    try {
-      await axios.delete(`http://localhost:5000/api/posts/${postId}`);
-      setPosts(posts.filter((post) => post._id !== postId)); // Remove from UI
-    } 
-    
-    catch (error) {
-      console.error("Error deleting post:", error);
-    }
-
-    setPostMenuDropdown(null); // Close popup after delete
-    alert("Post deleted successfully!");
-  };
+  
 
   // 📌 Handle search input
   const handleSearch = (e) => {
@@ -62,56 +48,50 @@ const Posts = () => {
   //handles for ui inputs
   const handleRefresh = () => window.location.reload();
 
-  //open modal to create new post
-  const openCreatePostModal = () => {
-    setEditingPost(null);
-    setIsModalOpen(true);
+  // Edit Post
+  const handleEditPost = async (postId) => {
+    const fullPost = await fetchPostById(postId);
+    if (fullPost) {
+      setEditingPost(fullPost);
+      setIsModalOpen(true);
+    } else {
+      alert("Failed to load post");
+    }
+  };
+
+  // Delete Post
+  const handleDeletePost = async (postId) => {
+    if (!window.confirm("You sure you want to delete this post?")) return;
+  
+    try {
+      const res = await fetch(`http://localhost:5000/api/posts/${postId}`, {
+        method: "DELETE",
+      });
+  
+      if (!res.ok) throw new Error("Failed to delete post");
+  
+      setPosts((prev) => prev.filter((p) => p._id !== postId));
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Failed to delete the post. Please try again.");
+    }
   };
   
-  //close the create/edit modal
-  const closeCreatePostModal = () => {
-    setIsModalOpen(false);
-    setEditingPost(null);
-  };
 
-  //open modal to edit an existing posts
-  const handleEditPost = (post) => {
-    setEditingPost(post);
-    setIsModalOpen(true);
-  };
-
-  //save post handler (create and update)
-  const handleSavePost = (postData) => {
-    if (!postData || !postData.content?.trim()) {
-      alert("Post content cannot be empty.");
-      return;
+  // For edit post get data by ID
+  const fetchPostById = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/posts/${id}`);
+      if (!response.ok) throw new Error("Failed to fetch post");
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching post by ID:", error);
+      return null;
     }
-
-    const now = new Date();
-    const isScheduled =
-      postData.scheduledDate && new Date(postData.scheduledDate) > now;
-    const status = isScheduled ? "Scheduled" : "Published";
-
-    if (postData._id) {
-      //update existing post
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post._id === postData._id ? { ...postData, status } : post
-        )
-      );
-    } else {
-      //add new post
-      const newPost = {
-        ...postData,
-        _id: crypto.randomUUID(),
-        author: "Francis Hill",
-        status,
-      };
-      setPosts((prevPosts) => [newPost, ...prevPosts]);
-    }
-
-    closeCreatePostModal();
   };
+  
+
 
 //toggle dropdown menu for a post
   const menuDropdown = (event, postID) => {
@@ -227,12 +207,11 @@ const Posts = () => {
                 onChange={handleSelectAll}
               />
             </th>
-            <th>ID</th>
-            <th>Status</th>
+            <th>Client</th>
             <th>Content</th>
             <th>Hashtags</th>
             <th>Platforms</th>
-            <th>Client</th>
+            <th>Status</th>            
             <th>Actions</th>
           </tr>
         </thead>
@@ -243,15 +222,19 @@ const Posts = () => {
                 <input
                   type="checkbox"
                   checked={selectedPosts.includes(post._id)}
-                  onChange={() => handleCheckboxChange(post._id)}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setSelectedPostIds((prev) =>
+                      checked ? [...prev, post._id] : prev.filter((id) => id !== post._id)
+                    );
+                  }}
                 />
               </td>
-              <td>{post._id}</td>
-              <td>{post.posted || "-"}</td>
+              <td>{post.client || "-"}</td>
               <td>{post.content}</td>
               <td>{post.hashtags || "-"}</td>
               <td>{post.selectedPlatforms.join(", ") || "-"}</td>
-              <td>{post.client || "-"}</td>
+              <td>{post.posted || "-"}</td>
               <td>
                 {/* Ellipsis icon and dropdown */}
                 <FaEllipsisV onClick={(e) => menuDropdown(e, post._id)} />
@@ -261,8 +244,8 @@ const Posts = () => {
                       className="post-actions-dropdown"
                       style={{ top: menuPosition.top, left: menuPosition.left }}
                     >
-                      <button onClick={() => handleEditPost(post)}>Edit</button>
-                      <button className="delete-btn" onClick={() => handleDeletePost(postMenuDropdown)}>Delete</button>
+                      <button onClick={() => handleEditPost(post._id)}>Edit</button>
+                      <button className="delete-btn" onClick={() => handleDeletePost(post._id)}>Delete</button>
                     </div>,
                     document.body
                   )}
@@ -331,7 +314,33 @@ const Posts = () => {
       </div>
       
       {/* Create/Edit Post Modal */}
-      {isModalOpen && <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onPostCreated={handlePostCreated}/>}
+      {isModalOpen && (
+          <CreatePostModal
+            isOpen={isModalOpen}
+            onClose={() => {
+              setIsModalOpen(false);
+              setEditingPost(null);
+            }}
+            onPostCreated={handlePostCreated}
+            initialData={editingPost}
+            onSave={async (savedPost) => {
+              setPosts((prevPosts) => {
+                const existingIndex = prevPosts.findIndex(p => p._id === savedPost._id);
+                if (existingIndex !== -1) {
+                  // Update existing
+                  const updatedPosts = [...prevPosts];
+                  updatedPosts[existingIndex] = savedPost;
+                  return updatedPosts;
+                } else {
+                  // Add new
+                  return [...prevPosts, savedPost];
+                }
+              });
+            }}
+            
+          />
+      )}
+
     </div>
   );
 };
