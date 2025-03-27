@@ -18,18 +18,19 @@ const Posts = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); //modal open state
   const [editingPost, setEditingPost] = useState(null);// post being edited
 
+  // Fetch posts from backend
   useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/posts");
+        const data = await response.json();
+        setPosts(data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
     fetchPosts();
   }, []);
-
-  const fetchPosts = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/api/posts");
-      setPosts(response.data);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    }
-  };
 
   // 📌 Handle Post Deletion
   const handleDeletePost = async (postId) => {
@@ -231,7 +232,7 @@ const Posts = () => {
             <th>Content</th>
             <th>Hashtags</th>
             <th>Platforms</th>
-            <th>Author</th>
+            <th>Client</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -249,8 +250,8 @@ const Posts = () => {
               <td>{post.posted || "-"}</td>
               <td>{post.content}</td>
               <td>{post.hashtags || "-"}</td>
-              <td>{post.platforms?.join(", ") || "-"}</td>
-              <td>{post.author || "-"}</td>
+              <td>{post.selectedPlatforms.join(", ") || "-"}</td>
+              <td>{post.client || "-"}</td>
               <td>
                 {/* Ellipsis icon and dropdown */}
                 <FaEllipsisV onClick={(e) => menuDropdown(e, post._id)} />
