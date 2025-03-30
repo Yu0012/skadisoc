@@ -1,38 +1,39 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import Lottie from "lottie-react"; // Import Lottie for animation
-import "../styles.css"; // Import global styles
-import logo from "../assets/SOCMEDMT_logo.png"; // Import company logo
-import bellAnimation from "../assets/bellring.json"; // Animated ringing bell
-import bellStatic from "../assets/bellring-no.png"; // Static bell (no notifications)
-import userIcon from "../assets/icon-women.png"; // User profile icon
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import Lottie from "lottie-react";
+import "../styles.css";
+import logo from "../assets/SOCMEDMT_logo.png";
+import bellAnimation from "../assets/bellring.json";
+import bellStatic from "../assets/bellring-no.png";
+import userIcon from "../assets/icon-women.png";
+import sunIcon from "../assets/icon-sun.png";
+import moonIcon from "../assets/icon-moon.png";
 
 const Navbar = () => {
-  const location = useLocation(); // Get the current active route
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  // State to handle notifications and dropdowns
   const [hasNotifications, setHasNotifications] = useState(false);
-  const [notifications, setNotifications] = useState([]); // Notification list
+  const [notifications, setNotifications] = useState([]);
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
-  // Simulated notifications fetching every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      // Example: Add notifications randomly
-      const newNotifications = Math.random() < 0.5 ? [
-        { id: 1, message: "New comment on your post" },
-        { id: 2, message: "Your scheduled post has been published" }
-      ] : [];
-
+      const newNotifications =
+        Math.random() < 0.5
+          ? [
+              { id: 1, message: "New comment on your post" },
+              { id: 2, message: "Your scheduled post has been published" },
+            ]
+          : [];
       setNotifications(newNotifications);
       setHasNotifications(newNotifications.length > 0);
     }, 5000);
-
-    return () => clearInterval(interval); // Cleanup interval on unmount
+    return () => clearInterval(interval);
   }, []);
 
-  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!event.target.closest(".notification-menu")) {
@@ -42,19 +43,28 @@ const Navbar = () => {
         setUserDropdownOpen(false);
       }
     };
-
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
+  const toggleTheme = () => {
+    setDarkMode((prev) => !prev);
+    document.body.classList.toggle("dark-mode");
+  };
+
+  const handleUserNav = (path) => {
+    navigate(path);
+    setUserDropdownOpen(false);
+  };
+
   return (
     <nav className="navbar">
-      {/* Left Side: Logo */}
+      {/* Logo */}
       <img src={logo} alt="SOCMEDMT Logo" className="logo" />
 
-      {/* Center: Navigation Links */}
+      {/* Navigation Links */}
       <div className="nav-links">
-        <Link to="/" className={location.pathname === "/" ? "active" : ""}>
+        <Link to="/dashboard" className={location.pathname === "/dashboard" ? "active" : ""}>
           Dashboard
         </Link>
         <Link to="/posts" className={location.pathname === "/posts" ? "active" : ""}>
@@ -71,9 +81,18 @@ const Navbar = () => {
         </Link>
       </div>
 
-      {/* Right Side: Notification Bell & User Icon */}
+      {/* Right Side Icons */}
       <div className="nav-icons">
-        {/* Notification Bell */}
+        {/* 🌗 Theme Toggle */}
+        <div className="theme-toggle" onClick={toggleTheme}>
+          <img
+            src={darkMode ? sunIcon : moonIcon}
+            alt={darkMode ? "Light Mode" : "Dark Mode"}
+            className="theme-icon"
+          />
+        </div>
+
+        {/* 🔔 Notification Bell */}
         <div className="notification-menu">
           <div onClick={() => setNotifDropdownOpen(!notifDropdownOpen)} className="bell-container">
             {hasNotifications ? (
@@ -83,44 +102,42 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Notification Dropdown */}
           {notifDropdownOpen && (
             <div className="dropdown-menu notifications-dropdown">
               <h4>Notifications</h4>
               {hasNotifications ? (
-                notifications.map((notif) => (
-                  <p key={notif.id}>{notif.message}</p>
-                ))
+                notifications.map((notif) => <p key={notif.id}>{notif.message}</p>)
               ) : (
                 <p>No new notifications</p>
               )}
               <hr />
-              <Link to="/notifications" className="view-all">View All</Link>
+              <Link to="/notifications" className="view-all" onClick={() => setNotifDropdownOpen(false)}>
+                View All
+              </Link>
             </div>
           )}
         </div>
 
-        {/* User Icon with Dropdown Menu */}
+        {/* 👤 User Menu */}
         <div className="user-menu">
-          <img 
-            src={userIcon} 
-            alt="User Icon" 
-            className="user-icon" 
-            onClick={() => setUserDropdownOpen(!userDropdownOpen)} 
+          <img
+            src={userIcon}
+            alt="User Icon"
+            className="user-icon"
+            onClick={() => setUserDropdownOpen(!userDropdownOpen)}
           />
-          {/* User Profile Dropdown */}
-        {userDropdownOpen && (
-        <div className="user-dropdown">
-            <a href="/profile">User Profile</a>
-            <a href="/personalization">Personalization</a>
-            <hr />
-            <a href="/settings">User Settings</a>
-            <a href="/support">Help & Support</a>
-            <hr />
-        <a href="/logout" className="logout">Sign Out</a>
-        </div>
-)}
-
+          {userDropdownOpen && (
+            <div className="user-dropdown">
+              <div onClick={() => handleUserNav("/profile")}>User Profile</div>
+              <hr />
+              <div onClick={() => handleUserNav("/settings")}>User Settings</div>
+              <div onClick={() => handleUserNav("/support")}>Help & Support</div>
+              <hr />
+              <div onClick={() => handleUserNav("/logout")} className="logout">
+                Sign Out
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </nav>

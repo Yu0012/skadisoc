@@ -6,19 +6,23 @@ import Posts from "./components/Posts";
 import Account from "./components/Account";
 import Client from "./components/Client";
 import EventCalendar from "./components/EventCalendar";
+import UserProfile from "./components/UserProfile";
+import UserSettings from "./components/UserSettings"; 
+import HelpSupport from "./components/HelpSupport";
 import "./styles.css";
 
-
 const App = () => (
-  
   <Router>
-    <Navbar/>
+    <Navbar />
     <Routes>
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/posts" element={<Posts />} />
       <Route path="/account" element={<Account />} />
       <Route path="/client" element={<Client />} />
       <Route path="/calendar" element={<EventCalendar />} />
+      <Route path="/profile" element={<UserProfile />} /> 
+      <Route path="/settings" element={<UserSettings />} /> 
+      <Route path="/support" element={<HelpSupport />} />
     </Routes>
   </Router>
 );

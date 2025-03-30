@@ -4,37 +4,28 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../styles.css";
 import { FaTimes, FaCalendarAlt, FaPaperclip } from "react-icons/fa";
 
-const CreatePostModal = ({ isOpen, onClose }) => {
-  const [content, setContent] = useState("");
-  const [hashtags, setHashtags] = useState("#");
-  const [client, setClient] = useState("JYP Entertainment");
-  const [scheduledDate, setScheduledDate] = useState(null);
+const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
+  const [content, setContent] = useState(initialData?.content || "");
+  const [hashtags, setHashtags] = useState(initialData?.hashtags || "");
+  const [client, setClient] = useState(initialData?.client || "No Client Selected");
+  const [scheduledDate, setScheduledDate] = useState(initialData?.scheduledDate || null);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedPlatforms, setSelectedPlatforms] = useState([]);
+  const [selectedPlatforms, setSelectedPlatforms] = useState(initialData?.selectedPlatforms || []);
   const [attachedFile, setAttachedFile] = useState(null);
   const [clients, setClients] = useState([]);
 
   const datePickerRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  if (!isOpen) return null;
-
-  const toggleDatePicker = (e) => {
-    e.stopPropagation();
-    setShowDatePicker((prev) => !prev);
-  };
-
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (datePickerRef.current && !datePickerRef.current.contains(event.target)) {
-        setShowDatePicker(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+    if (initialData) {
+      setContent(initialData.content || "");
+      setHashtags(initialData.hashtags || "");
+      setClient(initialData.client || "JYP Entertainment");
+      setScheduledDate(initialData.scheduledDate ? new Date(initialData.scheduledDate) : null);
+      setSelectedPlatforms(initialData.selectedPlatforms || []);
+    }
+  }, [initialData]);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -52,29 +43,6 @@ const CreatePostModal = ({ isOpen, onClose }) => {
     fetchClients();
   }, []);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setAttachedFile(file);
-    }
-  };
-
-  const handlePlatformChange = (platformId) => {
-    setSelectedPlatforms((prev) => {
-      if (prev.includes(platformId)) {
-        return prev.filter((p) => p !== platformId);
-      } else {
-        return [...prev, platformId];
-      }
-    });
-  };
-  
-
-
-  const triggerFileInput = () => {
-    fileInputRef.current.click();
-  };
-
   const handleSubmit = async () => {
     if (!content.trim()) {
       alert("Post content cannot be empty!");
@@ -86,15 +54,21 @@ const CreatePostModal = ({ isOpen, onClose }) => {
     formData.append("hashtags", hashtags);
     formData.append("client", client);
     formData.append("scheduledDate", scheduledDate ? scheduledDate.toISOString() : "");
-    formData.append("selectedPlatforms", JSON.stringify(selectedPlatforms)); // Convert array to JSON string
-  
+    // Convert array to JSON string
+    formData.append("selectedPlatforms", JSON.stringify(selectedPlatforms));
     if (attachedFile) {
       formData.append("file", attachedFile);
     }
   
+    const isEditing = initialData && initialData._id;
+    const url = isEditing
+      ? `http://localhost:5000/api/posts/${initialData._id}`
+      : "http://localhost:5000/api/posts";
+    const method = isEditing ? "PUT" : "POST";
+  
     try {
-      const response = await fetch("http://localhost:5000/api/posts", {
-        method: "POST",
+      const response = await fetch(url, {
+        method,
         body: formData,
       });
   
@@ -102,7 +76,9 @@ const CreatePostModal = ({ isOpen, onClose }) => {
         throw new Error("Failed to submit post");
       }
   
-      alert("Post submitted successfully!");
+      const result = await response.json();
+      alert(`Post ${isEditing ? "updated" : "created"} successfully!`);
+      onSave?.(result.post || result); // pass post back to parent
       onClose();
     } catch (error) {
       console.error("Error submitting post:", error);
@@ -111,6 +87,21 @@ const CreatePostModal = ({ isOpen, onClose }) => {
   };
   
 
+  const handlePlatformChange = (platformId) => {
+    setSelectedPlatforms((prev) => {
+      if (prev.includes(platformId)) {
+        return prev.filter((p) => p !== platformId);
+      } else {
+        return [...prev, platformId];
+      }
+    });
+  };
+
+  const toggleDatePicker = (e) => {
+    e.stopPropagation();
+    setShowDatePicker((prev) => !prev);
+  };
+
   const platforms = [
     { id: "facebook", name: "Facebook" },
     { id: "instagram", name: "Instagram" },
@@ -118,11 +109,23 @@ const CreatePostModal = ({ isOpen, onClose }) => {
     { id: "twitter", name: "Twitter" },
   ];
 
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) setAttachedFile(file);
+  };
+
+  
+  if (!isOpen) return null;
+
   return (
     <div className="modal-overlay">
       <div className="modal-content large-modal">
         <div className="modal-header">
-          <h2>Create Post</h2>
+          <h2>{initialData?._id ? "Edit Post" : "Create Post"}</h2>
           <FaTimes className="close-icon" onClick={onClose} />
         </div>
 
@@ -158,8 +161,9 @@ const CreatePostModal = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          <div className="flex-row">
-            <div className="half-width">
+          <div className="two-column-layout">
+            {/* Left */}
+            <div className="left-column">
               <label>Hashtags</label>
               <input
                 type="text"
@@ -168,8 +172,30 @@ const CreatePostModal = ({ isOpen, onClose }) => {
                 onChange={(e) => setHashtags(e.target.value)}
                 placeholder="#socialmedia #marketing"
               />
+
+              <label>Platforms</label>
+              <div className="platform-container">
+                {platforms.map((platform) => (
+                  <div key={platform.id} className="platform-item">
+                    <span className="platform-name">{platform.name}</span>
+                    <label className="switch">
+                      <input
+                        type="checkbox"
+                        checked={selectedPlatforms.includes(platform.id)}
+                        onChange={() =>
+                          handlePlatformChange(platform.id
+                          )
+                        }
+                      />
+                      <span className="slider"></span>
+                    </label>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="half-width">
+
+            {/* Right */}
+            <div className="right-column">
               <label>Client</label>
               <select
                 className="dropdown-field"
@@ -182,49 +208,51 @@ const CreatePostModal = ({ isOpen, onClose }) => {
                     {c.companyName}
                   </option>
                 ))}
-                
               </select>
+
+              <div className="schedule-row">
+                <button className="schedule-btn" onClick={toggleDatePicker}>
+                  <FaCalendarAlt /> Schedule Post
+                </button>
+                {scheduledDate && (
+                  <span className="selected-date">
+                    {scheduledDate.toLocaleString()}
+                  </span>
+                )}
+                {showDatePicker && (
+                  <div
+                    ref={datePickerRef}
+                    style={{
+                      position: "absolute",
+                      top: "-370px",
+                      right: "0",
+                      zIndex: 9999,
+                      backgroundColor: "white",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+                      padding: "10px"
+                    }}
+                  >
+                    <DatePicker
+                      selected={scheduledDate}
+                      onChange={(date) => {
+                        setScheduledDate(date);
+                        setShowDatePicker(false);
+                      }}
+                      showTimeSelect
+                      timeIntervals={30}
+                      dateFormat="MMMM d, yyyy h:mm aa"
+                      inline
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="schedule-container">
-            <button className="schedule-btn" onClick={toggleDatePicker}>
-              <FaCalendarAlt /> Schedule Post
-            </button>
-
-            {showDatePicker && (
-              <div className="date-picker-container" ref={datePickerRef}>
-                <DatePicker
-                  selected={scheduledDate}
-                  onChange={(date) => setScheduledDate(date)}
-                  showTimeSelect
-                  dateFormat="Pp"
-                  className="date-picker"
-                  calendarClassName="custom-calendar"
-                  popperPlacement="bottom"
-                />
-              </div>
-            )}
-          </div>
-
-          <label>Platforms</label>
-          <div className="platform-container">
-            {platforms.map((platform) => (
-              <div key={platform.id} className="platform-item">
-                <span className="platform-name">{platform.name}</span>
-                <label className="switch">
-                  <input
-                    type="checkbox"
-                    checked={selectedPlatforms.includes(platform.id)}
-                    onChange={() => handlePlatformChange(platform.id)}
-                  />
-                  <span className="slider"></span>
-                </label>
-              </div>
-            ))}
-          </div>
-
-          <button className="post-submit-btn" onClick={handleSubmit}>Post</button>
+          <button className="post-submit-btn" onClick={handleSubmit}>
+            {initialData?._id ? "Save Changes" : "Create Post"}
+          </button>
         </div>
       </div>
     </div>

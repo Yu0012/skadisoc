@@ -49,7 +49,7 @@ const postSchema = new mongoose.Schema({
   scheduledDate: Date,
   selectedPlatforms: [String],
   filePath: String, // Store file path if uploaded
-  posted: { type: Boolean, default: false }
+  posted: { type: Boolean, default: false },
 });
 const Post = mongoose.model("Post", postSchema);
 
@@ -60,8 +60,17 @@ const clientSchema = new mongoose.Schema({
   socialAccounts: [
     {
       platform: { type: String, required: true }, // Example: "Facebook"
+      //Facebook & Instagram
       companyToken: String,
-      pageId: String
+      pageId: String,
+      //Twitter
+      apiKey: String,
+      apiKeySecret: String,
+      accessToken: String,
+      accessTokenSecret: String,
+      //Linkedin
+      urn: String
+
     }
   ]
 });
@@ -73,7 +82,7 @@ const accountSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   phoneNum: { type: String, required: true },
-  address: { type: String, required: true },
+  clientAccess: { type: String, required: true },
   password: { type: String, required: true },
 }, { timestamps: true });
 const Account = mongoose.model("Account", accountSchema);
@@ -107,7 +116,6 @@ app.post('/api/posts', upload.single('file'), async (req, res) => {
       scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
       selectedPlatforms, // Now correctly stored as an array
       filePath: req.file ? `/uploads/${req.file.filename}` : null,
-      posted: false,
     });
 
     await newPost.save();
@@ -128,6 +136,111 @@ app.get('/api/posts', async (req, res) => {
     res.status(500).json({ error: "Failed to fetch posts" });
   }
 });
+
+app.get('/api/scheduled-posts', async (req, res) => {
+  try {
+    const now = new Date();
+    const posts = await Post.find({ scheduledDate: { $lte: now }, posted: false });
+    res.json(posts);
+  } catch (error) {
+    console.error("Error fetching scheduled posts:", error);
+    res.status(500).json({ error: "Failed to fetch scheduled posts" });
+  }
+});
+
+// ✅ Delete a post by ID
+app.delete('/api/posts/:id', async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const deletedPost = await Post.findByIdAndDelete(postId);
+
+    if (!deletedPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    res.status(200).json({ message: "Post deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    res.status(500).json({ message: "Failed to delete post" });
+  }
+});
+
+// Delete multiple posts
+app.post("/api/posts/bulk-delete", async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: "No IDs provided" });
+    }
+
+    await Post.deleteMany({ _id: { $in: ids } });
+
+    res.json({ message: "Posts deleted" });
+  } catch (error) {
+    console.error("Bulk delete failed:", error);
+    res.status(500).json({ error: "Bulk delete failed" });
+  }
+});
+
+
+// Edit post by ID
+app.get('/api/posts/:id', async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    res.json(post);
+  } catch (error) {
+    console.error('Error fetching post by ID:', error);
+    res.status(500).json({ error: 'Failed to fetch post' });
+  }
+});
+// ✅ Update post by ID
+app.put('/api/posts/:id', upload.single('file'), async (req, res) => {
+  try {
+    const { content, hashtags, client, scheduledDate } = req.body;
+
+    let selectedPlatforms = [];
+    if (req.body.selectedPlatforms) {
+      try {
+        selectedPlatforms = JSON.parse(req.body.selectedPlatforms);
+      } catch (error) {
+        console.error("Invalid Platform Data:", error);
+      }
+    }
+
+    const updatedFields = {
+      content,
+      hashtags,
+      client,
+      scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
+      selectedPlatforms,
+    };
+
+    if (req.file) {
+      updatedFields.filePath = `/uploads/${req.file.filename}`;
+    }
+
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.params.id,
+      updatedFields,
+      { new: true }
+    );
+
+    if (!updatedPost) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    res.status(200).json({ message: "Post updated", post: updatedPost });
+  } catch (error) {
+    console.error("Error updating post:", error);
+    res.status(500).json({ error: "Failed to update post" });
+  }
+});
+
+
+
 
 // ===============================
 // 📌 **Client API Routes**
@@ -245,6 +358,91 @@ app.get('/api/accounts', async (req, res) => {
   }
 });
 
+// UPDATE account
+app.put('/api/accounts/:id', async (req, res) => {
+  try {
+    const updatedAccount = await Account.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updatedAccount) return res.status(404).json({ error: "Account not found" });
+    res.json({ account: updatedAccount });
+  } catch (error) {
+    console.error("Update failed:", error);
+    res.status(500).json({ error: "Failed to update account" });
+  }
+});
+
+// DELETE account
+app.delete('/api/accounts/:id', async (req, res) => {
+  try {
+    const deleted = await Account.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ error: "Account not found" });
+    res.json({ message: "Account deleted" });
+  } catch (error) {
+    console.error("Delete failed:", error);
+    res.status(500).json({ error: "Failed to delete account" });
+  }
+});
+
+
+// Function to post to Facebook
+const postToFacebook = async (post, client) => {
+  try {
+    const facebookAccount = client.socialAccounts.find(acc => acc.platform === "Facebook");
+
+    if (!facebookAccount || !facebookAccount.companyToken || !facebookAccount.pageId) {
+      console.error(`No valid Facebook account for client: ${client.companyName}`);
+      return false;
+    }
+
+    const pageAccessToken = facebookAccount.companyToken;
+    const pageId = facebookAccount.pageId;
+    console.log("Page Access Token:", pageAccessToken);
+
+    const url = `https://graph.facebook.com/${pageId}/feed`;
+
+    const postData = {
+      message: `${post.content}\n\n${post.hashtags || ""}`,
+      access_token: pageAccessToken,
+    };
+
+    const response = await axios.post(url, postData);
+    
+    if (response.data.id) {
+      console.log(`Post successful: ${response.data.id}`);
+      return true;
+    }
+  } catch (error) {
+    console.error("Error posting to Facebook:", error.response?.data || error.message);
+  }
+  return false;
+};
+
+const checkAndPostScheduledPosts = async () => {
+  try {
+    const now = new Date();
+    const posts = await Post.find({ scheduledDate: { $lte: now }, posted: false });
+
+    for (const post of posts) {
+      const client = await Client.findOne({ companyName: post.client });
+
+      if (!client) {
+        console.error(`Client not found for post: ${post._id}`);
+        continue;
+      }
+
+      const success = await postToFacebook(post, client);
+
+      if (success) {
+        post.posted = true;
+        await post.save();
+      }
+    }
+  } catch (error) {
+    console.error("Error checking scheduled posts:", error);
+  }
+};
+
+// Run the function every minute
+setInterval(checkAndPostScheduledPosts, 60 * 1000);
 
 // ===============================
 // 📌 **Start Server**
