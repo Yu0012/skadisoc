@@ -16,8 +16,17 @@ const Client = () => {
 
   // Social accounts
   const [socialMediaAccounts, setSocialMediaAccounts] = useState({
-    Facebook: { companyToken: "", pageId: "" },
-    Twitter: { companyToken: "", pageId: "" },
+    Facebook: { 
+      companyToken: "", 
+      pageId: "" 
+    },
+    Twitter: {
+      apiKey: "",
+      apiKeySecret: "",
+      accessToken: "",
+      accessTokenSecret: ""
+    },
+    
     LinkedIn: { companyToken: "", pageId: "" },
     Instagram: { companyToken: "", pageId: "" },
   });

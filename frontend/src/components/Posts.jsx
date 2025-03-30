@@ -224,6 +224,7 @@ const Posts = () => {
                   checked={selectedPosts.includes(post._id)}
                   onChange={(e) => {
                     const checked = e.target.checked;
+                    handleCheckboxChange(post._id);
                     setSelectedPostIds((prev) =>
                       checked ? [...prev, post._id] : prev.filter((id) => id !== post._id)
                     );

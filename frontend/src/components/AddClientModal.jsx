@@ -12,10 +12,24 @@ const AddClientModal = ({
   const [companyDetail, setCompanyDetail] = useState("");
   const [socialMedia, setSocialMedia] = useState("Facebook");
   const [socialMediaAccounts, setSocialMediaAccounts] = useState({
-    Facebook: { companyToken: "", pageId: "" },
-    Twitter: { companyToken: "", pageId: "" },
-    LinkedIn: { companyToken: "", pageId: "" },
-    Instagram: { companyToken: "", pageId: "" },
+    Facebook: { 
+      companyToken: "", 
+      pageId: "" 
+    },
+    Twitter: {
+      apiKey: "",
+      apiKeySecret: "",
+      accessToken: "",
+      accessTokenSecret: "",
+    },
+    LinkedIn: {
+      accessToken: "",
+      urn: ""
+    },
+    Instagram: { 
+      companyToken: "", 
+      pageId: "" 
+    },
   });
 
 //prefill form fields when editing an existing client
@@ -29,7 +43,12 @@ const AddClientModal = ({
       clientData.socialAccounts?.forEach((acc) => {
         updated[acc.platform] = {
           companyToken: acc.companyToken || "",
-          pageId: acc.pageId || ""
+          pageId: acc.pageId || "",
+          apiKey: acc.apiKey || "",
+          apiKeySecret: acc.apiKeySecret || "",
+          accessToken: acc.accessToken || "",
+          accessTokenSecret: acc.accessTokenSecret || "",
+          urn: acc.urn || ""
         };
       });
       setSocialMediaAccounts(updated);
@@ -48,19 +67,58 @@ const AddClientModal = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+  
     const socialAccounts = Object.entries(socialMediaAccounts)
-      .filter(([_, v]) => v.companyToken || v.pageId)
-      .map(([platform, data]) => ({
-        platform,
-        ...data
-      }));
-
+    .filter(([platform, data]) => {
+      switch (platform) {
+        case "Twitter":
+          return data.apiKey || data.apiKeySecret || data.accessToken || data.accessTokenSecret;
+        case "Facebook":
+        case "Instagram":
+          return data.companyToken || data.pageId;
+        case "LinkedIn":
+          return data.accessToken || data.urn;
+        default:
+          return false;
+      }
+    })
+    .map(([platform, data]) => {
+      switch (platform) {
+        case "Twitter":
+          return {
+            platform,
+            apiKey: data.apiKey,
+            apiKeySecret: data.apiKeySecret,
+            accessToken: data.accessToken,
+            accessTokenSecret: data.accessTokenSecret,
+          };
+        case "Facebook":
+        case "Instagram":
+          return {
+            platform,
+            companyToken: data.companyToken,
+            pageId: data.pageId
+          };
+        case "LinkedIn":
+          return {
+            platform,
+            accessToken: data.accessToken,
+            urn: data.urn,
+          };
+        default:
+          return { platform };
+      }
+    });
+    
+    
+  
     onSubmit({
       companyName,
       companyDetail,
-      socialAccounts
+      socialAccounts,
     });
   };
+  
 
   return createPortal(
     <div className="newUserMenu" ref={modalRef}>
@@ -85,23 +143,92 @@ const AddClientModal = ({
           <option value="Instagram">Instagram</option>
         </select>
 
-        <label>
-          API Token
-          <input
-            type="text"
-            value={socialMediaAccounts[socialMedia].companyToken}
-            onChange={(e) => handleInputChange(socialMedia, "companyToken", e.target.value)}
-          />
-        </label>
+        {(socialMedia === "Facebook" || socialMedia === "Instagram") && (
+          <>
+            <label>Company Token
+              <input
+                type="text"
+                value={socialMediaAccounts[socialMedia]?.companyToken || ""}
+                onChange={(e) => handleInputChange(socialMedia, "companyToken", e.target.value)}
+              />
+            </label>
+            <label>Page ID
+              <input
+                type="text"
+                value={socialMediaAccounts[socialMedia]?.pageId || ""}
+                onChange={(e) => handleInputChange(socialMedia, "pageId", e.target.value)}
+              />
+            </label>
+          </>
+        )}
 
-        <label>
-          Page ID
-          <input
-            type="text"
-            value={socialMediaAccounts[socialMedia].pageId}
-            onChange={(e) => handleInputChange(socialMedia, "pageId", e.target.value)}
-          />
-        </label>
+
+        {socialMedia === "Twitter" && (
+          <>
+            <label>
+              API Key
+              <input
+                type="text"
+                value={socialMediaAccounts.Twitter?.apiKey || ""}
+                onChange={(e) =>
+                  handleInputChange("Twitter", "apiKey", e.target.value)
+                }
+              />
+            </label>
+            <label>
+              API Key Secret
+              <input
+                type="text"
+                value={socialMediaAccounts.Twitter?.apiKeySecret || ""}
+                onChange={(e) =>
+                  handleInputChange("Twitter", "apiKeySecret", e.target.value)
+                }
+              />
+            </label>
+            <label>
+              Access Token
+              <input
+                type="text"
+                value={socialMediaAccounts.Twitter?.accessToken || ""}
+                onChange={(e) =>
+                  handleInputChange("Twitter", "accessToken", e.target.value)
+                }
+              />
+            </label>
+            <label>
+              Access Token Secret
+              <input
+                type="text"
+                value={socialMediaAccounts.Twitter?.accessTokenSecret || ""}
+                onChange={(e) =>
+                  handleInputChange("Twitter", "accessTokenSecret", e.target.value)
+                }
+              />
+            </label>
+          </>
+        )}
+        {socialMedia === "LinkedIn" && (
+          <>
+            <label>Access Token
+              <input
+                type="text"
+                value={socialMediaAccounts.LinkedIn?.accessToken || ""}
+                onChange={(e) => handleInputChange("LinkedIn", "accessToken", e.target.value)}
+              />
+            </label>
+            <label>URN
+              <input
+                type="text"
+                value={socialMediaAccounts.LinkedIn?.urn || ""}
+                onChange={(e) => handleInputChange("LinkedIn", "urn", e.target.value)}
+              />
+            </label>
+          </>
+        )}
+
+
+
+
 
         <input className="create-post-btn" type="submit" value={clientData ? "Update" : "Save"} />
       </form>

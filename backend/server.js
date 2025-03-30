@@ -60,8 +60,17 @@ const clientSchema = new mongoose.Schema({
   socialAccounts: [
     {
       platform: { type: String, required: true }, // Example: "Facebook"
+      //Facebook & Instagram
       companyToken: String,
-      pageId: String
+      pageId: String,
+      //Twitter
+      apiKey: String,
+      apiKeySecret: String,
+      accessToken: String,
+      accessTokenSecret: String,
+      //Linkedin
+      urn: String
+
     }
   ]
 });
@@ -73,7 +82,7 @@ const accountSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   phoneNum: { type: String, required: true },
-  address: { type: String, required: true },
+  clientAccess: { type: String, required: true },
   password: { type: String, required: true },
 }, { timestamps: true });
 const Account = mongoose.model("Account", accountSchema);
