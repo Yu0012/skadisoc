@@ -6,7 +6,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { platform } = require('os');
-
+const axios = require('axios');
+const FormData = require("form-data");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -383,11 +384,11 @@ app.delete('/api/accounts/:id', async (req, res) => {
 });
 
 
-// Function to post to Facebook
+
+//Function to post to Facebook
 const postToFacebook = async (post, client) => {
   try {
     const facebookAccount = client.socialAccounts.find(acc => acc.platform === "Facebook");
-
     if (!facebookAccount || !facebookAccount.companyToken || !facebookAccount.pageId) {
       console.error(`No valid Facebook account for client: ${client.companyName}`);
       return false;
@@ -395,17 +396,18 @@ const postToFacebook = async (post, client) => {
 
     const pageAccessToken = facebookAccount.companyToken;
     const pageId = facebookAccount.pageId;
-    console.log("Page Access Token:", pageAccessToken);
 
-    const url = `https://graph.facebook.com/${pageId}/feed`;
+    const url = `https://graph.facebook.com/${pageId}/photos`;
 
-    const postData = {
-      message: `${post.content}\n\n${post.hashtags || ""}`,
-      access_token: pageAccessToken,
-    };
+    const formData = new FormData();
+    formData.append("message", `${post.content}\n\n${post.hashtags || ""}`);
+    formData.append("access_token", pageAccessToken);
+    formData.append("source", fs.createReadStream(path.join(__dirname, post.filePath)));
 
-    const response = await axios.post(url, postData);
-    
+    const response = await axios.post(url, formData, {
+      headers: formData.getHeaders(),
+    });
+
     if (response.data.id) {
       console.log(`Post successful: ${response.data.id}`);
       return true;
@@ -415,6 +417,49 @@ const postToFacebook = async (post, client) => {
   }
   return false;
 };
+
+async function postToInstagram(post, client) {
+  try {
+      const instagramAccount = client.socialAccounts.find(acc => acc.platform === "Instagram");
+      if (!instagramAccount || !instagramAccount.companyToken || !instagramAccount.pageId) {
+          console.error(`No valid Instagram account for client: ${client.companyName}`);
+          return;
+      }
+      const accessToken = instagramAccount.companyToken;
+      const igUserId = instagramAccount.pageId; // Instagram Business Account ID
+      const mediaUrl = instagramAccount.filePath ? `http://localhost:5000${instagramAccount.filePath}` : null; // URL of the media file to be posted
+      const message = `${post.content}\n\n${post.hashtags || ""}`;
+      console.log("Instagram Access Token:", accessToken);
+      console.log("Instagram User ID:", igUserId);
+
+
+      // Step 1: Upload Media
+      const mediaResponse = await axios.post(
+          `https://graph.facebook.com/${igUserId}/media`,
+          {
+              image_url: mediaUrl, // Use video_url for videos
+              caption: message,
+              access_token: accessToken,
+          }
+      );
+      
+      const creationId = mediaResponse.data.id;
+      console.log('Instagram Media ID:', creationId);
+
+      // Step 2: Publish Media
+      const publishResponse = await axios.post(
+          `https://graph.facebook.com/${igUserId}/media_publish`,
+          {
+              creation_id: creationId,
+              access_token: accessToken,
+          }
+      );
+      console.log('Instagram Post ID:', publishResponse.data.id);
+  } catch (error) {
+      console.error('Error posting to Instagram:', error.response?.data || error.message);
+  }
+};
+
 
 const checkAndPostScheduledPosts = async () => {
   try {
@@ -430,6 +475,7 @@ const checkAndPostScheduledPosts = async () => {
       }
 
       const success = await postToFacebook(post, client);
+
 
       if (success) {
         post.posted = true;
