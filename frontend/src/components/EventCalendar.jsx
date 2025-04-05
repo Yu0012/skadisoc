@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaSyncAlt } from "react-icons/fa";
+import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
 import "../styles.css";
 import calendarData from "../data/calendarEvents.json";
 
@@ -98,13 +99,13 @@ const EventCalendar = () => {
           </div>
 
           <div className="fc-toolbar-right">
-            <img src={doubleLeftButton} className="fc-nav-button" onClick={goToPrevDouble} />
-            <img src={leftButton} className="fc-nav-button" onClick={goToPrev} />
+            <FaAnglesLeft className="fc-nav-button" onClick={goToPrevDouble} />
+            <FaAngleLeft className="fc-nav-button" onClick={goToPrev} />
             <p className="fc-current-date">
               {currentMonth}, {currentYear}
             </p>
-            <img src={rightButton} className="fc-nav-button" onClick={goToNext} />
-            <img src={doubleRightButton} className="fc-nav-button" onClick={goToNextDouble} />
+            <FaAngleRight className="fc-nav-button" onClick={goToNext} />
+            <FaAnglesRight className="fc-nav-button" onClick={goToNextDouble} />
           </div>
         </div>
 

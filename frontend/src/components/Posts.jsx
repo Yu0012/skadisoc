@@ -160,12 +160,16 @@ const Posts = () => {
   };
 
   return (
+    
     <div className="posts-container">
       {/*Header and actions*/}
       <div className="posts-header">
-        <h2>Posts</h2>
-        <div className="posts-actions">
-          <FaSyncAlt className="refresh-btn" onClick={handleRefresh} />
+      <div className="welcome-message">
+          <p>Welcome,</p>
+          <h2 className="user-name">Amber Broos</h2>
+      </div>
+      <div className="posts-actions">
+          <FaSyncAlt className="refresh-icon" onClick={handleRefresh} />
           <button className="create-post-btn" onClick={() => setIsModalOpen(true)}>
             <FaPlus /> Create Post
           </button>
