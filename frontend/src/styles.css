@@ -397,34 +397,23 @@ body {
   border: 1px solid black;
 }
 
-.create-user-btn {
-  background-color: white;
-  color: #0D286E;
-  padding: 5px 20px;
-  border: solid;
-  border-radius: 5px;
-  border-color: #ADB5BD;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-  transition: 0.3s;
-  font-weight: bold;
-}
-
-.create-user-btn:hover{
-  background-color: #0D286E;
-  color: white;
-  border-color: black;
-}
 
 
 /* 🔍 Search Bar + Dropdown + Export in One Line */
 .search-container {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
+  justify-content: space-between;
+  flex-wrap: wrap;
   padding-bottom: 10px;
+}
+
+/* Puts Category and Search Bar at the right */
+.search-container-left{
+  display:flex;
+  align-items: center;
+  gap:10px;
 }
 
 /* 🟦 Category Dropdown */
@@ -470,7 +459,7 @@ body {
 
 /* 🔍 Search Icon */
 .search-icon {
-  color: #0a0f5c;
+  color: var(--icon-color);
   font-size: 18px;
   cursor: pointer;
   padding: 5px;
@@ -603,6 +592,10 @@ body {
   font-size: 16px;
 }
 
+.fc-today-button:hover{
+  background-color: var(--button-hover)
+}
+
 .fc-nav-button {
   font-size: 20px;
   padding: 1px;
@@ -687,7 +680,8 @@ body {
 
 /* Button to add new clients*/
 .add-client-btn {
-  background-color: #0D286E; 
+  background-color: var(--add-client); 
+  border: var(--add-client-border);
   border-radius: 10px;
   display: flex;
   gap: 3px;
@@ -702,18 +696,21 @@ body {
   cursor: pointer;
 }
 
+.add-client-btn:hover {
+  background-color: var(--button-hover);
+}
 
 /* Client Object */
 .client-object {
-  background-color: white; 
-  border: solid 2px;
+  background-color: var(--client-block); 
+  border: solid 2px var(--client-border);
   border-radius: 10px;
   padding: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  color: #0D286E;
+  color: var(--client-text);
   width: 150px;
   height: 110px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -730,7 +727,7 @@ body {
 
 /* Client Description */
 .client-description {
-  color: #0D286E;
+  color: var(--client-text);
   font-size: 15px;
   text-overflow: ellipsis;
 }
@@ -1146,7 +1143,7 @@ input:checked + .slider:before {
 /* ============================= */
 
 .dropdown {
-  background-color: var(--dropdown-bg);
+  background-color: var(--category-dropdown);
   color: white;
   font-weight: bold;
   padding: 12px 15px;
@@ -1215,7 +1212,7 @@ input:checked + .slider:before {
   padding: 10px;
   font-size: 16px;
   background-color: transparent;
-  color: #555;
+  color: var(--search-bar-color);
   width: 100%;
 }
 
@@ -1244,17 +1241,19 @@ input:checked + .slider:before {
   gap: 5px;
 }
 
-.pagination button {
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  background: #f8f9fa;
-  cursor: pointer;
-}
-
 .pagination button.active {
   background-color: #0a0f5c;
   color: white;
   font-weight: bold;
+}
+
+.pagination-navigation {
+  font-size: 10px;
+  padding:10px 10px;
+  color: var(--pagination);
+  border: 1px solid var(--pagination-border);
+  background: var(--pagination-bg);
+  cursor: pointer;
 }
 
 .account-row{
@@ -1391,10 +1390,6 @@ input::-webkit-inner-spin-button {
     margin-bottom: 10px;
   }
 
-  .posts-actions {
-    flex-direction: column;
-    gap: 10px;
-  }
 
   .pagination-container {
     flex-direction: column;
@@ -1440,12 +1435,6 @@ input::-webkit-inner-spin-button {
   font-size: 14px;
 }
 
-.posts-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
-}
 
 .icon-row {
   display: flex;
@@ -1465,7 +1454,7 @@ input::-webkit-inner-spin-button {
 /* Three-dot menu icon */
 .popup-icon {
   font-size: 18px;
-  color: #333;
+  color: var(--client-ellipsis);
   cursor: pointer;
 }
 
@@ -1474,7 +1463,7 @@ input::-webkit-inner-spin-button {
   position: absolute;
   top: 20px;
   right: 0;
-  background: white;
+  background: var(--dropdown-bg);
   border: 1px solid #ddd;
   border-radius: 5px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
@@ -1487,16 +1476,28 @@ input::-webkit-inner-spin-button {
 
 .popup-menu button {
   border: none;
-  background: none;
+  color: black;
+  background: var(--dropdown-bg);
   padding: 8px 10px;
   cursor: pointer;
+  border-radius: 5px;
   text-align: left;
   width: 100%;
   font-size: 14px;
 }
 
+
 .popup-menu button:hover {
-  background: #f0f0f0;
+  background: var(--dropdown-hover);
+}
+
+.popup-menu .delete-btn{
+  color:red;
+}
+
+.popup-menu .delete-btn:hover{
+  background-color: #fc3d47;
+  color: white;
 }
 
 .selected-datetime {
@@ -1874,21 +1875,7 @@ body {
   font-size: 14px;
 }
 
-.popup-menu button {
-  border: none;
-  background: none;
-  padding: 8px 10px;
-  cursor: pointer;
-  text-align: left;
-  border-radius: 5px;
-  width: 100%;
-  font-size: 14px;
-}
 
-.popup-menu .delete-button:hover{
-  background-color: #fc3d47;
-  color: white;
-}
 
 .refresh-icon {
   font-size: 30px;
@@ -1912,14 +1899,13 @@ body {
   transition: 0.3s;
   margin-top: 10px;
 }
+
 .create-user-btn {
-  background-color: white;
-  color: #0D286E;
-  padding: 5px 20px;
-  padding: 10px 20px;
-  border: solid;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  padding: 13px 20px;
   border-radius: 5px;
-  border-color: #ADB5BD;
+  border: none;
   display: flex;
   align-items: center;
   gap: 5px;
@@ -1928,43 +1914,21 @@ body {
   font-weight: bold;
 }
 
+.create-user-btn:hover{
+  background-color: var(--button-hover);
+  color: white;
+}
+
 .popup-container-2 {
   position: relative;
   display: inline-block;
 }
 
-.popup-menu {
-  position: absolute;
-  top: 100%;       /* appear right below */
-  right: 0;
-  z-index: 9999;   /* ensures it's above other stuff */
-  background-color: white;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  border-radius: 8px;
-  min-width: 130px;
-  padding: 0.5rem 0;
-  white-space: nowrap;
-}
-
-.popup-menu button {
-  background: none;
-  border: none;
-  width: 100%;
-  padding: 10px 16px;
-  text-align: left;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.popup-menu button:hover {
-  background-color: #f2f2f2;
-}
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
 }
-/* var(--button-bg) */
+
 /* Light Theme (Default) */
 :root {
   --bg-color: white;
@@ -1974,10 +1938,11 @@ body {
   --button-bg: #0a0f5c;
   --button-border: #0a0f5c;
   --button-text: white;
+  --button-hover: black;
 
   --nav-hover: white;
   --nav-bg-hover:#0a0f5c;
-  --nav-active-text: #0a0f5c;  /* Active link color */
+  --nav-active-text: #0a0f5c;  /* Active link color in light mode */
 
   --calendar-lines: #0a0f5c;
 
@@ -1990,10 +1955,28 @@ body {
 
   --search-bar: white;
   --search-bar-border: #ddd;
+  --search-bar-color: #555;
 
-  --dropdown-bg: #0a0f5c;
+
+  --category-dropdown: #0a0f5c;
 
   --icon-color: #0a0f5c;
+
+  --client-block: white;
+  --client-text: #0D286E;
+  --client-border: #0D286E;
+  --client-ellipsis: #333;
+
+  --add-client: #0D286E;
+  --add-client-border: #0D286E;
+
+  --pagination: #0D286E;
+  --pagination-border: #32323b;
+  --pagination-bg: #f8f9fa;
+
+  --dropdown-bg: white;
+  --dropdown-hover: #ddd;
+  --dropdown-text: black;
 }
 
 /* Dark Theme */
@@ -2002,9 +1985,10 @@ body {
   --bg-color-secondary:#272831;
   --text-color: white;
 
-  --button-bg: #1e27ae;
-  --button-border: #1e27ae;
+  --button-bg: #3983f6;
+  --button-border: #3983f6;
   --button-text: lightgray;
+  --button-hover: #0D286E;
 
   --nav-hover: #0a0f5c;
   --nav-bg-hover: white;
@@ -2021,10 +2005,27 @@ body {
 
   --search-bar: #33343a;
   --search-bar-border: #202125;
+  --search-bar-color: white;
 
-  --dropdown-bg: #1e27ae;
+  --category-dropdown: #3983f6;
 
   --icon-color: white;
+
+  --client-block: #32323b;
+  --client-text: white;
+  --client-border: #6c7789;
+  --client-ellipsis: white;
+
+  --add-client: #3983f6;
+  --add-client-border: #3983f6;
+
+  --pagination: #0a0f5c;
+  --pagination-border: #6c7789;
+  --pagination-bg: #ccc;
+
+  --dropdown-bg: white;
+  --dropdown-hover: #ddd;
+  --dropdown-text:white;
 
 }
 

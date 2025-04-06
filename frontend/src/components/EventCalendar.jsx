@@ -10,11 +10,6 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
-// Icons
-import leftButton from "../assets/LeftArrow.png";
-import rightButton from "../assets/RightArrow.png";
-import doubleLeftButton from "../assets/DoubleLeftArrow.png";
-import doubleRightButton from "../assets/DoubleRightArrow.png";
 
 const EventCalendar = () => {
   const [events, setEvents] = useState([]);

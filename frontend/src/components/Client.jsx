@@ -215,7 +215,7 @@ const Client = () => {
                     {popupOpen === client._id && (
                       <div className="popup-menu" ref={popupRef}>
                         <button onClick={() => handleEditClient(client)}>Edit</button>
-                        <button className="delete-button" onClick={() => handleDeleteClient(client._id)}>Delete</button>
+                        <button className="delete-btn" onClick={() => handleDeleteClient(client._id)}>Delete</button>
                       </div>
                     )}
                   </div>

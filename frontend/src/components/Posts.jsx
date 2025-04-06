@@ -3,6 +3,7 @@ import "../styles.css";
 import { FaSearch, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa";
 import { createPortal } from "react-dom";
 import CreatePostModal from "./CreatePostModal";
+import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
 
 const Posts = () => {
   // State declarations
@@ -168,16 +169,11 @@ const Posts = () => {
           <p>Welcome,</p>
           <h2 className="user-name">Amber Broos</h2>
       </div>
-      <div className="posts-actions">
-          <FaSyncAlt className="refresh-icon" onClick={handleRefresh} />
-          <button className="create-post-btn" onClick={() => setIsModalOpen(true)}>
-            <FaPlus /> Create Post
-          </button>
-        </div>
-      </div>
+    </div>
 
-      {/*search and catogories filter*/}
-      <div className="search-container">
+    {/*search and catogories filter*/}
+    <div className="search-container">
+      <div className="search-container-left">
         <select
           className="dropdown"
           value={category}
@@ -188,7 +184,6 @@ const Posts = () => {
           <option>Scheduled</option>
         </select>
 
-
         <div className="search-box">
           <input
             type="text"
@@ -198,7 +193,15 @@ const Posts = () => {
           />
           <FaSearch className="search-icon" />
         </div>
+    </div>
+    
+      <div className="posts-actions">
+        <FaSyncAlt className="refresh-icon" onClick={handleRefresh} />
+        <button className="create-post-btn" onClick={() => setIsModalOpen(true)}>
+          <FaPlus /> Create Post
+        </button>
       </div>
+    </div>
 
       {/* Posts Table */}
       <table className="posts-table">
@@ -283,15 +286,16 @@ const Posts = () => {
           {filteredPosts.length} entries
         </p>
         <div className="pagination">
-          <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
-            «
-          </button>
-          <button
+          <FaAnglesLeft 
+            className="pagination-navigation" 
+            onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
+          />
+          <FaAngleLeft 
+            className="pagination-navigation" 
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 1}
-          >
-            ‹
-          </button>
+          />
+            
           {[...Array(totalPages).keys()]
             .slice(Math.max(0, currentPage - 2), currentPage + 1)
             .map((number) => (
@@ -303,18 +307,16 @@ const Posts = () => {
                 {number + 1}
               </button>
             ))}
-          <button
+          <FaAngleRight 
+            className="pagination-navigation"
             onClick={() => setCurrentPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-          >
-            ›
-          </button>
-          <button
+          />
+          <FaAnglesRight
+            className="pagination-navigation"
             onClick={() => setCurrentPage(totalPages)}
             disabled={currentPage === totalPages}
-          >
-            »
-          </button>
+          />
         </div>
       </div>
       
