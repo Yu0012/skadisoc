@@ -6,6 +6,10 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { platform } = require('os');
+const mime = require("mime-types");
+const axios = require("axios");
+const FormData = require("form-data");
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -382,12 +386,19 @@ app.delete('/api/accounts/:id', async (req, res) => {
   }
 });
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+  setHeaders: (res, filePath) => {
+    const contentType = mime.lookup(filePath) || 'application/octet-stream';
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Accept-Ranges', 'bytes');  // Instagram needs this
+    res.setHeader('Cache-Control', 'public, max-age=31536000');
+  }
+}));
 
 // Function to post to Facebook
 const postToFacebook = async (post, client) => {
   try {
     const facebookAccount = client.socialAccounts.find(acc => acc.platform === "Facebook");
-
     if (!facebookAccount || !facebookAccount.companyToken || !facebookAccount.pageId) {
       console.error(`No valid Facebook account for client: ${client.companyName}`);
       return false;
@@ -395,17 +406,18 @@ const postToFacebook = async (post, client) => {
 
     const pageAccessToken = facebookAccount.companyToken;
     const pageId = facebookAccount.pageId;
-    console.log("Page Access Token:", pageAccessToken);
 
-    const url = `https://graph.facebook.com/${pageId}/feed`;
+    const url = `https://graph.facebook.com/${pageId}/photos`;
 
-    const postData = {
-      message: `${post.content}\n\n${post.hashtags || ""}`,
-      access_token: pageAccessToken,
-    };
+    const formData = new FormData();
+    formData.append("message", `${post.content}\n\n${post.hashtags || ""}`);
+    formData.append("access_token", pageAccessToken);
+    formData.append("source", fs.createReadStream(path.join(__dirname, post.filePath)));
 
-    const response = await axios.post(url, postData);
-    
+    const response = await axios.post(url, formData, {
+      headers: formData.getHeaders(),
+    });
+
     if (response.data.id) {
       console.log(`Post successful: ${response.data.id}`);
       return true;
@@ -415,6 +427,58 @@ const postToFacebook = async (post, client) => {
   }
   return false;
 };
+
+
+async function postToInstagram(post, client) {
+  try {
+    const instagramAccount = client.socialAccounts.find(acc => acc.platform === "Instagram");
+    if (!instagramAccount || !instagramAccount.companyToken || !instagramAccount.pageId) {
+      console.error(`No valid Instagram account for client: ${client.companyName}`);
+      return;
+    }
+
+    const accessToken = instagramAccount.companyToken;
+    const igUserId = instagramAccount.pageId;
+
+    const mediaUrl = `${"https://89cc-2001-e68-5456-3b90-7949-5b30-1168-d19e.ngrok-free.app"}${post.filePath}`;
+
+    if (!mediaUrl) {
+      console.error("❌ No valid image URL for Instagram post.");
+      return;
+    }
+
+    const message = `${post.content}\n\n${post.hashtags || ""}`;
+
+    // Step 1: Upload Media
+    const mediaResponse = await axios.post(
+      `https://graph.facebook.com/${igUserId}/media`,
+      {
+        image_url: mediaUrl,
+        caption: message,
+        access_token: accessToken,
+      }
+    );
+
+    const creationId = mediaResponse.data.id;
+
+    // Step 2: Publish Media
+    const publishResponse = await axios.post(
+      `https://graph.facebook.com/${igUserId}/media_publish`,
+      {
+        creation_id: creationId,
+        access_token: accessToken,
+      }
+    );
+
+    console.log('✅ Instagram Post ID:', publishResponse.data.id);
+    return true;
+
+  } catch (error) {
+    console.error('Error posting to Instagram:', error.response?.data || error.message);
+    return false;
+  }
+}
+
 
 const checkAndPostScheduledPosts = async () => {
   try {
@@ -429,9 +493,14 @@ const checkAndPostScheduledPosts = async () => {
         continue;
       }
 
-      const success = await postToFacebook(post, client);
+      if (post.selectedPlatforms.includes("facebook")) {
+        await postToFacebook(post, client);
+        post.posted = true;
+        await post.save();
+      }
 
-      if (success) {
+      if (post.selectedPlatforms.includes("instagram")) {
+        await postToInstagram(post, client);
         post.posted = true;
         await post.save();
       }
