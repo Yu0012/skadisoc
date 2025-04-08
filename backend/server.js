@@ -8,6 +8,7 @@ const fs = require('fs');
 const { platform } = require('os');
 const mime = require("mime-types");
 const axios = require("axios");
+const {TwitterApi} = require("twitter-api-v2");
 const FormData = require("form-data");
 
 
@@ -479,6 +480,32 @@ async function postToInstagram(post, client) {
   }
 }
 
+const postToTwitter = async (post, client) => { 
+  try {
+    const twitterAccount = client.socialAccounts.find(acc => acc.platform === "Twitter");
+    if (!twitterAccount || !twitterAccount.apiKey || !twitterAccount.apiKeySecret || !twitterAccount.accessToken || !twitterAccount.accessTokenSecret) {
+      console.error(`No valid Twitter account for client: ${client.companyName}`);
+      return false;
+    }
+
+    const { apiKey, apiKeySecret, accessToken, accessTokenSecret } = twitterAccount;
+
+    const twitterClient = new TwitterApi({
+      appKey: apiKey,
+      appSecret: apiKeySecret,
+      accessToken: accessToken,
+      accessSecret: accessTokenSecret,
+    });
+
+    await twitterClient.v2.tweet(post.content);
+    console.log(`Post successful on Twitter`);
+    return true;
+  } catch (error) {
+    console.error("Error posting to Twitter:", error.response?.data || error.message);
+  }
+  return false;
+}
+
 
 const checkAndPostScheduledPosts = async () => {
   try {
@@ -501,6 +528,12 @@ const checkAndPostScheduledPosts = async () => {
 
       if (post.selectedPlatforms.includes("instagram")) {
         await postToInstagram(post, client);
+        post.posted = true;
+        await post.save();
+      }
+
+      if (post.selectedPlatforms.includes("twitter")) {
+        await postToTwitter(post, client);
         post.posted = true;
         await post.save();
       }
