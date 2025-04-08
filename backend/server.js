@@ -342,28 +342,13 @@ const checkAndPostScheduledPosts = async () => {
   }
 };
 
-// const twitterClient = new TwitterApi({
-//   appKey: process.env.TWITTER_API_KEY,
-//   appSecret: process.env.TWITTER_API_SECRET,
-//   accessToken: process.env.TWITTER_ACCESS_TOKEN,
-//   accessSecret: process.env.TWITTER_ACCESS_SECRET,
-// });
+const twitterClient = new TwitterApi({
+    appKey: process.env.TWITTER_API_KEY,
+    appSecret: process.env.TWITTER_API_SECRET,
+    accessToken: process.env.TWITTER_ACCESS_TOKEN,
+    accessSecret: process.env.TWITTER_ACCESS_SECRET,
+});
 
-// const postToTwitter = async (post) => {
-//   try {
-//     const tweetContent = `${post.content}\n${post.hashtags || ""}`;
-    
-//     const response = await twitterClient.v2.tweet(tweetContent);
-    
-//     if (response.data) {
-//       console.log(`Tweet posted successfully: ${response.data.id}`);
-//       return true;
-//     }
-//   } catch (error) {
-//     console.error("Error posting to Twitter:", error);
-//   }
-//   return false;
-// };
 
 // Run the function every minute
 setInterval(checkAndPostScheduledPosts, 60 * 1000);
