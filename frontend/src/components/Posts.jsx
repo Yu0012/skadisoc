@@ -55,6 +55,7 @@ const Posts = () => {
     if (fullPost) {
       setEditingPost(fullPost);
       setIsModalOpen(true);
+      setPostMenuDropdown(null); 
     } else {
       alert("Failed to load post");
     }
@@ -161,8 +162,8 @@ const Posts = () => {
   };
 
   return (
-    
-    <div className="posts-container">
+    <div>
+    <div className={`posts-container ${isModalOpen ? "blurred" : ""}`}>
       {/*Header and actions*/}
       <div className="posts-header">
       <div className="welcome-message">
@@ -245,7 +246,7 @@ const Posts = () => {
               <td>{post.posted || "-"}</td>
               <td>
                 {/* Ellipsis icon and dropdown */}
-                <FaEllipsisV onClick={(e) => menuDropdown(e, post._id)} />
+                <FaEllipsisV className="popup-icon" onClick={(e) => menuDropdown(e, post._id)} />
                 {postMenuDropdown === post._id &&
                   createPortal(
                     <div
@@ -319,7 +320,7 @@ const Posts = () => {
           />
         </div>
       </div>
-      
+      </div>
       {/* Create/Edit Post Modal */}
       {isModalOpen && (
           <CreatePostModal

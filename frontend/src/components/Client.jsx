@@ -135,7 +135,7 @@ const Client = () => {
 
 
   return (
-    <div className={`posts-container ${showClientModal ? "blurred" : ""}`}>
+    <div className={`posts-container ${showClientModal ? "blurred" : ""}`}> {/* Blurs when editing menu or creating client*/}
       {/* Header */}
       <div className="posts-header">
         <div className="welcome-message">

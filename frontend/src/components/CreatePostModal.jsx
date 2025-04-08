@@ -126,7 +126,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
       <div className="modal-content large-modal">
         <div className="modal-header">
           <h2>{initialData?._id ? "Edit Post" : "Create Post"}</h2>
-          <FaTimes className="close-icon" onClick={onClose} />
+          <FaTimes className="modal-close" onClick={onClose} />
         </div>
 
         <div className="modal-body">

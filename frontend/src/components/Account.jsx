@@ -105,6 +105,7 @@ const Accounts = () => {
     setAddress(account.address);
     setPassword(account.password); // or leave empty
     setCreateUserDropdown(true); // show form modal
+    setAccountMenuDropdown(null);
   };
 
   const handleDeleteAccount = async (accountId) => {
@@ -280,7 +281,7 @@ const Accounts = () => {
             <ImCross className="exitButton" onClick={toggleCreateUserDropdown} />
             <form className="form-group" onSubmit={handleSubmit}>
               <a className="form-title">Create New User</a>
-              <label>Name: <input type="text" value={name} onChange={(e) => setName(e.target.value)} required /></label>
+              <label>Name: <input type="text" className="newAccountForm" value={name} onChange={(e) => setName(e.target.value)} required /></label>
               <label>Email: <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
               <label>Phone: <input type="number" value={phoneNum} onChange={(e) => setPhoneNum(e.target.value)} required /></label>
               <label>Address: <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} required /></label>
@@ -326,7 +327,7 @@ const Accounts = () => {
               <td>{account.phoneNum}</td>
               <td>{account.address}</td>
               <td>
-                <FaEllipsisV onClick={(e) => menuDropdown(e, account._id)} />
+                <FaEllipsisV className="popup-icon" onClick={(e) => menuDropdown(e, account._id)} />
 
                 {accountMenuDropdown === account._id &&
                   createPortal(
