@@ -803,9 +803,9 @@ body {
 
 /* Content Input */
 .content-input {
-  width: 100%;
+  width: 98%;
   height: 80px; /* Decreased height */
-  padding: 12px;
+  padding: 10px;
   border: 1px solid #ddd;
   border-radius: 8px;
   resize: none;
@@ -1961,3 +1961,21 @@ body {
   margin-top: 10px;
 }
 
+.input-field {
+  margin-bottom: 16px;
+}
+
+.platform-container {
+  margin-top: 8px;
+}
+
+.content-container {
+  margin-bottom: 20px;
+}
+
+.insert-icon {
+  width: 18px;         /* ⬅ Adjust width here */
+  height: 18px;        /* ⬅ Adjust height here */
+  object-fit: contain; /* Keeps proportions clean */
+  display: block;      /* Ensures no weird spacing */
+}
