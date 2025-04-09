@@ -497,8 +497,20 @@ const postToTwitter = async (post, client) => {
       accessSecret: accessTokenSecret,
     });
 
-    await twitterClient.v2.tweet(post.content);
-    console.log(`Post successful on Twitter`);
+    const imagePath = path.join(__dirname, post.filePath);
+
+    if (['.jpg', '.jpeg', '.png'].includes(path.extname(imagePath).toLowerCase())) {
+      const mediaData = await twitterClient.v1.uploadMedia(imagePath); // Upload image
+      await twitterClient.v2.tweet(post.content, { media: { media_ids: [mediaData] }}); // Post tweet with image
+      console.log(`Post successful on Twitter`);s
+    }
+
+    else if (['.mp4', '.avi', '.mkv', '.mov', '.gif'].includes(path.extname(imagePath).toLowerCase())) {
+      const mediaData = await twitterClient.v1.uploadMedia(imagePath, { type: 'video' }); // Upload video
+      await twitterClient.v2.tweet(post.content, { media: { media_ids: [mediaData] }}); // Post tweet with video
+      console.log(`Post successful on Twitter`);
+    }
+
     return true;
   } catch (error) {
     console.error("Error posting to Twitter:", error.response?.data || error.message);
