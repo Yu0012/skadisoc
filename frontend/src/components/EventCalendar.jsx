@@ -170,6 +170,15 @@ const EventCalendar = () => {
                         >
                           {trimmed}
                         </a>
+                      ) : trimmed.toLowerCase() === "instagram" ? (
+                        <a
+                          href={`/instagram-preview/${selectedEvent.id}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="platform-link"
+                        >
+                          {trimmed}
+                        </a>
                       ) : (
                         trimmed
                       )}

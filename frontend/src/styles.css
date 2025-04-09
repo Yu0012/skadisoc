@@ -2157,3 +2157,74 @@ body {
   font-size: 16px;
   cursor: pointer;
 }
+
+/*Instagram*/
+.insta-preview-page {
+  background: #fafafa;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 30px 16px;
+  font-family: 'Segoe UI', sans-serif;
+  align-items: flex-start;
+}
+
+.insta-post-container {
+  width: 400px;
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.insta-header {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+}
+
+.insta-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.insta-user-info span {
+  display: block;
+  font-size: 12px;
+  color: #888;
+}
+
+.insta-image-wrapper {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background: #000;
+}
+
+.insta-main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.insta-actions {
+  font-size: 20px;
+  padding: 10px 12px;
+}
+
+.insta-caption {
+  padding: 0 12px 8px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.insta-hashtag {
+  color: #00376b;
+}
+
+.insta-time {
+  font-size: 11px;
+  color: #999;
+  padding: 0 12px 12px;
+}

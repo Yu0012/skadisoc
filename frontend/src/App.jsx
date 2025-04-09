@@ -10,6 +10,7 @@ import UserProfile from "./components/UserProfile";
 import UserSettings from "./components/UserSettings"; 
 import HelpSupport from "./components/HelpSupport";
 import FacebookPreview from "./components/FacebookPreview";
+import InstagramPreview from "./components/InstagramPreview";
 import "./styles.css";
 
 const App = () => (
@@ -25,6 +26,7 @@ const App = () => (
       <Route path="/settings" element={<UserSettings />} /> 
       <Route path="/support" element={<HelpSupport />} />
       <Route path="/facebook-preview/:postId" element={<FacebookPreview />} />
+      <Route path="/instagram-preview/:postId" element={<InstagramPreview />} />
     </Routes>
   </Router>
 );
