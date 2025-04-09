@@ -9,6 +9,7 @@ import EventCalendar from "./components/EventCalendar";
 import UserProfile from "./components/UserProfile";
 import UserSettings from "./components/UserSettings"; 
 import HelpSupport from "./components/HelpSupport";
+import FacebookPreview from "./components/FacebookPreview";
 import "./styles.css";
 
 const App = () => (
@@ -23,6 +24,7 @@ const App = () => (
       <Route path="/profile" element={<UserProfile />} /> 
       <Route path="/settings" element={<UserSettings />} /> 
       <Route path="/support" element={<HelpSupport />} />
+      <Route path="/facebook-preview/:postId" element={<FacebookPreview />} />
     </Routes>
   </Router>
 );

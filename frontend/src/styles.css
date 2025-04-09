@@ -1979,3 +1979,181 @@ body {
   object-fit: contain; /* Keeps proportions clean */
   display: block;      /* Ensures no weird spacing */
 }
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.vertical-detail-modal {
+  width: 600px;
+  max-width: 95%;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  position: relative;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.modal-title {
+  font-size: 20px;
+  color: #0d47a1;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.modal-field {
+  margin: 10px 0;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.modal-link {
+  color: #1976d2;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.modal-note {
+  margin-top: 16px;
+  font-style: italic;
+  color: #555;
+  font-size: 14px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/*Facebook*/
+.fb-preview-page {
+  background-color: #f0f2f5;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 30px 16px;
+  align-items: flex-start; /* prevent vertical stretching */
+}
+
+
+.fb-post-container {
+  width: 500px;
+  background: white;
+  border-radius: 8px;
+  padding: 16px 16px 5px 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.fb-post-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.fb-profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.fb-profile-pic.small {
+  width: 32px;
+  height: 32px;
+}
+
+.fb-header-text span {
+  font-size: 13px;
+  color: #606770;
+  display: block;
+}
+
+.fb-post-body {
+  margin-bottom: 12px;
+}
+
+.fb-post-content {
+  font-size: 15px;
+  margin: 5px 0;
+}
+
+.fb-post-hashtags {
+  font-size: 14px;
+  color: #1877f2;
+}
+
+.fb-post-image {
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 6px;
+  max-height: 400px;
+  object-fit: contain;
+}
+
+.fb-reactions {
+  padding: 8px 0;
+  font-size: 14px;
+  color: #65676b;
+  border-top: 1px solid #ccc;
+}
+
+.fb-actions {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.fb-actions button {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #65676b;
+  cursor: pointer;
+}
+
+.fb-comment-bar {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+}
+
+.fb-comment-bar input {
+  flex: 1;
+  border: none;
+  background: #f0f2f5;
+  padding: 8px 12px;
+  margin: 0 8px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.fb-comment-bar input:focus {
+  outline: none;
+  background: #e4e6eb;
+}
+
+.fb-comment-icons span {
+  margin-left: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
