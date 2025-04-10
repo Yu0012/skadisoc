@@ -801,6 +801,11 @@ body {
   gap: 20px; /* More spacing between sections */
 }
 
+/* Just push the first label down a bit */
+.modal-body label:first-of-type {
+  margin-top: 10px; /* or 12px for more breathing space */
+}
+
 /* Content Input */
 .content-input {
   width: 98%;
