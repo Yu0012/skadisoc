@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { FaSyncAlt } from "react-icons/fa";
+import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
 import "../styles.css";
 
 // FullCalendar plugins
@@ -9,12 +10,6 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-
-// Navigation arrows
-import leftButton from "../assets/LeftArrow.png";
-import rightButton from "../assets/RightArrow.png";
-import doubleLeftButton from "../assets/DoubleLeftArrow.png";
-import doubleRightButton from "../assets/DoubleRightArrow.png";
 
 const EventCalendar = () => {
   const [events, setEvents] = useState([]);
@@ -135,11 +130,11 @@ const EventCalendar = () => {
             <button className="fc-today-button" onClick={goToToday}>Today</button>
           </div>
           <div className="fc-toolbar-right">
-            <img src={doubleLeftButton} className="fc-nav-button" onClick={goToPrevDouble} />
-            <img src={leftButton} className="fc-nav-button" onClick={goToPrev} />
+            <FaAnglesLeft className="fc-nav-button" onClick={goToPrevDouble} />
+            <FaAngleLeft className="fc-nav-button" onClick={goToPrev} />
             <p className="fc-current-date">{currentMonth}, {currentYear}</p>
-            <img src={rightButton} className="fc-nav-button" onClick={goToNext} />
-            <img src={doubleRightButton} className="fc-nav-button" onClick={goToNextDouble} />
+            <FaAngleRight className="fc-nav-button" onClick={goToNext} />
+             <FaAnglesRight className="fc-nav-button" onClick={goToNextDouble} />
           </div>
         </div>
 

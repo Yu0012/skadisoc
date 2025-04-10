@@ -3,7 +3,7 @@
 /* 🌍 Global Styling */
 body {
   font-family: Arial, sans-serif;
-  background-color: #f5f7fb;
+  background-color: var(--bg-color-secondary);
   margin: 0;
   padding: 0;
 }
@@ -29,7 +29,6 @@ body {
 
 .welcome-message {
   font-size: 18px;
-  color: #555;
   margin-bottom: 20px;
 }
 
@@ -52,7 +51,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 15px 30px;
-  background-color: white;
+  background-color: var(--bg-color); /* Switch between light and dark theme */
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -73,19 +72,20 @@ body {
 .nav-links a {
   text-decoration: none;
   font-weight: 600;
-  color: #0a0f5c;
+  color: var(--text-color);
   font-size: 16px;
   transition: 0.3s;
 }
 
 /* Active navbar link */
 .nav-links a.active {
-  color: black;
+  color: var(--nav-active-text);
   font-weight: bold;
 }
 
 .nav-links a:hover {
-  color: black;
+  color: var(--nav-hover);
+  background-color: var(--nav-bg-hover);
 }
 
 /* 🔔 Right Side Icons */
@@ -156,8 +156,8 @@ body {
   top: 60px;
   right: 10px;
   width: 180px;
-  background-color: white;
-  border: 1px solid #ccc;
+  background-color:var(--options);
+  border: 1px solid var(--options);
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   font-size: 14px;
@@ -170,7 +170,7 @@ body {
   display: block;
   padding: 10px 16px;
   text-decoration: none;
-  color: #000;
+  color: var(--options-color);
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s ease;
@@ -188,7 +188,7 @@ body {
 }
 
 .user-dropdown .logout {
-  color: red;
+  color: rgb(255, 0, 0);
   font-weight: bold;
 }
 
@@ -274,18 +274,6 @@ body {
   background: #ffe6e6; 
 }
 
-/* 🔄 Refresh Button */
-.refresh-icon {
-  font-size: 20px;
-  cursor: pointer;
-  color: #0a0f5c;
-  transition: 0.3s;
-}
-
-.refresh-icon:hover {
-  color: black;
-}
-
 /* 🔽 Export Button Styling */
 .export-btn {
   background-color: #0a0f5c;
@@ -332,20 +320,21 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
+  color: var(--text-color);
 }
 
 .welcome-message p {
   margin: 0;
   font-size: 14px;
-  color: #555;
+  color: var(--welcome-text);
 }
 
 .user-name {
   font-size: 20px;
   font-weight: bold;
   margin: 0;
-  color: #0a0f5c;
-  text-shadow: 2px 2px 2px rgba(0,0,0, 0.25);
+  color: var(--username-text) !important;
+   text-shadow: none;
 }
 
 .posts-actions {
@@ -387,10 +376,10 @@ body {
 
 /* ➕ Create Post Button */
 .create-post-btn {
-  background-color: #0a0f5c;
+  background-color: var(--button-bg);
   color: white;
   padding: 10px 15px;
-  border: none;
+  border: 1px solid var(--button-bg);
   border-radius: 5px;
   display: flex;
   align-items: center;
@@ -401,41 +390,30 @@ body {
 
 .create-post-btn:hover {
   background-color: black;
+  border: 1px solid black;
 }
-
-.create-user-btn {
-  background-color: white;
-  color: #0D286E;
-  padding: 5px 20px;
-  border: solid;
-  border-radius: 5px;
-  border-color: #ADB5BD;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-  transition: 0.3s;
-  font-weight: bold;
-}
-
-.create-user-btn:hover{
-  background-color: #0D286E;
-  color: white;
-  border-color: black;
-}
-
 
 /* 🔍 Search Bar + Dropdown + Export in One Line */
 .search-container {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
+  justify-content: space-between;
+  flex-wrap: wrap;
   padding-bottom: 10px;
 }
 
+/* Puts Category and Search Bar at the right */
+.search-container-left{
+  display:flex;
+  align-items: center;
+  gap:10px;
+}
+
+
 /* 🟦 Category Dropdown */
 .dropdown {
-  background-color: #0a0f5c;
+  background-color: var(--dropdown);
   color: white;
   font-weight: bold;
   padding: 10px 15px;
@@ -476,7 +454,7 @@ body {
 
 /* 🔍 Search Icon */
 .search-icon {
-  color: #0a0f5c;
+  color: var(--icon-color);
   font-size: 18px;
   cursor: pointer;
   padding: 5px;
@@ -485,10 +463,10 @@ body {
 /* 📄 Posts Table */
 .posts-table {
   width: 100%;
-  background: white;
+  background: var(--table-bg);
   border-spacing: 0;
   border: solid 1px;
-  border-color: #0D286E;
+  border-color: var(--table-border);
   border-radius: 8px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -504,28 +482,28 @@ body {
 .posts-table td {
   padding: 12px;
   text-align: left;
-  color: #0D286E;
+  color: var(--text-color);
 }
 
 .posts-table th{
-  border-bottom: solid 1px #0D286E;
+  border-bottom: solid 1px var(--table-border);
 }
 
 
 .posts-table th {
-  background: #f5f5f5;
+  background: var(--table-bg);
 }
 
 .posts-table tr:hover {
-  background: #f9f9f9;
+  background: var(--table-bg);
 }
 
 /* FullCalendar Section */
 /* Calendar Design */
 .fc {
-  color: #0D286E !important;
-  border-color: #0D286E solid !important;
-  background-color: white; /* ✅ changed to white */
+  color: var(--text-color)!important;
+  border-color: solid var(--table-border) !important;
+  background-color: var(--table-bg);
   max-width: 1500px; 
   height: 500px;     
   font-size: 14px;    
@@ -560,7 +538,7 @@ body {
   align-items: center;
 }
 .fc-day-today .fc-daygrid-day-number {
-  background-color: #0D286E !important; 
+  background-color: var(--table-current-day) !important; 
   color: white !important;
   border-radius: 6px;
   padding: 3px 6px; 
@@ -598,20 +576,10 @@ body {
   background: none !important;
 }
 
-/* "Today", button and the navigational buttons */
-.fc-today-button, .fc-prev-button, .fc-next-button {
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  background-color: white;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: 0.3s;
-}
-
 .fc-today-button{
   padding: 10px 25px;
-  border: 1px solid #ccc;
-  background-color: #0D286E;
+  background-color: var(--button-bg);
+  border: 1px solid var(--button-border);
   color: white;
   cursor: pointer;
   border-radius: 5px;
@@ -619,10 +587,16 @@ body {
   font-size: 16px;
 }
 
+.fc-today-button:hover{
+  background-color: var(--button-hover)
+}
+
 .fc-nav-button {
+  font-size: 20px;
   padding: 1px;
   margin: 1px;
   cursor: pointer;
+  color: var(--icon-color);
 }
 
 /* The rounded border for the current date */
@@ -665,6 +639,32 @@ body {
   color:black;
 }
 
+/* Changes the colours of the borders according to Light/Dark mode */
+[data-selected-theme="dark"] .fc-scrollgrid,
+[data-selected-theme="dark"] .fc-scrollgrid th,
+[data-selected-theme="dark"] .fc-scrollgrid td,
+[data-selected-theme="dark"] .fc-theme-standard td,
+[data-selected-theme="dark"] .fc-daygrid-day-frame {
+  border-color: var(--calendar-lines) !important;
+}
+
+/* Fixes for border issues within Dark Mode*/
+[data-selected-theme="dark"] .fc {
+  border-radius: 8px; 
+  overflow: hidden; 
+  background-color: var(--table-bg); 
+}
+
+[data-selected-theme="dark"] .fc {
+  border-radius: 8px; 
+  overflow: hidden; 
+  background-color: var(--table-bg); 
+}
+
+[data-selected-theme="dark"] .fc-scrollgrid {
+  border-radius: 8px; 
+}
+
 /* Client List (Wrap to Next Line When Full) */
 .client-list {
   display: flex;
@@ -674,7 +674,8 @@ body {
 
 /* Button to add new clients*/
 .add-client-btn {
-  background-color: #0D286E; 
+  background-color: var(--add-client); 
+  border: var(--add-client-border);
   border-radius: 10px;
   display: flex;
   gap: 3px;
@@ -689,18 +690,21 @@ body {
   cursor: pointer;
 }
 
+.add-client-btn:hover {
+  background-color: var(--button-hover);
+}
 
 /* Client Object */
 .client-object {
-  background-color: white; 
-  border: solid 2px;
+  background-color: var(--client-block); 
+  border: solid 2px var(--client-border);
   border-radius: 10px;
   padding: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  color: #0D286E;
+  color: var(--client-text);
   width: 150px;
   height: 110px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -717,7 +721,7 @@ body {
 
 /* Client Description */
 .client-description {
-  color: #0D286E;
+  color: var(--client-text);
   font-size: 15px;
   text-overflow: ellipsis;
 }
@@ -776,7 +780,7 @@ body {
   border: none;
   font-size: 22px;
   cursor: pointer;
-  color: #333;
+  color: var(--menu-color);
   transition: 0.3s;
 }
 
@@ -786,7 +790,8 @@ body {
  
 /* Modal Content */
 .modal-content {
-  background: white;
+  background-color: var(--menu-page);
+  color: var(--menu-color); 
   width: 850px;
   max-width: 90vw;
   border-radius: 12px;
@@ -811,16 +816,38 @@ body {
   width: 98%;
   height: 80px; /* Decreased height */
   padding: 10px;
+  background-color: var(--textarea);
+  color: var(--textarea-text);
   border: 1px solid #ddd;
   border-radius: 8px;
   resize: none;
 }
+
+.content-input::placeholder{
+  color: var(--textarea-placeholder);
+}
+
 
 /* Hashtags & Client Layout */
 .flex-row {
   display: flex;
   gap: 40px; /* Increased spacing between Hashtags & Client */
 }
+
+.input-field{
+  background-color: var(--textarea);
+  color: var(--textarea-text);
+}
+
+.input-field::placeholder{
+  color: var(--textarea-placeholder);
+}
+
+.dropdown-field{
+  background-color: var(--category-dropdown);
+  color: white;
+}
+
 
 /* Hashtags & Client Inputs */
 .input-field, .dropdown-field {
@@ -884,8 +911,8 @@ body {
 }
 
 .schedule-btn {
-  background-color: #0a0a80;
-  color: white;
+  background-color: var(--button-bg);
+  color: var(--button-text);
   border: none;
   padding: 6px 12px;
   border-radius: 6px;
@@ -999,7 +1026,7 @@ body {
 .platform-name {
   font-size: 16px;
   font-weight: 500;
-  color: #333;
+  color: var(--menu-color);
 }
 
 /* 🔄 Toggle Switch */
@@ -1044,7 +1071,7 @@ body {
 
 /* Toggle On */
 input:checked + .slider {
-  background-color: #0a0f5c; /* Dark blue when selected */
+  background-color: var(--category-dropdown); /* Colour shown when selected */
 }
 
 input:checked + .slider:before {
@@ -1053,7 +1080,7 @@ input:checked + .slider:before {
 
 /* Submit Button */
 .post-submit-btn {
-  background: #0a0f5c;
+  background: var(--button-bg);
   color: white;
   width: 100%;
   padding: 14px;
@@ -1138,11 +1165,10 @@ input:checked + .slider:before {
 /* ============================= */
 
 .dropdown {
-  background-color: #0a0f5c;
+  background-color: var(--category-dropdown);
   color: white;
   font-weight: bold;
   padding: 12px 15px;
-  border: none;
   border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
@@ -1166,11 +1192,12 @@ input:checked + .slider:before {
 /* ============================= */
 
 .refresh-btn {
+  font-size: 30px;
   background: none;
   border: none;
   font-size: 18px;
   cursor: pointer;
-  color: #0a0f5c;
+  color: var(--icon-color);
   padding: 8px;
   transition: 0.3s;
   display: flex;
@@ -1192,10 +1219,10 @@ input:checked + .slider:before {
 .search-box {
   display: flex;
   align-items: center;
-  background: white;
+  background: var(--search-bar);
   border-radius: 8px;
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--search-bar-border);
   width: 250px; /* Match with dropdown width */
   height: 20px; /* Match dropdown height */
 }
@@ -1207,7 +1234,7 @@ input:checked + .slider:before {
   padding: 10px;
   font-size: 16px;
   background-color: transparent;
-  color: #555;
+  color: var(--search-bar-color);
   width: 100%;
 }
 
@@ -1226,6 +1253,7 @@ input:checked + .slider:before {
   width: 97%;
   padding: 10px 20px;
   position: absolute;
+  color: var(--text-color);
   bottom: 10px;
   right: 20px;
 }
@@ -1235,17 +1263,20 @@ input:checked + .slider:before {
   gap: 5px;
 }
 
-.pagination button {
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  background: #f8f9fa;
-  cursor: pointer;
-}
 
 .pagination button.active {
   background-color: #0a0f5c;
   color: white;
   font-weight: bold;
+}
+
+.pagination-navigation {
+  font-size: 10px;
+  padding:10px 10px;
+  color: var(--pagination);
+  border: 1px solid var(--pagination-border);
+  background: var(--pagination-bg);
+  cursor: pointer;
 }
 
 .account-row{
@@ -1276,6 +1307,11 @@ input::-webkit-inner-spin-button {
 .exitButton{
   float: right;
   cursor: pointer;
+  transition: 0.3s;
+}
+
+.exitButton:hover{
+  color:red;
 }
 
 .newUserMenu{
@@ -1284,14 +1320,14 @@ input::-webkit-inner-spin-button {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 1000px;
-  background: white;
+  background: var(--menu-page);
   border-radius: 8px;
-  border: 1px solid #0a0f5c !important;
+  border: 1px solid var(--menu-border) !important;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   padding: 10px;
   flex-direction: column;
   z-index: 100;
-  color: #0D286E;
+  color: var(--menu-color);
 }
 
 .form-title{
@@ -1302,6 +1338,17 @@ input::-webkit-inner-spin-button {
 
 .form-group{
   padding: 20px;
+  color: var(--menu-color);
+}
+
+.form-group input{
+  background-color: var(--textarea);
+  color: var(--textarea-text);
+}
+
+.form-group input:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 .form-group label {
@@ -1381,10 +1428,6 @@ input::-webkit-inner-spin-button {
     margin-bottom: 10px;
   }
 
-  .posts-actions {
-    flex-direction: column;
-    gap: 10px;
-  }
 
   .pagination-container {
     flex-direction: column;
@@ -1398,9 +1441,9 @@ input::-webkit-inner-spin-button {
   top: 30px; /* Adjusts dropdown below the dots */
   left: -10px;
   min-width: 140px; /* Smaller than user dropdown */
-  background: white;
+  background: var(--options);
   border-radius: 6px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--options);
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
   padding: 5px;
   display: flex;
@@ -1417,25 +1460,20 @@ input::-webkit-inner-spin-button {
   border: none;
   background: none;
   width: 100%;
+  color: var(--options-color);
 }
 
 .post-actions-dropdown button:hover {
-  background: #f5f5f5;
+  background: var(--options-highlight);
 }
 
 /* Delete Button - Keep it bold but smaller */
 .post-actions-dropdown .delete-btn {
-  color: red;
+  color: rgb(255, 43, 43);
   font-weight: bold;
   font-size: 14px;
 }
 
-.posts-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
-}
 
 .icon-row {
   display: flex;
@@ -1455,7 +1493,7 @@ input::-webkit-inner-spin-button {
 /* Three-dot menu icon */
 .popup-icon {
   font-size: 18px;
-  color: #333;
+  color: var(--client-ellipsis);
   cursor: pointer;
 }
 
@@ -1464,7 +1502,7 @@ input::-webkit-inner-spin-button {
   position: absolute;
   top: 20px;
   right: 0;
-  background: white;
+  background: var(--dropdown-bg);
   border: 1px solid #ddd;
   border-radius: 5px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
@@ -1477,16 +1515,27 @@ input::-webkit-inner-spin-button {
 
 .popup-menu button {
   border: none;
-  background: none;
+  color: black;
+  background: var(--dropdown-bg);
   padding: 8px 10px;
   cursor: pointer;
+  border-radius: 5px;
   text-align: left;
   width: 100%;
   font-size: 14px;
 }
 
 .popup-menu button:hover {
-  background: #f0f0f0;
+  background: var(--dropdown-hover);
+}
+
+.popup-menu .delete-btn{
+  color:red;
+}
+
+.popup-menu .delete-btn:hover{
+  background-color: #fc3d47;
+  color: white;
 }
 
 .selected-datetime {
@@ -1535,7 +1584,7 @@ input::-webkit-inner-spin-button {
 .profile-card p {
   margin: 4px 0;
   font-size: 14px;
-  color: #333;
+  color: var(--client-text);
 }
 
 .edit-btn {
@@ -1564,7 +1613,8 @@ input::-webkit-inner-spin-button {
 }
 
 .profile-card {
-  background: white;
+  background: var(--client-block);
+  color: var(--client-text);
   padding: 30px;
   border-radius: 16px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
@@ -1590,14 +1640,15 @@ input::-webkit-inner-spin-button {
 .profile-card p {
   margin: 4px 0;
   font-size: 14px;
-  color: #333;
+  color: var(--client-text);
 }
 
 .edit-btn {
   margin-top: 14px;
   padding: 8px 16px;
-  background: #f0f0f0;
-  border: 1px solid #ccc;
+  background: var(--button-bg);
+  border: 1px solid var(--button-border);
+  color: var(--button-text);
   border-radius: 6px;
   font-size: 13px;
   cursor: pointer;
@@ -1610,7 +1661,7 @@ input::-webkit-inner-spin-button {
 
 .user-stats {
   margin-top: 28px;
-  background: #fafafa;
+  background: var(--user-stats);
   padding: 18px;
   border-radius: 12px;
   text-align: left;
@@ -1648,6 +1699,15 @@ input::-webkit-inner-spin-button {
   align-items: center;
   gap: 12px;
   margin-top: 16px;
+}
+
+.profile-form input{
+  background-color: var(--textarea);
+  color: var(--textarea-text);
+}
+
+.profile-form input::placeholder{
+  color: var(--textarea-placeholder);
 }
 
 .profile-input {
@@ -1688,8 +1748,12 @@ input::-webkit-inner-spin-button {
 }
 
 .save-btn {
-  background-color: #007bff;
-  color: white;
+  background-color: var(--button-bg);
+   color: var(--button-text);
+ }
+ 
+ .save-btn:hover{
+   background-color: var(--button-hover);
 }
 
 .cancel-btn {
@@ -1697,14 +1761,30 @@ input::-webkit-inner-spin-button {
   color: #333;
 }
 
+.cancel-btn:hover{
+  background-color: #aeadad;
+}
+
 .settings-container {
   max-width: 500px;
   margin: 30px auto;
-  background: white;
+  background: var(--client-block);
+  color: var(--client-text);
   padding: 50px;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
+
+.settings-form input{
+  background-color: var(--textarea);
+  color: var(--textarea-text);
+}
+
+.settings-form input::placeholder{
+  background-color: var(--textarea);
+  color: var(--textarea-placeholder);
+}
+
 
 .settings-form h3 {
   margin-bottom: 10px;
@@ -1719,13 +1799,17 @@ input::-webkit-inner-spin-button {
 }
 
 .reset-btn {
-  background-color: #001f7f;
-  color: white;
+  background-color: var(--button-bg);
+  color: var(--button-text);
   padding: 10px 20px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
+}
+
+.reset-btn:hover{
+  background-color: var(--button-hover);
 }
 
 .reset-message {
@@ -1736,11 +1820,33 @@ input::-webkit-inner-spin-button {
 .support-container {
   max-width: 700px;
   margin: 40px auto;
-  background: #fff;
+  background: var(--client-block);
+  color: var(--client-text);
   padding: 25px 40px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
 }
+
+.contact-form input{
+  background-color: var(--textarea);
+  color: var(--textarea-text);
+}
+
+.contact-form input::placeholder{
+  background-color: var(--textarea);
+  color: var(--textarea-placeholder);
+}
+
+.contact-form textarea{
+  background-color: var(--textarea);
+  color: var(--textarea-text);
+}
+
+.contact-form textarea::placeholder{
+  background-color: var(--textarea);
+  color: var(--textarea-placeholder);
+}
+
 
 .faq-section, .contact-form {
   margin-top: 30px;
@@ -1760,7 +1866,29 @@ input::-webkit-inner-spin-button {
 
 .faq-answer {
   padding-top: 8px;
-  color: #555;
+  color: var(--text-color);
+ 
+   /* For transition purposes */
+   transform: translateY(-5px);
+   transition: opacity 0.8s ease, transform 0.8s ease;
+ }
+ 
+ /* Transition when open and close FAQ */
+ .faq-answer-wrapper {
+   max-height: 0;
+   overflow: hidden;
+   transition: max-height 0.8s ease, padding 0.4s ease;
+   padding: 0 0;
+ }
+ 
+ .faq-answer-wrapper.expanded {
+   max-height: 200px; /* Adjust based on expected content height */
+   padding: 0.5rem 0;
+ }
+ 
+ .faq-answer-wrapper.expanded .faq-answer {
+   opacity: 1;
+   transform: translateY(0);
 }
 
 .support-input,
@@ -1779,13 +1907,17 @@ input::-webkit-inner-spin-button {
 }
 
 .support-btn {
-  background-color: #001f7f;
-  color: white;
+  background-color: var(--button-bg);
+  color: var(--button-text);
   border: none;
   padding: 10px 20px;
   border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
+}
+
+.support-btn:hover{
+  background-color: var(--button-hover);
 }
 
 .support-feedback {
@@ -1840,7 +1972,7 @@ input::-webkit-inner-spin-button {
 }
 
 body {
-  background-color: #f5f7fb;
+  background-color: var(--bg-color-secondary);
   margin: 0;
   padding: 0;
   overflow-x: hidden;
@@ -1864,27 +1996,11 @@ body {
   font-size: 14px;
 }
 
-.popup-menu button {
-  border: none;
-  background: none;
-  padding: 8px 10px;
-  cursor: pointer;
-  text-align: left;
-  border-radius: 5px;
-  width: 100%;
-  font-size: 14px;
-}
-
-.popup-menu .delete-button:hover{
-  background-color: #fc3d47;
-  color: white;
-}
-
 .refresh-icon {
   font-size: 20px;
   font-size: 30px;
   cursor: pointer;
-  color: #0a0f5c;
+  color: var(--icon-color);
   transition: 0.3s;
   margin-right: 0px;
   margin-left: auto;
@@ -1904,13 +2020,11 @@ body {
   margin-top: 10px;
 }
 .create-user-btn {
-  background-color: white;
-  color: #0D286E;
-  padding: 5px 20px;
-  padding: 10px 20px;
-  border: solid;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  padding: 13px 20px;
   border-radius: 5px;
-  border-color: #ADB5BD;
+  border-color: var(--button-bg);
   display: flex;
   align-items: center;
   gap: 5px;
@@ -1919,38 +2033,26 @@ body {
   font-weight: bold;
 }
 
+.create-user-btn:hover{
+  background-color: var(--button-hover);
+  color: white;
+}
+
+
 .popup-container-2 {
   position: relative;
   display: inline-block;
 }
 
-.popup-menu {
-  position: absolute;
-  top: 100%;       /* appear right below */
-  right: 0;
-  z-index: 9999;   /* ensures it's above other stuff */
-  background-color: white;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  border-radius: 8px;
-  min-width: 130px;
-  padding: 0.5rem 0;
-  white-space: nowrap;
+.inline-icon{
+  vertical-align: middle;
+  font-size: 1.2em;
+  padding-right: 5px;
+  height: 20px;
+  width: 20px;
 }
 
-.popup-menu button {
-  background: none;
-  border: none;
-  width: 100%;
-  padding: 10px 16px;
-  text-align: left;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.popup-menu button:hover {
-  background-color: #f2f2f2;
-}
+/* For transition effects */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
@@ -2338,4 +2440,129 @@ body {
   justify-content: space-around;
   font-size: 16px;
   color: #657786;
+}
+
+ /* Light Theme (Default) */
+ :root {
+  --bg-color: white;
+  --bg-color-secondary: #f5f7fb;
+  --text-color: #0a0f5c;
+
+  --button-bg: #0a0f5c;
+  --button-border: #0a0f5c;
+  --button-text: white;
+  --button-hover: black;
+
+  --nav-hover: white;
+  --nav-bg-hover:#0a0f5c;
+  --nav-active-text: #0a0f5c;  /* Active link color in light mode */
+
+  --calendar-lines: #0a0f5c;
+
+  --welcome-text: #555;
+  --username-text: #0a0f5c;
+
+  --table-bg: #f5f7fb;
+  --table-border: #0a0f5c;
+  --table-current-day: #0a0f5c;
+
+  --search-bar: white;
+  --search-bar-border: #ddd;
+  --search-bar-color: #555;
+
+  --category-dropdown: #0a0f5c;
+
+  --icon-color: #0a0f5c;
+
+  --client-block: white;
+  --client-text: #0D286E;
+  --client-border: #0D286E;
+  --client-ellipsis: #333;
+
+  --add-client: #0D286E;
+  --add-client-border: #0D286E;
+
+  --pagination: #0D286E;
+  --pagination-border: #32323b;
+  --pagination-bg: #f8f9fa;
+
+  --dropdown-bg: white;
+  --dropdown-hover: #ddd;
+  --dropdown-text: black;
+
+  --menu-page: white;
+  --menu-color: #0D286E;
+  --menu-border: #0D286E;
+
+  --textarea: white;
+  --textarea-placeholder: #6c7789;
+  --textarea-text: black;
+
+  --options: white;
+  --options-color: black;
+  --options-highlight: #d6d6d6;
+}
+
+/* Dark Theme */
+[data-selected-theme="dark"] {
+  --bg-color: #1f2027;
+  --bg-color-secondary:#272831;
+  --text-color: white;
+
+  --button-bg: #3983f6;
+  --button-border: #3983f6;
+  --button-text: rgb(255, 255, 255);
+  --button-hover: #0D286E;
+
+  --nav-hover: #0a0f5c;
+  --nav-bg-hover: white;
+  --nav-active-text: #2eb4fb;  /* Active link color in dark mode */
+
+  --welcome-text: #a2a1a1;
+  --username-text: #4a6eff;
+
+  --table-bg: #32323b;
+  --table-border: #6c7789;
+  --table-current-day: #4a6eff;
+  
+  --calendar-lines: #6c7789;
+
+  --search-bar: #33343a;
+  --search-bar-border: #202125;
+  --search-bar-color: white;
+
+  --category-dropdown: #3983f6;
+
+  --icon-color: white;
+
+  --client-block: #32323b;
+  --client-text: white;
+  --client-border: #6c7789;
+  --client-ellipsis: white;
+
+  --add-client: #3983f6;
+  --add-client-border: #3983f6;
+
+  --pagination: #0a0f5c;
+  --pagination-border: #6c7789;
+  --pagination-bg: #ccc;
+
+  --dropdown-bg: white;
+  --dropdown-hover: #ddd;
+  --dropdown-text:white;
+
+  --menu-page: #272831;
+  --menu-border: #6c7789;
+  --menu-color: white;
+
+  --textarea: #6c7789;
+  --textarea-placeholder: rgb(171, 170, 170);
+  --textarea-text: white;
+
+  --options: #6c7789;
+  --options-color: white;
+  --options-highlight: #202125;
+
+  --user-stats: #6c7789;
+
 }

@@ -67,8 +67,10 @@ const HelpSupport = () => {
               <span>{expanded === index ? "−" : "+"}</span>
             </div>
 
-            {/* Answer shown only if expanded */}
-            {expanded === index && <div className="faq-answer">{faq.answer}</div>}
+            {/* Answer shown only if expanded. Added transition to make shown answer look better */}
+            <div className={`faq-answer-wrapper ${expanded === index ? "expanded" : ""}`}>
+               {expanded === index && <div className="faq-answer">{faq.answer}</div>}
+             </div>
           </div>
         ))}
       </section>

@@ -4,20 +4,38 @@ import Lottie from "lottie-react";
 import "../styles.css";
 import logo from "../assets/SOCMEDMT_logo.png";
 import bellAnimation from "../assets/bellring.json";
+import bellAnimation_light from "../assets/bellring_light.json";
 import bellStatic from "../assets/bellring-no.png";
+import bellStatic_light from "../assets/bellring-no_light.png";
 import userIcon from "../assets/icon-women.png";
-import sunIcon from "../assets/icon-sun.png";
+import sunIcon from "../assets/icon-sun-light.png";
 import moonIcon from "../assets/icon-moon.png";
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const themes = ['light', 'dark'] //For Light/Dark themes
+  const [currentTheme, setCurrentTheme] = useState(
+    localStorage.getItem("theme") || "light"
+  );
+
 
   const [hasNotifications, setHasNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+
+  //Updates elements with data-selected-theme attribute, also saves theme to localStorage for consistency across pages
+  useEffect(() => {
+    document.documentElement.setAttribute("data-selected-theme", currentTheme);
+    localStorage.setItem("theme", currentTheme);
+  }, [currentTheme]);
+
+  //Ensures dark mode is in sync with the current theme
+  useEffect(() => {
+    setDarkMode(currentTheme === 'dark');
+  }, [currentTheme]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -50,8 +68,9 @@ const Navbar = () => {
   const toggleTheme = () => {
     setDarkMode((prev) => !prev);
     document.body.classList.toggle("dark-mode");
+    const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
+    setCurrentTheme(nextTheme);
   };
-
   const handleUserNav = (path) => {
     navigate(path);
     setUserDropdownOpen(false);
@@ -96,9 +115,9 @@ const Navbar = () => {
         <div className="notification-menu">
           <div onClick={() => setNotifDropdownOpen(!notifDropdownOpen)} className="bell-container">
             {hasNotifications ? (
-              <Lottie animationData={bellAnimation} className="bell-icon" />
+              <Lottie animationData={darkMode ? bellAnimation_light : bellAnimation} className="bell-icon" />
             ) : (
-              <img src={bellStatic} alt="No Notifications" className="bell-icon" />
+              <img src={darkMode ? bellStatic_light : bellStatic } alt="No Notifications" className="bell-icon" />
             )}
           </div>
 

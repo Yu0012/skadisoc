@@ -3,6 +3,11 @@ import "../styles.css";
 import { FaSearch, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa";
 import { createPortal } from "react-dom";
 import CreatePostModal from "./CreatePostModal";
+import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
+import facebookIcon from '../assets/facebook.png';
+import twitterIcon from '../assets/twitter.png';
+import instagramIcon from '../assets/instagram.png';
+import linkedinIcon from '../assets/linkedin.png';
 
 const Posts = () => {
   // State declarations
@@ -18,6 +23,13 @@ const Posts = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); //modal open state
   const [editingPost, setEditingPost] = useState(null);
 
+  //Replaces text to icons for social media
+  const platformIcons = {
+    facebook: <img src={facebookIcon} className="inline-icon" alt="Facebook" />,
+     twitter: <img src={twitterIcon} className="inline-icon" alt="Twitter"/>,
+     instagram: <img src={instagramIcon} className="inline-icon" alt="Instagram"/>,
+     linkedin: <img src={linkedinIcon} className="inline-icon" alt="LinkedIn"/>
+  };
 
   // Fetch posts from backend
   useEffect(() => {
@@ -55,6 +67,7 @@ const Posts = () => {
     if (fullPost) {
       setEditingPost(fullPost);
       setIsModalOpen(true);
+      setPostMenuDropdown(null); 
     } else {
       alert("Failed to load post");
     }
@@ -161,39 +174,46 @@ const Posts = () => {
   };
 
   return (
-    <div className="posts-container">
+    <div>
+     <div className={`posts-container ${isModalOpen ? "blurred" : ""}`}>
       {/*Header and actions*/}
       <div className="posts-header">
-        <h2>Posts</h2>
-        <div className="posts-actions">
-          <FaSyncAlt className="refresh-btn" onClick={handleRefresh} />
-          <button className="create-post-btn" onClick={() => setIsModalOpen(true)}>
-            <FaPlus /> Create Post
-          </button>
-        </div>
+      <div className="welcome-message">
+           <p>Welcome,</p>
+           <h2 className="user-name">Amber Broos</h2>
+       </div>
       </div>
 
       {/*search and catogories filter*/}
       <div className="search-container">
-        <select
-          className="dropdown"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          <option>All Categories</option>
-          <option>Published</option>
-          <option>Scheduled</option>
-        </select>
+        <div className="search-container-left">
+          <select
+            className="dropdown"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option>All Categories</option>
+            <option>Published</option>
+            <option>Scheduled</option>
+          </select>
 
 
-        <div className="search-box">
-          <input
-            type="text"
-            placeholder={`Search by ${category}`}
-            value={searchQuery}
-            onChange={handleSearch}
-          />
-          <FaSearch className="search-icon" />
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder={`Search by ${category}`}
+              value={searchQuery}
+              onChange={handleSearch}
+            />
+            <FaSearch className="search-icon" />
+          </div>
+        </div>
+     
+        <div className="posts-actions">
+          <FaSyncAlt className="refresh-icon" onClick={handleRefresh} />
+          <button className="create-post-btn" onClick={() => setIsModalOpen(true)}>
+            <FaPlus /> Create Post
+          </button>
         </div>
       </div>
 
@@ -229,11 +249,21 @@ const Posts = () => {
               <td>{post.client || "-"}</td>
               <td>{post.content}</td>
               <td>{post.hashtags || "-"}</td>
-              <td>{post.selectedPlatforms.join(", ") || "-"}</td>
+              <td> 
+                   {/* For each post, render the icon that corresponds to the social media that's associated with the post. 
+                       Unavailable icons would render the text instead, and posts without platforms would have a dash instead */}
+                   {post.selectedPlatforms.length > 0
+                     ? post.selectedPlatforms.map((platform, index) => (
+                         <span key={index}>
+                           {platformIcons[platform.toLowerCase()] || platform}
+                         </span>
+                       ))
+                     : "-"}
+               </td>
               <td>{post.posted || "-"}</td>
               <td>
                 {/* Ellipsis icon and dropdown */}
-                <FaEllipsisV onClick={(e) => menuDropdown(e, post._id)} />
+                <FaEllipsisV className="popup-icon" onClick={(e) => menuDropdown(e, post._id)} />
                 {postMenuDropdown === post._id &&
                   createPortal(
                     <div
@@ -274,15 +304,16 @@ const Posts = () => {
           {filteredPosts.length} entries
         </p>
         <div className="pagination">
-          <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
-            «
-          </button>
-          <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            ‹
-          </button>
+        <FaAnglesLeft 
+             className="pagination-navigation" 
+             onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
+        />
+        <FaAngleLeft 
+          className="pagination-navigation" 
+        onClick={() => setCurrentPage(currentPage - 1)}
+        disabled={currentPage === 1} 
+       />
+
           {[...Array(totalPages).keys()]
             .slice(Math.max(0, currentPage - 2), currentPage + 1)
             .map((number) => (
@@ -294,19 +325,18 @@ const Posts = () => {
                 {number + 1}
               </button>
             ))}
-          <button
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            ›
-          </button>
-          <button
-            onClick={() => setCurrentPage(totalPages)}
-            disabled={currentPage === totalPages}
-          >
-            »
-          </button>
+          <FaAngleRight 
+              className="pagination-navigation"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+          />
+            <FaAnglesRight
+              className="pagination-navigation"
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+            />
         </div>
+      </div>
       </div>
       
       {/* Create/Edit Post Modal */}

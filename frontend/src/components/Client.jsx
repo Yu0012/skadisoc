@@ -135,7 +135,7 @@ const Client = () => {
 
 
   return (
-    <div className={`posts-container ${showClientModal ? "blurred" : ""}`}>
+    <div className={`posts-container ${showClientModal ? "blurred" : ""}`}> {/* Blurs when editing menu or creating client*/}
       {/* Header */}
       <div className="posts-header">
         <div className="welcome-message">
@@ -178,7 +178,7 @@ const Client = () => {
               <div className="popup-container">
                 <FaEllipsisV className="popup-icon" onClick={() => togglePopup(client._id)} />
                 {popupOpen === client._id && (
-                  <div className="popup-menu" ref={popupRef}>
+                  <div className="post-actions-dropdown" ref={popupRef}>
                     <button onClick={() => handleEditClient(client)}>Edit</button>
                     <button className="delete-btn" onClick={() => handleDeleteClient(client._id)}>Delete</button>
                   </div>
@@ -213,9 +213,9 @@ const Client = () => {
                       onClick={() => togglePopup(client._id)}
                     />
                     {popupOpen === client._id && (
-                      <div className="popup-menu" ref={popupRef}>
+                      <div className="post-actions-dropdown" ref={popupRef}>
                         <button onClick={() => handleEditClient(client)}>Edit</button>
-                        <button className="delete-button" onClick={() => handleDeleteClient(client._id)}>Delete</button>
+                        <button className="delete-btn" onClick={() => handleDeleteClient(client._id)}>Delete</button>
                       </div>
                     )}
                   </div>
