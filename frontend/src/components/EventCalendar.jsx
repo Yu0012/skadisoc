@@ -1,13 +1,16 @@
+// Import dependencies
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { FaSyncAlt } from "react-icons/fa";
 import "../styles.css";
 
+// FullCalendar plugins
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
+// Navigation arrows
 import leftButton from "../assets/LeftArrow.png";
 import rightButton from "../assets/RightArrow.png";
 import doubleLeftButton from "../assets/DoubleLeftArrow.png";
@@ -22,6 +25,7 @@ const EventCalendar = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // ✅ Fetch posts and format for calendar
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -51,6 +55,7 @@ const EventCalendar = () => {
     fetchPosts();
   }, []);
 
+  // ✅ On calendar load, update title
   useEffect(() => {
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
@@ -97,8 +102,22 @@ const EventCalendar = () => {
     window.location.reload();
   };
 
+  // ✅ Render time + title for each calendar event cell
+  const renderEventContent = (eventInfo) => {
+    const time = eventInfo.timeText;
+    const title = eventInfo.event.title;
+
+    return (
+      <div className="custom-event-box">
+        <span className="custom-event-time">{time}</span>
+        <span className="custom-event-title">{title}</span>
+      </div>
+    );
+  };
+
   return (
     <div className="posts-container">
+      {/* Header section */}
       <div className="posts-header">
         <div className="welcome-message">
           <p>Welcome,</p>
@@ -109,6 +128,7 @@ const EventCalendar = () => {
         </div>
       </div>
 
+      {/* Toolbar + Calendar */}
       <div className="search-toolbar-container">
         <div className="search-container">
           <div className="fc-toolbar-left">
@@ -141,10 +161,12 @@ const EventCalendar = () => {
               setSelectedEvent(eventProps);
               setIsModalOpen(true);
             }}
+            eventContent={renderEventContent}
           />
         </div>
       </div>
 
+      {/* Modal with event details */}
       {isModalOpen && selectedEvent && (
         <div className="modal-overlay">
           <div className="event-modal vertical-detail-modal">
@@ -154,33 +176,34 @@ const EventCalendar = () => {
             <div className="modal-field"><strong>Client:</strong> {selectedEvent.client || '-'}</div>
             <div className="modal-field"><strong>Content:</strong> {selectedEvent.content || '-'}</div>
             <div className="modal-field"><strong>Hashtags:</strong> {selectedEvent.hashtags || '-'}</div>
+
+            {/* ✅ Dynamic platform links */}
             <div className="modal-field">
               <strong>Platforms:</strong>{" "}
               {selectedEvent.platforms ? (
                 selectedEvent.platforms.split(",").map((platform, index) => {
-                  const trimmed = platform.trim();
+                  const trimmed = platform.trim().toLowerCase();
+
+                  // Link to previews if match
+                  const previewLinks = {
+                    facebook: `/facebook-preview/${selectedEvent.id}`,
+                    instagram: `/instagram-preview/${selectedEvent.id}`,
+                    twitter: `/twitter-preview/${selectedEvent.id}`, // ✅ added
+                  };
+
                   return (
                     <span key={index} style={{ marginRight: "6px" }}>
-                      {trimmed.toLowerCase() === "facebook" ? (
+                      {previewLinks[trimmed] ? (
                         <a
-                          href={`/facebook-preview/${selectedEvent.id}`}
+                          href={previewLinks[trimmed]}
                           target="_blank"
                           rel="noreferrer"
                           className="platform-link"
                         >
-                          {trimmed}
-                        </a>
-                      ) : trimmed.toLowerCase() === "instagram" ? (
-                        <a
-                          href={`/instagram-preview/${selectedEvent.id}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="platform-link"
-                        >
-                          {trimmed}
+                          {platform.trim()}
                         </a>
                       ) : (
-                        trimmed
+                        platform.trim()
                       )}
                     </span>
                   );
@@ -207,7 +230,8 @@ const EventCalendar = () => {
             </div>
 
             <div className="modal-note">
-              This post was scheduled on {new Date(selectedEvent.scheduledDate).toLocaleString()}.
+              This post was scheduled on{" "}
+              {new Date(selectedEvent.scheduledDate).toLocaleString()}.
             </div>
           </div>
         </div>

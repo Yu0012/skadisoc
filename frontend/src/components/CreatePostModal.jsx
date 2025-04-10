@@ -18,6 +18,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
   // === Refs for file and date picker ===
   const datePickerRef = useRef(null);
   const fileInputRef = useRef(null);
+  const calendarContainerRef = useRef(null); // 👈 Wraps button + calendar to handle outside click
 
   // === Load initial values when editing ===
   useEffect(() => {
@@ -44,6 +45,28 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
     };
     fetchClients();
   }, []);
+
+  // === Close date picker on outside click ===
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        datePickerRef.current &&
+        !datePickerRef.current.contains(event.target) &&
+        calendarContainerRef.current &&
+        !calendarContainerRef.current.contains(event.target)
+      ) {
+        setShowDatePicker(false); // 👈 Closes the calendar when clicking outside
+      }
+    };
+
+    if (showDatePicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDatePicker]);
 
   // === Submit new or edited post ===
   const handleSubmit = async () => {
@@ -145,7 +168,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
               placeholder="What's on your mind?"
             />
             <button className="attach-file-btn" onClick={triggerFileInput}>
-            <img src="/src/assets/insert-icon.png" alt="Insert" className="insert-icon" />
+              <img src="/src/assets/insert-icon.png" alt="Insert" className="insert-icon" />
             </button>
             <input
               type="file"
@@ -160,7 +183,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
           {/* File preview */}
           {attachedFile && (
             <div className="attached-file-preview">
-              {attachedFile.type.startsWith("image/") ? (
+              {attachedFile.type?.startsWith("image/") ? (
                 <img src={URL.createObjectURL(attachedFile)} alt="Attachment Preview" />
               ) : (
                 <p>{attachedFile.name}</p>
@@ -220,7 +243,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave }) => {
               </select>
 
               {/* Schedule Date Picker */}
-              <div className="schedule-row">
+              <div className="schedule-row" ref={calendarContainerRef}> {/* 👈 ref wraps button + picker */}
                 <button className="schedule-btn" onClick={toggleDatePicker}>
                   <FaCalendarAlt /> Schedule Post
                 </button>

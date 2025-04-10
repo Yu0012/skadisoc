@@ -50,6 +50,7 @@ const Posts = () => {
 
   // Edit Post
   const handleEditPost = async (postId) => {
+    setPostMenuDropdown(null); // 👈 Close dropdown when Edit is clicked
     const fullPost = await fetchPostById(postId);
     if (fullPost) {
       setEditingPost(fullPost);
@@ -222,13 +223,7 @@ const Posts = () => {
                 <input
                   type="checkbox"
                   checked={selectedPosts.includes(post._id)}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    handleCheckboxChange(post._id);
-                    setSelectedPostIds((prev) =>
-                      checked ? [...prev, post._id] : prev.filter((id) => id !== post._id)
-                    );
-                  }}
+                  onChange={() => handleCheckboxChange(post._id)}
                 />
               </td>
               <td>{post.client || "-"}</td>
@@ -338,7 +333,6 @@ const Posts = () => {
                 }
               });
             }}
-            
           />
       )}
 
