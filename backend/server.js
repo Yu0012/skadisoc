@@ -414,7 +414,6 @@ const postToFacebook = async (post, client) => {
     formData.append("message", `${post.content}\n\n${post.hashtags || ""}`);
     formData.append("access_token", pageAccessToken);
     formData.append("source", fs.createReadStream(path.join(__dirname, post.filePath)));
-
     const response = await axios.post(url, formData, {
       headers: formData.getHeaders(),
     });
@@ -441,7 +440,7 @@ async function postToInstagram(post, client) {
     const accessToken = instagramAccount.companyToken;
     const igUserId = instagramAccount.pageId;
 
-    const mediaUrl = `${"https://89cc-2001-e68-5456-3b90-7949-5b30-1168-d19e.ngrok-free.app"}${post.filePath}`;
+    const mediaUrl = `${" https://82bc-43-252-46-2.ngrok-free.app"}${post.filePath}`;
 
     if (!mediaUrl) {
       console.error("❌ No valid image URL for Instagram post.");

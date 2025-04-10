@@ -22,7 +22,7 @@ const UserProfile = () => {
     totalPosts: 12,
     published: 8,
     scheduled: 4,
-    lastLogin: "March 22, 2025, 9:14 AM",
+    Client: "JYP Entertainment",
   });
 
   // Handle text input change (name, email, role)
@@ -116,7 +116,7 @@ const UserProfile = () => {
                 <li>Total Posts: <strong>{stats.totalPosts}</strong></li>
                 <li>Published Posts: <strong>{stats.published}</strong></li>
                 <li>Scheduled Posts: <strong>{stats.scheduled}</strong></li>
-                <li>Last Login: <strong>{stats.lastLogin}</strong></li>
+                <li>Client: <strong>{stats.Client}</strong></li>
               </ul>
             </div>
           </>

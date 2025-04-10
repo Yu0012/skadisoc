@@ -25,6 +25,7 @@ const Posts = () => {
       try {
         const response = await fetch("http://localhost:5000/api/posts");
         const data = await response.json();
+        setPosts(data.reverse()); // Reverse the order to show the latest posts first
         setPosts(data);
       } catch (error) {
         console.error("Error fetching posts:", error);
