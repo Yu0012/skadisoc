@@ -440,7 +440,7 @@ async function postToInstagram(post, client) {
     const accessToken = instagramAccount.companyToken;
     const igUserId = instagramAccount.pageId;
 
-    const mediaUrl = `${" https://82bc-43-252-46-2.ngrok-free.app"}${post.filePath}`;
+    const mediaUrl = `${" https://3077-2405-3800-8c4-a9e2-40e-7620-679-6a2f.ngrok-free.app"}${post.filePath}`;
 
     if (!mediaUrl) {
       console.error("❌ No valid image URL for Instagram post.");
@@ -501,7 +501,7 @@ const postToTwitter = async (post, client) => {
     if (['.jpg', '.jpeg', '.png'].includes(path.extname(imagePath).toLowerCase())) {
       const mediaData = await twitterClient.v1.uploadMedia(imagePath); // Upload image
       await twitterClient.v2.tweet(post.content, { media: { media_ids: [mediaData] }}); // Post tweet with image
-      console.log(`Post successful on Twitter`);s
+      console.log(`Post successful on Twitter`);
     }
 
     else if (['.mp4', '.avi', '.mkv', '.mov', '.gif'].includes(path.extname(imagePath).toLowerCase())) {

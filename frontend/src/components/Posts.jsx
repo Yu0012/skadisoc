@@ -236,7 +236,7 @@ const Posts = () => {
               <td>{post.content}</td>
               <td>{post.hashtags || "-"}</td>
               <td>{post.selectedPlatforms.join(", ") || "-"}</td>
-              <td>{post.posted || "-"}</td>
+              <td>{post.status || "-"}</td>
               <td>
                 {/* Ellipsis icon and dropdown */}
                 <FaEllipsisV onClick={(e) => menuDropdown(e, post._id)} />
