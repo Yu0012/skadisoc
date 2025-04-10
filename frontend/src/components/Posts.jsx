@@ -4,7 +4,10 @@ import { FaSearch, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa";
 import { createPortal } from "react-dom";
 import CreatePostModal from "./CreatePostModal";
 import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
+import facebookIcon from '../assets/facebook.png';
+import twitterIcon from '../assets/twitter.png';
+import instagramIcon from '../assets/instagram.png';
+import linkedinIcon from '../assets/linkedin.png';
 
 
 const Posts = () => {
@@ -23,14 +26,12 @@ const Posts = () => {
  
   //Replaces text to icons for social media
   const platformIcons = {
-    facebook: <FaFacebook className="inline-icon" />,
-    twitter: <FaTwitter className="inline-icon" />,
-    instagram: <FaInstagram className="inline-icon" />,
-    linkedin: <FaLinkedin className="inline-icon" />
+    facebook: <img src={facebookIcon} className="inline-icon" alt="Facebook" />,
+    twitter: <img src={twitterIcon} className="inline-icon" alt="Twitter"/>,
+    instagram: <img src={instagramIcon} className="inline-icon" alt="Instagram"/>,
+    linkedin: <img src={linkedinIcon} className="inline-icon" alt="LinkedIn"/>
   };
   
-
-
   // Fetch posts from backend
   useEffect(() => {
     const fetchPosts = async () => {

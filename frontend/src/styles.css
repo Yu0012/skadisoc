@@ -2047,6 +2047,8 @@ body {
   vertical-align: middle;
   font-size: 1.2em;
   padding-right: 5px;
+  height: 20px;
+  width: 20px;
 }
 
 /* For transition effects */
