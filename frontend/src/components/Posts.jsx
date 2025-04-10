@@ -4,6 +4,8 @@ import { FaSearch, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa";
 import { createPortal } from "react-dom";
 import CreatePostModal from "./CreatePostModal";
 import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
+
 
 const Posts = () => {
   // State declarations
@@ -18,6 +20,15 @@ const Posts = () => {
   const [isAllSelected, setIsAllSelected] = useState(false);// whether all visible posts are selected
   const [isModalOpen, setIsModalOpen] = useState(false); //modal open state
   const [editingPost, setEditingPost] = useState(null);
+ 
+  //Replaces text to icons for social media
+  const platformIcons = {
+    facebook: <FaFacebook className="inline-icon" />,
+    twitter: <FaTwitter className="inline-icon" />,
+    instagram: <FaInstagram className="inline-icon" />,
+    linkedin: <FaLinkedin className="inline-icon" />
+  };
+  
 
 
   // Fetch posts from backend
@@ -242,7 +253,17 @@ const Posts = () => {
               <td>{post.client || "-"}</td>
               <td>{post.content}</td>
               <td>{post.hashtags || "-"}</td>
-              <td>{post.selectedPlatforms.join(", ") || "-"}</td>
+              <td> 
+                  {/* For each post, render the icon that corresponds to the social media that's associated with the post. 
+                      Unavailable icons would render the text instead, and posts without platforms would have a dash instead */}
+                  {post.selectedPlatforms.length > 0
+                    ? post.selectedPlatforms.map((platform, index) => (
+                        <span key={index}>
+                          {platformIcons[platform.toLowerCase()] || platform}
+                        </span>
+                      ))
+                    : "-"}
+              </td>
               <td>{post.posted || "-"}</td>
               <td>
                 {/* Ellipsis icon and dropdown */}

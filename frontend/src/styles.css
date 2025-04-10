@@ -2043,6 +2043,13 @@ body {
   display: inline-block;
 }
 
+.inline-icon{
+  vertical-align: middle;
+  font-size: 1.2em;
+  padding-right: 5px;
+}
+
+/* For transition effects */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
