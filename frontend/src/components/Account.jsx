@@ -295,14 +295,14 @@ const Accounts = () => {
       <table className="posts-table">
         <thead>
           <tr>
-            <th>
+            {/* <th>
               <input
                 type="checkbox"
                 id="checkbox-selectAll"
                 checked={isAllSelected}
                 onChange={handleSelectAll}
               />
-            </th>
+            </th> */}
             <th>Username</th>
             <th>Email</th>
             <th>Phone No.</th>
@@ -313,14 +313,14 @@ const Accounts = () => {
         <tbody>
           {currentAccounts.map((account) => (
             <tr key={account._id}>
-              <td>
+              {/* <td>
                 <input
                   type="checkbox"
                   className="checkbox-rowSelection"
                   checked={selectedAccounts.includes(account._id)}
                   onChange={() => handleCheckboxChange(account._id)}
                 />
-              </td>
+              </td> */}
               <td>{account.name}</td>
               <td>{account.email}</td>
               <td>{account.phoneNum}</td>

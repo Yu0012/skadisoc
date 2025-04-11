@@ -201,13 +201,13 @@ const Posts = () => {
       <table className="posts-table">
         <thead>
           <tr>
-            <th>
+            {/* <th>
               <input
                 type="checkbox"
                 checked={isAllSelected}
                 onChange={handleSelectAll}
               />
-            </th>
+            </th> */}
             <th>Client</th>
             <th>Content</th>
             <th>Hashtags</th>
@@ -219,7 +219,7 @@ const Posts = () => {
         <tbody>
           {currentPosts.map((post) => (
             <tr key={post._id}>
-              <td>
+              {/* <td>
                 <input
                   type="checkbox"
                   checked={selectedPosts.includes(post._id)}
@@ -231,7 +231,7 @@ const Posts = () => {
                     );
                   }}
                 />
-              </td>
+              </td> */}
               <td>{post.client || "-"}</td>
               <td>{post.content}</td>
               <td>{post.hashtags || "-"}</td>

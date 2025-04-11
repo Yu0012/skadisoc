@@ -55,6 +55,7 @@ const postSchema = new mongoose.Schema({
   selectedPlatforms: [String],
   filePath: String, // Store file path if uploaded
   posted: { type: Boolean, default: false },
+  status: { type: String, enum: ['draft', 'scheduled', 'posted'], default: 'draft' }
 });
 const Post = mongoose.model("Post", postSchema);
 
@@ -87,7 +88,7 @@ const accountSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   phoneNum: { type: String, required: true },
-  clientAccess: { type: String, required: true },
+  address: { type: String, required: true },
   password: { type: String, required: true },
 }, { timestamps: true });
 const Account = mongoose.model("Account", accountSchema);
@@ -114,14 +115,22 @@ app.post('/api/posts', upload.single('file'), async (req, res) => {
       return res.status(400).json({ error: "Content is required" });
     }
 
+    const parsedDate = scheduledDate ? new Date(scheduledDate) : null;
+
+    let status = 'draft';
+    if (parsedDate) status = 'scheduled';
+
     const newPost = new Post({
       content,
       hashtags,
       client,
-      scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
-      selectedPlatforms, // Now correctly stored as an array
+      scheduledDate: parsedDate,
+      selectedPlatforms,
       filePath: req.file ? `/uploads/${req.file.filename}` : null,
+      posted: false,
+      status
     });
+
 
     await newPost.save();
     res.status(201).json({ message: "Post created successfully", post: newPost });
@@ -215,13 +224,21 @@ app.put('/api/posts/:id', upload.single('file'), async (req, res) => {
       }
     }
 
+    const parsedDate = scheduledDate ? new Date(scheduledDate) : null;
+
+    let status = 'draft';
+    if (parsedDate) status = 'scheduled';
+
     const updatedFields = {
       content,
       hashtags,
       client,
-      scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
+      scheduledDate: parsedDate,
       selectedPlatforms,
+      posted: false,
+      status
     };
+
 
     if (req.file) {
       updatedFields.filePath = `/uploads/${req.file.filename}`;
@@ -440,7 +457,7 @@ async function postToInstagram(post, client) {
     const accessToken = instagramAccount.companyToken;
     const igUserId = instagramAccount.pageId;
 
-    const mediaUrl = `${" https://3077-2405-3800-8c4-a9e2-40e-7620-679-6a2f.ngrok-free.app"}${post.filePath}`;
+    const mediaUrl = `${"https://ff74-2001-e68-5456-3b90-c599-ce4-184d-5774.ngrok-free.app"}${post.filePath}`;
 
     if (!mediaUrl) {
       console.error("❌ No valid image URL for Instagram post.");
@@ -500,14 +517,24 @@ const postToTwitter = async (post, client) => {
 
     if (['.jpg', '.jpeg', '.png'].includes(path.extname(imagePath).toLowerCase())) {
       const mediaData = await twitterClient.v1.uploadMedia(imagePath); // Upload image
-      await twitterClient.v2.tweet(post.content, { media: { media_ids: [mediaData] }}); // Post tweet with image
+      tweetResponse = await twitterClient.v2.tweet(post.content, { media: { media_ids: [mediaData] }}); // Post tweet with image
       console.log(`Post successful on Twitter`);
     }
 
     else if (['.mp4', '.avi', '.mkv', '.mov', '.gif'].includes(path.extname(imagePath).toLowerCase())) {
       const mediaData = await twitterClient.v1.uploadMedia(imagePath, { type: 'video' }); // Upload video
-      await twitterClient.v2.tweet(post.content, { media: { media_ids: [mediaData] }}); // Post tweet with video
+      tweetResponse = await twitterClient.v2.tweet(post.content, { media: { media_ids: [mediaData] }}); // Post tweet with video
       console.log(`Post successful on Twitter`);
+    }
+    else {
+      tweetResponse = await twitterClient.v2.tweet(post.content); // Post tweet without media
+    }
+    
+    const tweetId = tweetResponse?.data?.id;
+
+    if (tweetId) {
+      console.log(`Tweet ID: ${tweetId}`);
+      return tweetId; // ⬅️ Return tweet ID
     }
 
     return true;
@@ -534,18 +561,21 @@ const checkAndPostScheduledPosts = async () => {
       if (post.selectedPlatforms.includes("facebook")) {
         await postToFacebook(post, client);
         post.posted = true;
+        post.status = 'posted';
         await post.save();
       }
 
       if (post.selectedPlatforms.includes("instagram")) {
         await postToInstagram(post, client);
         post.posted = true;
+        post.status = 'posted';
         await post.save();
       }
 
       if (post.selectedPlatforms.includes("twitter")) {
         await postToTwitter(post, client);
         post.posted = true;
+        post.status = 'posted';
         await post.save();
       }
     }
