@@ -82,10 +82,14 @@ body {
 .nav-links a.active {
   color: black;
   font-weight: bold;
+  text-shadow: 2px 2px 5px rgb(193, 182, 182);
+
 }
 
 .nav-links a:hover {
-  color: black;
+  color: rgb(0, 0, 0);
+  text-shadow: #555;
+  
 }
 
 /* 🔔 Right Side Icons */
@@ -787,7 +791,7 @@ body {
 /* Modal Content */
 .modal-content {
   background: white;
-  width: 850px;
+  width: 1500px;
   max-width: 90vw;
   border-radius: 12px;
   padding: 30px;
@@ -1961,3 +1965,26 @@ body {
   margin-top: 10px;
 }
 
+.modal-box {
+  display: flex;
+  width: 95%;
+  height: 90%;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f7f9fc;
+  padding: 20px;
+  gap: 20px;
+}
+
+.content-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.preview-section {
+  flex: 1;
+  border-left: 2px solid #ddd;
+  padding-left: 20px;
+}
