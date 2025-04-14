@@ -1988,3 +1988,83 @@ body {
   border-left: 2px solid #ddd;
   padding-left: 20px;
 }
+
+/* Platform Dropdown Menu New!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+.platform-dropdown-wrapper {
+  position: absolute;
+  top: 210px; /* Adjust this based on your Create Post button's position */
+  right: 25px; /* Adjust as needed */
+  z-index: 9999;
+  width: fit-content;
+
+}
+
+.platform-dropdown-horizontal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  background-color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: slideDown 0.25s ease forwards;
+}
+
+.platform-dropdown-horizontal button {
+  background-color: #f1f1f1;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+@keyframes slideDown {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.platform-dropdown-horizontal button {
+  background-color: #f2f2f2;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.platform-dropdown-horizontal button:hover {
+  background-color: #e0e0e0;
+}
+
+.platform-dropdown-horizontal .cancel-btn {
+  background-color: transparent;
+  color: #777;
+  font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .platform-dropdown-wrapper {
+    left: 20px;
+    right: 20px;
+    top: auto;
+    bottom: 30px;
+  }
+
+  .platform-dropdown-horizontal {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .platform-dropdown-horizontal button {
+    width: 100%;
+    text-align: left;
+  }
+}

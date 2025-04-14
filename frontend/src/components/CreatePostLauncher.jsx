@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import CreatePostModal from './CreatePostModal';
 
-const CreatePostLauncher = () => {
+const CreatePostLauncher = ({ isOpen, onClose, initialData = {}}) => {
   const [platform, setPlatform] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);

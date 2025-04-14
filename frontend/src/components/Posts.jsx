@@ -17,6 +17,9 @@ const Posts = () => {
   const [isAllSelected, setIsAllSelected] = useState(false);// whether all visible posts are selected
   const [isModalOpen, setIsModalOpen] = useState(false); //modal open state
   const [editingPost, setEditingPost] = useState(null);
+  const [isPlatformSelectOpen, setIsPlatformSelectOpen] = useState(false);
+  const [selectedPlatform, setSelectedPlatform] = useState(null);
+  
 
 
   // Fetch posts from backend
@@ -45,6 +48,11 @@ const Posts = () => {
     fetchPosts(); // Reload posts after a new post is added
     setIsModalOpen(false);
   };
+
+  const handleCreatePostClick = () => {
+    setIsPlatformSelectOpen(true);
+  };
+  
   
   //handles for ui inputs
   const handleRefresh = () => window.location.reload();
@@ -136,6 +144,7 @@ const Posts = () => {
       currentPosts.every((post) => selectedPosts.includes(post._id));
     setIsAllSelected(allChecked);
   }, [selectedPosts, currentPosts]);
+  
 
   //handle single checkbox change
   const handleCheckboxChange = (postID) => {
@@ -167,7 +176,7 @@ const Posts = () => {
         <h2>Posts</h2>
         <div className="posts-actions">
           <FaSyncAlt className="refresh-btn" onClick={handleRefresh} />
-          <button className="create-post-btn" onClick={() => setIsModalOpen(true)}>
+          <button className="create-post-btn" onClick={handleCreatePostClick}>
             <FaPlus /> Create Post
           </button>
         </div>
@@ -314,6 +323,27 @@ const Posts = () => {
           </button>
         </div>
       </div>
+
+      {isPlatformSelectOpen && createPortal(
+         <div className="platform-dropdown-wrapper">
+          <div className="platform-dropdown-horizontal  animate-slide-down">
+           {["Facebook", "Instagram", "Twitter", "LinkedIn"].map((platform) => (
+             <button
+               key={platform}
+               onClick={() => {
+                 setSelectedPlatform(platform);
+                 setIsModalOpen(true);
+                 setIsPlatformSelectOpen(false);
+               }}
+             >
+               {platform}
+             </button>
+           ))}
+           <button className="cancel-btn" onClick={() => setIsPlatformSelectOpen(false)}>Cancel</button>
+         </div>
+        </div>,
+       document.body
+      )}
       
       {/* Create/Edit Post Modal */}
       {isModalOpen && (
@@ -339,7 +369,7 @@ const Posts = () => {
                 }
               });
             }}
-            
+            platform={selectedPlatform}
           />
       )}
 
