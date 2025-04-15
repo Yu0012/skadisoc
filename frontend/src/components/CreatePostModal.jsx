@@ -58,6 +58,12 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform})
     }));
   }, [platform]);
 
+  useEffect(() => {
+    if (platform && !selectedPlatforms.includes(platform.toLowerCase())) {
+      setSelectedPlatforms([platform.toLowerCase()]);
+    }
+  }, [platform]);
+
   const handleSubmit = async () => {
     if (!content.trim()) {
       alert("Post content cannot be empty!");
