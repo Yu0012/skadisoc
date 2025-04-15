@@ -18,7 +18,7 @@ const Posts = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); //modal open state
   const [editingPost, setEditingPost] = useState(null);
   const [isPlatformSelectOpen, setIsPlatformSelectOpen] = useState(false);
-  const [selectedPlatform, setSelectedPlatform] = useState(null);
+  const [selectedPlatforms, setSelectedPlatforms] = useState(null);
   
 
 
@@ -331,7 +331,7 @@ const Posts = () => {
              <button
                key={platform}
                onClick={() => {
-                 setSelectedPlatform(platform);
+                 setSelectedPlatforms(platform);
                  setIsModalOpen(true);
                  setIsPlatformSelectOpen(false);
                }}
@@ -369,7 +369,7 @@ const Posts = () => {
                 }
               });
             }}
-            platform={selectedPlatform}
+            platform={selectedPlatforms}
           />
       )}
 

@@ -559,24 +559,33 @@ const checkAndPostScheduledPosts = async () => {
       }
 
       if (post.selectedPlatforms.includes("facebook")) {
-        await postToFacebook(post, client);
-        post.posted = true;
-        post.status = 'posted';
-        await post.save();
+        const success = await postToFacebook(post, client);
+
+        if (success) {
+          post.posted = true;
+          post.status = 'posted';
+          await post.save();
+        }
       }
 
-      if (post.selectedPlatforms.includes("instagram")) {
-        await postToInstagram(post, client);
-        post.posted = true;
-        post.status = 'posted';
-        await post.save();
+      else if (post.selectedPlatforms.includes("instagram")) {
+        const success = await postToInstagram(post, client);
+        
+        if (success) {
+          post.posted = true;
+          post.status = 'posted';
+          await post.save();
+        }
       }
 
-      if (post.selectedPlatforms.includes("twitter")) {
-        await postToTwitter(post, client);
-        post.posted = true;
-        post.status = 'posted';
-        await post.save();
+      else if (post.selectedPlatforms.includes("twitter")) {
+        const success = await postToTwitter(post, client);
+
+        if (success) {
+          post.posted = true;
+          post.status = 'posted';
+          await post.save();
+        }
       }
     }
   } catch (error) {
