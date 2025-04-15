@@ -20,6 +20,7 @@ const Posts = () => {
   const [isPlatformSelectOpen, setIsPlatformSelectOpen] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState(null);
   
+  const platforms = [{id: "facebook", name: "Facebook"}, {id: "instagram", name: "Instagram"}, {id: "twitter", name: "Twitter"}, {id: "linkedin", name: "LinkedIn"}]
 
 
   // Fetch posts from backend

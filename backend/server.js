@@ -560,7 +560,6 @@ const checkAndPostScheduledPosts = async () => {
 
       if (post.selectedPlatforms.includes("facebook")) {
         const success = await postToFacebook(post, client);
-
         if (success) {
           post.posted = true;
           post.status = 'posted';
@@ -570,7 +569,6 @@ const checkAndPostScheduledPosts = async () => {
 
       else if (post.selectedPlatforms.includes("instagram")) {
         const success = await postToInstagram(post, client);
-        
         if (success) {
           post.posted = true;
           post.status = 'posted';
@@ -580,13 +578,13 @@ const checkAndPostScheduledPosts = async () => {
 
       else if (post.selectedPlatforms.includes("twitter")) {
         const success = await postToTwitter(post, client);
-
         if (success) {
           post.posted = true;
           post.status = 'posted';
           await post.save();
         }
       }
+
     }
   } catch (error) {
     console.error("Error checking scheduled posts:", error);
