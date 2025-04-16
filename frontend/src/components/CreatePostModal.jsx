@@ -250,9 +250,9 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform})
               )} */}
 
 
-              <div className="two-column-layout">
+              <div className="">
                 {/* Right */}
-                <div className="right-column">
+                <div className="client-column">
                   <label>Client</label>
                   <select
                     className="dropdown-field"
