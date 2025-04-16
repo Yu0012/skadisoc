@@ -49,7 +49,7 @@ const upload = multer({ storage });
 // ✅ **Post Schema**
 const postSchema = new mongoose.Schema({
   content: { type: String, required: true },
-  hashtags: String,
+  title: String,
   client: String,
   scheduledDate: Date,
   selectedPlatforms: [String],
@@ -100,7 +100,7 @@ const Account = mongoose.model("Account", accountSchema);
 // ✅ Create a new post (with optional file upload)
 app.post('/api/posts', upload.single('file'), async (req, res) => {
   try {
-    const { content, hashtags, client, scheduledDate } = req.body;
+    const { title, content, client, scheduledDate } = req.body;
 
     let selectedPlatforms = [];
     if (req.body.selectedPlatforms) {
@@ -121,8 +121,8 @@ app.post('/api/posts', upload.single('file'), async (req, res) => {
     if (parsedDate) status = 'scheduled';
 
     const newPost = new Post({
+      title,
       content,
-      hashtags,
       client,
       scheduledDate: parsedDate,
       selectedPlatforms,
@@ -213,7 +213,7 @@ app.get('/api/posts/:id', async (req, res) => {
 // ✅ Update post by ID
 app.put('/api/posts/:id', upload.single('file'), async (req, res) => {
   try {
-    const { content, hashtags, client, scheduledDate } = req.body;
+    const { title, content, client, scheduledDate } = req.body;
 
     let selectedPlatforms = [];
     if (req.body.selectedPlatforms) {
@@ -230,8 +230,8 @@ app.put('/api/posts/:id', upload.single('file'), async (req, res) => {
     if (parsedDate) status = 'scheduled';
 
     const updatedFields = {
+      title,
       content,
-      hashtags,
       client,
       scheduledDate: parsedDate,
       selectedPlatforms,
@@ -428,7 +428,7 @@ const postToFacebook = async (post, client) => {
     const url = `https://graph.facebook.com/${pageId}/photos`;
 
     const formData = new FormData();
-    formData.append("message", `${post.content}\n\n${post.hashtags || ""}`);
+    formData.append("message", `${post.content}`);
     formData.append("access_token", pageAccessToken);
     formData.append("source", fs.createReadStream(path.join(__dirname, post.filePath)));
     const response = await axios.post(url, formData, {
@@ -464,7 +464,7 @@ async function postToInstagram(post, client) {
       return;
     }
 
-    const message = `${post.content}\n\n${post.hashtags || ""}`;
+    const message = `${post.content}`;
 
     // Step 1: Upload Media
     const mediaResponse = await axios.post(

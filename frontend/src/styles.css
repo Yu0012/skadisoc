@@ -762,7 +762,7 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  padding: 20px; /* Ensures space around modal */
+
 }
 
 /* Modal Header */
@@ -771,7 +771,7 @@ body {
   justify-content: space-between; /* Align title to left, close button to right */
   align-items: center;
   border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
+  ;
 }
 
 /* Close Button */
@@ -794,15 +794,17 @@ body {
   width: 1500px;
   max-width: 90vw;
   border-radius: 12px;
-  padding: 30px;
+  padding: 15px;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+
 }
 
 /* Modal Body */
 .modal-body {
   display: flex;
   flex-direction: column;
-  gap: 20px; /* More spacing between sections */
+  gap: 10px; /* More spacing between sections */
+  padding-bottom: 5px;
 }
 
 /* Content Input */
@@ -953,7 +955,7 @@ body {
 
 .dropdown-field,
 .input-field {
-  width: 100%;
+  width: 95%;
   padding: 0.5rem;
   border-radius: 6px;
   border: 1px solid #ccc;
@@ -1562,47 +1564,6 @@ input::-webkit-inner-spin-button {
   margin-top: 50px;
 }
 
-.profile-card {
-  background: white;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  width: 100%;
-  max-width: 420px;
-  text-align: center;
-}
-
-.profile-avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 16px;
-  border: 3px solid #f0f0f0;
-}
-
-.profile-card h2 {
-  font-size: 22px;
-  margin-bottom: 8px;
-}
-
-.profile-card p {
-  margin: 4px 0;
-  font-size: 14px;
-  color: #333;
-}
-
-.edit-btn {
-  margin-top: 14px;
-  padding: 8px 16px;
-  background: #f0f0f0;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
 .edit-btn:hover {
   background: #e4e4e4;
 }
@@ -2067,4 +2028,40 @@ body {
     width: 100%;
     text-align: left;
   }
+}
+
+
+.file-schedule-row {
+  display: flex;
+  align-items:end;
+  justify-content: space-between;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+
+.attach-file-btn {
+  width: 35px;
+  height: 35px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  background-color: #ffffff;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  color: #1a237e; /* deep blue for the icon */
+  font-size: 18px;
+  margin: 0;
+  padding: 0px;
+}
+
+.attach-file-btn:hover {
+  background-color: #f5f5f5;
+  border-color: #1a237e;
+}
+
+.close-icon{
+  float: right;
 }
