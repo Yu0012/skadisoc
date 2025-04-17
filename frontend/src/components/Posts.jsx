@@ -175,12 +175,7 @@ const Posts = () => {
       {/*Header and actions*/}
       <div className="posts-header">
         <h2>Posts</h2>
-        <div className="posts-actions">
-          <FaSyncAlt className="refresh-btn" onClick={handleRefresh} />
-          <button className="create-post-btn" onClick={handleCreatePostClick}>
-            <FaPlus /> Create Post
-          </button>
-        </div>
+        
       </div>
 
       {/*search and catogories filter*/}
@@ -205,6 +200,14 @@ const Posts = () => {
           />
           <FaSearch className="search-icon" />
         </div>
+
+        <div className="posts-actions">
+          <FaSyncAlt className="refresh-btn" onClick={handleRefresh} />
+          <button className="create-post-btn" onClick={handleCreatePostClick}>
+            <FaPlus /> Create Post
+          </button>
+        </div>
+        
       </div>
 
       {/* Posts Table */}
@@ -223,7 +226,7 @@ const Posts = () => {
             <th>Hashtags</th>
             <th>Platforms</th>
             <th>Status</th>            
-            <th>Actions</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -247,7 +250,7 @@ const Posts = () => {
               <td>{post.hashtags || "-"}</td>
               <td>{post.selectedPlatforms.join(", ") || "-"}</td>
               <td>{post.status || "-"}</td>
-              <td>
+              <td style={{ textAlign: "right" }}>
                 {/* Ellipsis icon and dropdown */}
                 <FaEllipsisV onClick={(e) => menuDropdown(e, post._id)} />
                 {postMenuDropdown === post._id &&

@@ -401,6 +401,8 @@ body {
   gap: 5px;
   cursor: pointer;
   transition: 0.3s;
+  height: 45px; /* Adjusted height */
+  font-size: large;
 }
 
 .create-post-btn:hover {
@@ -1173,7 +1175,7 @@ input:checked + .slider:before {
 .refresh-btn {
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: 30px;
   cursor: pointer;
   color: #0a0f5c;
   padding: 8px;
@@ -2069,4 +2071,9 @@ body {
 
 .close-icon{
   float: right;
+}
+
+.posts-actions{
+  flex-direction: row;
+  margin-left: auto;
 }
