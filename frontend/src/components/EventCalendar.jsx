@@ -1,7 +1,6 @@
 // Import dependencies
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { FaSyncAlt } from "react-icons/fa";
 import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
 import "../styles.css";
 
@@ -11,6 +10,9 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
+// ✅ Import CreatePostModal
+import CreatePostModal from "./CreatePostModal"; // Adjust the path if necessary
+
 const EventCalendar = () => {
   const [events, setEvents] = useState([]);
   const [currentMonth, setCurrentMonth] = useState("");
@@ -19,6 +21,10 @@ const EventCalendar = () => {
 
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // ✅ New state for create modal logic
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createInitialData, setCreateInitialData] = useState({});
 
   // ✅ Fetch posts and format for calendar
   useEffect(() => {
@@ -93,10 +99,6 @@ const EventCalendar = () => {
     updateTitle(calendarApi.getDate());
   };
 
-  const handleRefresh = () => {
-    window.location.reload();
-  };
-
   // ✅ Render time + title for each calendar event cell
   const renderEventContent = (eventInfo) => {
     const time = eventInfo.timeText;
@@ -118,23 +120,19 @@ const EventCalendar = () => {
           <p>Welcome,</p>
           <h2 className="user-name">Amber Broos</h2>
         </div>
-        <div className="posts-actions">
-          <FaSyncAlt className="refresh-icon" onClick={handleRefresh} title="Refresh Data" />
-        </div>
       </div>
 
       {/* Toolbar + Calendar */}
       <div className="search-toolbar-container">
-        <div className="search-container">
-          <div className="fc-toolbar-left">
-            <button className="fc-today-button" onClick={goToToday}>Today</button>
-          </div>
+        <div className="search-container calendar-controls-row">
+          {/* ✅ Navigation Row with Today button on the left side of month/year switch */}
           <div className="fc-toolbar-right">
+            <button className="fc-today-button" onClick={goToToday}>Today</button>
             <FaAnglesLeft className="fc-nav-button" onClick={goToPrevDouble} />
             <FaAngleLeft className="fc-nav-button" onClick={goToPrev} />
             <p className="fc-current-date">{currentMonth}, {currentYear}</p>
             <FaAngleRight className="fc-nav-button" onClick={goToNext} />
-             <FaAnglesRight className="fc-nav-button" onClick={goToNextDouble} />
+            <FaAnglesRight className="fc-nav-button" onClick={goToNextDouble} />
           </div>
         </div>
 
@@ -146,6 +144,12 @@ const EventCalendar = () => {
             headerToolbar={false}
             events={events}
             dayHeaderFormat={{ weekday: "long" }}
+            eventTimeFormat={{
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+              hour12: true,
+            }}
             datesSet={(info) => updateTitle(info.view.currentStart)}
             eventClick={(info) => {
               const eventProps = {
@@ -157,6 +161,11 @@ const EventCalendar = () => {
               setIsModalOpen(true);
             }}
             eventContent={renderEventContent}
+            dateClick={(info) => {
+              const clickedDate = new Date(info.dateStr);
+              setCreateInitialData({ scheduledDate: clickedDate });
+              setIsCreateModalOpen(true);
+            }}
           />
         </div>
       </div>
@@ -170,7 +179,6 @@ const EventCalendar = () => {
 
             <div className="modal-field"><strong>Client:</strong> {selectedEvent.client || '-'}</div>
             <div className="modal-field"><strong>Content:</strong> {selectedEvent.content || '-'}</div>
-            <div className="modal-field"><strong>Hashtags:</strong> {selectedEvent.hashtags || '-'}</div>
 
             {/* ✅ Dynamic platform links */}
             <div className="modal-field">
@@ -179,11 +187,10 @@ const EventCalendar = () => {
                 selectedEvent.platforms.split(",").map((platform, index) => {
                   const trimmed = platform.trim().toLowerCase();
 
-                  // Link to previews if match
                   const previewLinks = {
                     facebook: `/facebook-preview/${selectedEvent.id}`,
                     instagram: `/instagram-preview/${selectedEvent.id}`,
-                    twitter: `/twitter-preview/${selectedEvent.id}`, // ✅ added
+                    twitter: `/twitter-preview/${selectedEvent.id}`,
                   };
 
                   return (
@@ -208,28 +215,40 @@ const EventCalendar = () => {
               )}
             </div>
 
-            <div className="modal-field">
-              <strong>Link:</strong>{" "}
-              {selectedEvent.link ? (
-                <a
-                  href={selectedEvent.link}
-                  className="modal-link"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {selectedEvent.link}
-                </a>
-              ) : (
-                "-"
-              )}
-            </div>
-
             <div className="modal-note">
-              This post was scheduled on{" "}
+              This post was scheduled on {" "}
               {new Date(selectedEvent.scheduledDate).toLocaleString()}.
             </div>
           </div>
         </div>
+      )}
+
+      {/* ✅ CreatePostModal when clicking on empty calendar cell */}
+      {isCreateModalOpen && (
+        <CreatePostModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          initialData={createInitialData}
+          onSave={(newPost) => {
+            setEvents((prev) => [
+              ...prev,
+              {
+                id: newPost._id,
+                title: newPost.client || "Untitled Post",
+                start: newPost.scheduledDate,
+                extendedProps: {
+                  client: newPost.client,
+                  content: newPost.content,
+                  hashtags: newPost.hashtags,
+                  platforms: newPost.selectedPlatforms?.join(", "),
+                  link: newPost.filePath ? `http://localhost:5000${newPost.filePath}` : null,
+                  scheduledDate: newPost.scheduledDate,
+                },
+              },
+            ]);
+            setIsCreateModalOpen(false);
+          }}
+        />
       )}
     </div>
   );

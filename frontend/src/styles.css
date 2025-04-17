@@ -70,22 +70,23 @@ body {
 }
 
 .nav-links a {
+  color: #000066; /* dark blue */
+  margin: 0 20px;
   text-decoration: none;
   font-weight: 600;
-  color: var(--text-color);
-  font-size: 16px;
-  transition: 0.3s;
+  transition: color 0.3s ease;
 }
 
 /* Active navbar link */
-.nav-links a.active {
-  color: var(--nav-active-text);
-  font-weight: bold;
+.nav-links a:hover {
+  color: #5382da; /* light blue or whatever color you prefer */
+  background-color: transparent; /* ensures no background */
 }
 
-.nav-links a:hover {
-  color: var(--nav-hover);
-  background-color: var(--nav-bg-hover);
+/* Active link styling */
+.nav-links a.active {
+  color: #00001a;
+  background-color: transparent;
 }
 
 /* 🔔 Right Side Icons */
@@ -2338,23 +2339,28 @@ body {
 
 /* Month cell style override */
 .custom-event-box {
-  background-color: #e0f4ff;
-  border: 1px solid #0077b6;
-  border-radius: 4px;
-  padding: 4px 6px;
-  margin-bottom: 3px;
+  background-color: #ffffff;         
+  border: 1px solid #000000;         
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin-bottom: 4px;
   font-size: 12px;
   display: flex;
   align-items: center;
-  color: #0077b6;
+  color: #27548A;                    
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: background-color 0.2s;
+}
+
+.custom-event-box:hover {
+  background-color: #d6ecff;         
 }
 
 .custom-event-time {
-  margin-right: 4px;
+  margin-right: 6px;
   font-weight: bold;
 }
 
@@ -2565,4 +2571,17 @@ body {
 
   --user-stats: #6c7789;
 
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px; /* ⬅️ This adds spacing below the header */
+}
+
+.page-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* spacing between dropdown, search, button, etc. */
 }

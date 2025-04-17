@@ -90,7 +90,7 @@ const Navbar = () => {
           Posts
         </Link>
         <Link to="/calendar" className={location.pathname === "/calendar" ? "active" : ""}>
-          Logs
+          Calendar
         </Link>
         <Link to="/account" className={location.pathname === "/account" ? "active" : ""}>
           Account
