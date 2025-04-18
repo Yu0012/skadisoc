@@ -403,7 +403,7 @@ const Posts = () => {
                 }
               });
             }}
-            platform={selectedPlatforms}
+            platform={editingPost?.selectedPlatforms?.[0] || selectedPlatforms}
           />
       )}
 
