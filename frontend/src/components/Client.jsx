@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaSearch, FaSyncAlt, FaPlus, FaEllipsisV } from "react-icons/fa";
-import { CiViewTable } from "react-icons/ci";
 import AddClientModal from "./AddClientModal";
 import { createPortal } from "react-dom";
 
@@ -10,8 +9,12 @@ const Client = () => {
   const [showClientModal, setShowClientModal] = useState(false);
   const [editClient, setEditClient] = useState(null);
   const [popupOpen, setPopupOpen] = useState(null);
-  const [changeView, setChangeView] = useState(false);
+  const [activeView, setActiveView] = useState(localStorage.getItem("viewMode") || "block");
   const popupRef = useRef(null);
+
+    //Edit & Delete Dropdown
+    const [clientMenuDropdown, setClientMenuDropdown] = useState(null);
+    const [clientMenuPosition, setClientMenuPosition] = useState({ top: 0, left: 0 });
 
 
   // Social accounts
@@ -60,9 +63,27 @@ const Client = () => {
     setPopupOpen(popupOpen === clientId ? null : clientId);
   };
 
-  const toggleView = () => {
-    setChangeView((prev) => !prev);
+
+  //menu dropdown handler
+  const menuDropdown = (event, clientId) => {
+    event.stopPropagation();
+    if (clientMenuDropdown === clientId) {
+      setClientMenuDropdown(null);
+    } else {
+      const rect = event.currentTarget.getBoundingClientRect();
+      setClientMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left });
+      setClientMenuDropdown(clientId);
+    }
   };
+
+  // Changes view of Client View
+  const toggleView = (view) => {
+    setActiveView(view);
+    localStorage.setItem("viewMode", view); // <- persists selection
+  };
+
+  //handles for ui inputs
+  const handleRefresh = () => window.location.reload();
 
 
 
@@ -77,6 +98,7 @@ const Client = () => {
     setEditClient(client);
     setShowClientModal(true);
     setPopupOpen(null);
+    setClientMenuDropdown(null);
   };
 
   const handleSaveClient = async (clientData) => {
@@ -142,9 +164,10 @@ const Client = () => {
           <p>Welcome,</p>
           <h2 className="user-name">Amber Broos</h2>
         </div>
+      </div>
 
-        <div className="posts-actions">
-
+      <div className="search-container">
+        <div className="post-actions">
           <div className="search-box">
             <input
               type="text"
@@ -154,20 +177,37 @@ const Client = () => {
             />
             <FaSearch className="search-icon" />
           </div>
-          <div className="icon-row">
-            <FaSyncAlt className="refresh-icon" title="Refresh Data" />
-            <CiViewTable size={30} className="action-icon" onClick={toggleView} title="Toggle View" />
-          </div>
-
         </div>
-
-        
+        <div className="posts-actions">
+          <div className="icon-row">
+              <FaSyncAlt className="refresh-icon" id="client" title="Refresh Data" onClick={handleRefresh}/>
+              <div>
+                {/* Changes Views of page, whether it's Block View or Table View */}
+                <button
+                  className={`client-select-view-btn ${activeView === "block" ? "client-select-view-btn-selected" : ""}`}
+                  id="left"
+                  onClick={() => toggleView("block")}
+                  disabled={activeView === "block"}
+                >
+                Block
+                </button>
+                <button
+                  className={`client-select-view-btn ${activeView === "table" ? "client-select-view-btn-selected" : ""}`}
+                  id="right"
+                  onClick={() => toggleView("table")}
+                  disabled={activeView === "table"}
+                >
+                  Table
+                </button>
+              </div>
+          </div>
+        </div>
       </div>
 
       
 
       {/* Block View */}
-      {!changeView && (
+      {activeView === "block" && (
         <div className="client-list">
         <button className="add-client-btn" onClick={handleAddClient}>
           <FaPlus />
@@ -192,7 +232,7 @@ const Client = () => {
       )}
 
       {/* Table View */}
-      {changeView && (
+      {activeView === "table" && (
         <table className="posts-table">
           <thead>
             <tr>
@@ -206,17 +246,21 @@ const Client = () => {
               <tr key={client._id}>
                 <td>{client.companyName}</td>
                 <td>{client.companyDetail}</td>
-                <td stylel={{positon:"relative"}}>
+                <td style={{positon:"relative"}}>
                   <div className="popup-container-2">
                     <FaEllipsisV
                       className="popup-icon"
-                      onClick={() => togglePopup(client._id)}
+                      onClick={(e) => menuDropdown(e, client._id)} 
                     />
-                    {popupOpen === client._id && (
-                      <div className="post-actions-dropdown" ref={popupRef}>
+                    {clientMenuDropdown === client._id && 
+                    createPortal(
+                      <div className="post-actions-dropdown" ref={popupRef} 
+                      style={{top: clientMenuPosition.top, left: clientMenuPosition.left
+                      }}>
                         <button onClick={() => handleEditClient(client)}>Edit</button>
                         <button className="delete-btn" onClick={() => handleDeleteClient(client._id)}>Delete</button>
-                      </div>
+                      </div>,
+                      document.body
                     )}
                   </div>
                 </td>

@@ -352,6 +352,7 @@ body {
 .action-icon {
   cursor: pointer;
   font-size: 18px;
+  color: white;
 }
 
 .dropdown-menu button {
@@ -386,6 +387,7 @@ body {
   gap: 5px;
   cursor: pointer;
   transition: 0.3s;
+  font-weight: bold;
 }
 
 .create-post-btn:hover {
@@ -672,6 +674,43 @@ body {
   gap: 15px;
 }
 
+/* Toggle between block and table view in Client Page */
+.client-select-view-btn{
+  background-color: var(--client-select-view);
+  color: var(--button-text);
+  padding: 10px 25px;
+  border-color: var(--client-select-view);
+  align-items: center;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: bold;
+}
+
+.client-select-view-btn#right{
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-left: none;
+  border-right: none; /* avoid double border */
+  border-top: none;
+  border-bottom: none;
+}
+
+.client-select-view-btn#left{
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-left: none; /* avoid double border */
+  border-right: none;
+  border-top: none;
+  border-bottom: none;
+}
+
+.client-select-view-btn-selected{
+  background-color: var(--client-selected-view);
+  border-color:var(--client-selected-view);
+  color: var(--client-selected-text);
+  cursor: default;
+  transition: 0.5s;
+}
 /* Button to add new clients*/
 .add-client-btn {
   background-color: var(--add-client); 
@@ -1997,14 +2036,21 @@ body {
 }
 
 .refresh-icon {
-  font-size: 20px;
-  font-size: 30px;
+  font-size: 25px;
   cursor: pointer;
   color: var(--icon-color);
   transition: 0.3s;
-  margin-right: 0px;
-  margin-left: auto;
+  margin-top: 0px;
 }
+
+.refresh-icon#client {
+  font-size: 25px;
+  cursor: pointer;
+  color: var(--icon-color);
+  transition: 0.3s;
+  margin-top: 5px;
+}
+
 
 .delete-selected-btn{
   background-color: red;
@@ -2022,7 +2068,7 @@ body {
 .create-user-btn {
   background-color: var(--button-bg);
   color: var(--button-text);
-  padding: 13px 20px;
+  padding: 10px 15px;
   border-radius: 5px;
   border-color: var(--button-bg);
   display: flex;
@@ -2501,6 +2547,12 @@ body {
   --options: white;
   --options-color: black;
   --options-highlight: #d6d6d6;
+
+  --user-stats: #6c7789;
+
+  --client-select-view: #0D286E;
+  --client-selected-view: #a2a2a2;
+  --client-selected-text: black;
 }
 
 /* Dark Theme */
@@ -2564,5 +2616,11 @@ body {
   --options-highlight: #202125;
 
   --user-stats: #6c7789;
+
+  --client-select-view: #3983f6;
+  --client-selected-view: #0a0f5c;
+  --client-selected-text: white;
+
+
 
 }

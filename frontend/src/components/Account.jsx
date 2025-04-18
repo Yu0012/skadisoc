@@ -17,7 +17,6 @@ const Accounts = () => {
   const modalRef = useRef(null);
   const mainContentRef = useRef(null);
   const [selectedAccounts, setSelectedAccounts] = useState([]);
-  const [isAllSelected, setIsAllSelected] = useState(false);
 
   // Account details 
   const [name, setName] = useState("");
@@ -53,28 +52,11 @@ const Accounts = () => {
     fetchAccounts();
   }, []);
 
-  //checkbox selection handlers
-  const handleCheckboxChange = (accountId) => {
-    setSelectedAccounts((prevSelected) =>
-      prevSelected.includes(accountId)
-        ? prevSelected.filter((id) => id !== accountId)
-        : [...prevSelected, accountId]
-    );
-  };
-
-  const handleSelectAll = () => {
-    if (isAllSelected) {
-      setSelectedAccounts([]);
-    } else {
-      const allAccountIds = filteredAccounts.map((account) => account._id);
-      setSelectedAccounts(allAccountIds);
-    }
-    setIsAllSelected(!isAllSelected);
-  };
 
   const handleDeselectAll = () => {
     setSelectedAccounts([]);
   };
+
   //menu dropdown handler
   const menuDropdown = (event, accountId) => {
     event.stopPropagation();
@@ -86,6 +68,7 @@ const Accounts = () => {
       setAccountMenuDropdown(accountId);
     }
   };
+  
   // close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -228,14 +211,6 @@ const Accounts = () => {
   const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
   const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
 
-  //automatically updates "select all" checkbox
-  useEffect(() => {
-    const allChecked =
-      filteredAccounts.length > 0 &&
-      selectedAccounts.length === filteredAccounts.length;
-    setIsAllSelected(allChecked);
-  }, [selectedAccounts, filteredAccounts]);
-
   return (
     <div ref={mainContentRef} className={`posts-container ${createUserDropdown ? "blurred" : ""}`}>
       {/* Top Section */}
@@ -248,30 +223,34 @@ const Accounts = () => {
 
       {/* Search & Filter */}
       <div className="search-container">
-        {/* Search Category Dropdown */}
-        <select className="dropdown" value={category} onChange={handleCategoryChange}>
-          <option value="ID">ID</option>
-          <option value="Username">Username</option>
-          <option value="Email">Email</option>
-          <option value="Phone">Phone</option>
-          <option value="Address">Address</option>
-        </select>
+        <div className="search-container-left">
+            {/* Search Category Dropdown */}
+            <select className="dropdown" value={category} onChange={handleCategoryChange}>
+              <option value="ID">ID</option>
+              <option value="Username">Username</option>
+              <option value="Email">Email</option>
+              <option value="Phone">Phone</option>
+              <option value="Address">Address</option>
+            </select>
 
-        {/* Search Box */}
-        <div className="search-box">
-          <input
-            type="text"
-            placeholder={`Search by ${category}`}
-            value={searchQuery}
-            onChange={handleSearch}
-          />
-          <FaSearch className="search-icon" />
+          {/* Search Box */}
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder={`Search by ${category}`}
+              value={searchQuery}
+              onChange={handleSearch}
+            />
+            <FaSearch className="search-icon" />
+          </div>
         </div>
 
-        <button className="create-user-btn" onClick={toggleCreateUserDropdown}>
-          <FaPlus /> Add User
-        </button>
-        <FaSyncAlt className="refresh-icon" title="Refresh Data" />
+        <div className="posts-actions">
+          <FaSyncAlt className="refresh-icon" title="Refresh Data" />
+          <button className="create-user-btn" onClick={toggleCreateUserDropdown}>
+            <FaPlus /> Add User
+          </button>
+        </div>
       </div>
 
       {/* Add User Modal */}
@@ -296,14 +275,6 @@ const Accounts = () => {
       <table className="posts-table">
         <thead>
           <tr>
-            <th>
-              <input
-                type="checkbox"
-                id="checkbox-selectAll"
-                checked={isAllSelected}
-                onChange={handleSelectAll}
-              />
-            </th>
             <th>Username</th>
             <th>Email</th>
             <th>Phone No.</th>
@@ -314,14 +285,6 @@ const Accounts = () => {
         <tbody>
           {currentAccounts.map((account) => (
             <tr key={account._id}>
-              <td>
-                <input
-                  type="checkbox"
-                  className="checkbox-rowSelection"
-                  checked={selectedAccounts.includes(account._id)}
-                  onChange={() => handleCheckboxChange(account._id)}
-                />
-              </td>
               <td>{account.name}</td>
               <td>{account.email}</td>
               <td>{account.phoneNum}</td>

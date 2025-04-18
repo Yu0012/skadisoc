@@ -19,7 +19,6 @@ const Posts = () => {
   const [postMenuDropdown, setPostMenuDropdown] = useState(null);//current opened dropdown
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 }) //positon for dorpdown menu
   const [selectedPosts, setSelectedPosts] = useState([]);// selected post IDs
-  const [isAllSelected, setIsAllSelected] = useState(false);// whether all visible posts are selected
   const [isModalOpen, setIsModalOpen] = useState(false); //modal open state
   const [editingPost, setEditingPost] = useState(null);
 
@@ -56,7 +55,7 @@ const Posts = () => {
     fetchPosts(); // Reload posts after a new post is added
     setIsModalOpen(false);
   };
-  
+
   //handles for ui inputs
   const handleRefresh = () => window.location.reload();
 
@@ -142,13 +141,6 @@ const Posts = () => {
   const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
-  //update "select all" check box based on current posts
-  useEffect(() => {
-    const allChecked =
-      currentPosts.length > 0 &&
-      currentPosts.every((post) => selectedPosts.includes(post._id));
-    setIsAllSelected(allChecked);
-  }, [selectedPosts, currentPosts]);
 
   //handle single checkbox change
   const handleCheckboxChange = (postID) => {
@@ -159,15 +151,6 @@ const Posts = () => {
     );
   };
 
-  //toggle select all/deselect all
-  const handleSelectAll = () => {
-    if (isAllSelected) {
-      setSelectedPosts([]);
-    } else {
-      setSelectedPosts(currentPosts.map((post) => post._id));
-    }
-    setIsAllSelected(!isAllSelected);
-  };
 
   const handleDeselectAll = () => {
     setSelectedPosts([]);
@@ -178,10 +161,10 @@ const Posts = () => {
      <div className={`posts-container ${isModalOpen ? "blurred" : ""}`}>
       {/*Header and actions*/}
       <div className="posts-header">
-      <div className="welcome-message">
-           <p>Welcome,</p>
-           <h2 className="user-name">Amber Broos</h2>
-       </div>
+        <div className="welcome-message">
+            <p>Welcome,</p>
+            <h2 className="user-name">Amber Broos</h2>
+        </div>
       </div>
 
       {/*search and catogories filter*/}
@@ -210,7 +193,7 @@ const Posts = () => {
         </div>
      
         <div className="posts-actions">
-          <FaSyncAlt className="refresh-icon" onClick={handleRefresh} />
+           <FaSyncAlt className="refresh-icon" title="Refresh Data" onClick={handleRefresh}/>
           <button className="create-post-btn" onClick={() => setIsModalOpen(true)}>
             <FaPlus /> Create Post
           </button>
@@ -221,13 +204,6 @@ const Posts = () => {
       <table className="posts-table">
         <thead>
           <tr>
-            <th>
-              <input
-                type="checkbox"
-                checked={isAllSelected}
-                onChange={handleSelectAll}
-              />
-            </th>
             <th>Client</th>
             <th>Content</th>
             <th>Hashtags</th>
@@ -239,13 +215,6 @@ const Posts = () => {
         <tbody>
           {currentPosts.map((post) => (
             <tr key={post._id}>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={selectedPosts.includes(post._id)}
-                  onChange={() => handleCheckboxChange(post._id)}
-                />
-              </td>
               <td>{post.client || "-"}</td>
               <td>{post.content}</td>
               <td>{post.hashtags || "-"}</td>

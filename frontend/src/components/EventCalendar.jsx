@@ -118,23 +118,21 @@ const EventCalendar = () => {
           <p>Welcome,</p>
           <h2 className="user-name">Amber Broos</h2>
         </div>
-        <div className="posts-actions">
-          <FaSyncAlt className="refresh-icon" onClick={handleRefresh} title="Refresh Data" />
-        </div>
       </div>
 
       {/* Toolbar + Calendar */}
       <div className="search-toolbar-container">
         <div className="search-container">
           <div className="fc-toolbar-left">
-            <button className="fc-today-button" onClick={goToToday}>Today</button>
-          </div>
-          <div className="fc-toolbar-right">
-            <FaAnglesLeft className="fc-nav-button" onClick={goToPrevDouble} />
+          <FaAnglesLeft className="fc-nav-button" onClick={goToPrevDouble} />
             <FaAngleLeft className="fc-nav-button" onClick={goToPrev} />
             <p className="fc-current-date">{currentMonth}, {currentYear}</p>
             <FaAngleRight className="fc-nav-button" onClick={goToNext} />
              <FaAnglesRight className="fc-nav-button" onClick={goToNextDouble} />
+          </div>
+          <div className="fc-toolbar-right">
+            <FaSyncAlt className="refresh-icon" onClick={handleRefresh} title="Refresh Data" />
+            <button className="fc-today-button" onClick={goToToday}>Today</button>
           </div>
         </div>
 
