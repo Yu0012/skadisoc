@@ -74,47 +74,6 @@ const HelpSupport = () => {
           </div>
         ))}
       </section>
-
-      {/* Contact Support Form */}
-      <section className="contact-form">
-        <h3>📩 Contact Support</h3>
-        <form onSubmit={handleSubmit}>
-          {/* Name input */}
-          <input
-            type="text"
-            name="name"
-            placeholder="Your Name"
-            value={formData.name}
-            onChange={handleChange}
-            className="support-input"
-          />
-
-          {/* Email input */}
-          <input
-            type="email"
-            name="email"
-            placeholder="Your Email"
-            value={formData.email}
-            onChange={handleChange}
-            className="support-input"
-          />
-
-          {/* Message textarea */}
-          <textarea
-            name="message"
-            placeholder="Your Message"
-            value={formData.message}
-            onChange={handleChange}
-            className="support-textarea"
-          />
-
-          {/* Submit button */}
-          <button type="submit" className="support-btn">Send Message</button>
-
-          {/* Feedback after submission */}
-          {feedback && <p className="support-feedback">{feedback}</p>}
-        </form>
-      </section>
     </div>
   );
 };

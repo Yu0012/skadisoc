@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
+import { FaSyncAlt } from "react-icons/fa";
 import "../styles.css";
 
 // FullCalendar plugins
@@ -112,6 +113,10 @@ const EventCalendar = () => {
     );
   };
 
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
   return (
     <div className="posts-container">
       {/* Header section */}
@@ -126,17 +131,20 @@ const EventCalendar = () => {
       <div className="search-toolbar-container">
         <div className="search-container calendar-controls-row">
           {/* ✅ Navigation Row with Today button on the left side of month/year switch */}
-          <div className="fc-toolbar-right">
-            <button className="fc-today-button" onClick={goToToday}>Today</button>
-            <FaAnglesLeft className="fc-nav-button" onClick={goToPrevDouble} />
+          <div className="fc-toolbar-left">
+          <FaAnglesLeft className="fc-nav-button" onClick={goToPrevDouble} />
             <FaAngleLeft className="fc-nav-button" onClick={goToPrev} />
             <p className="fc-current-date">{currentMonth}, {currentYear}</p>
             <FaAngleRight className="fc-nav-button" onClick={goToNext} />
-            <FaAnglesRight className="fc-nav-button" onClick={goToNextDouble} />
+             <FaAnglesRight className="fc-nav-button" onClick={goToNextDouble} />
+          </div>
+          <div className="fc-toolbar-right">
+            <FaSyncAlt className="refresh-icon" onClick={handleRefresh} title="Refresh Data" />
+            <button className="fc-today-button" onClick={goToToday}>Today</button>
           </div>
         </div>
 
-        <div className="calendar-toolbar">
+        <div className="calendar-toolbar ">
           <FullCalendar
             ref={calendarRef}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -148,6 +156,8 @@ const EventCalendar = () => {
             contentHeight="auto"
             expandRows={true}
             fixedWeekCount={false}
+            dayMaxEventRows={true}
+            height="auto"
             eventTimeFormat={{
               hour: "2-digit",
               minute: "2-digit",

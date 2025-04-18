@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import "../styles.css";
-import logo from "../assets/SOCMEDMT_logo.png";
+import logo from "../assets/skadiLogo.png";
+import logo_light from "../assets/skadiLogo_light.png";
 import bellAnimation from "../assets/bellring.json";
 import bellAnimation_light from "../assets/bellring_light.json";
 import bellStatic from "../assets/bellring-no.png";
@@ -79,7 +80,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       {/* Logo */}
-      <img src={logo} alt="SOCMEDMT Logo" className="logo" />
+      <img src={darkMode ? logo : logo_light} alt="SOCMEDMT Logo" className="logo" />
 
       {/* Navigation Links */}
       <div className="nav-links">

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaSearch, FaSyncAlt, FaPlus, FaEllipsisV } from "react-icons/fa";
-import { CiViewTable } from "react-icons/ci";
 import AddClientModal from "./AddClientModal";
+import { createPortal } from "react-dom";
+import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
 
 const Client = () => {
   // State for storing client data from API
@@ -19,11 +20,19 @@ const Client = () => {
   // State for tracking which client's dropdown menu is open
   const [popupOpen, setPopupOpen] = useState(null);
   
-  // State for toggling between card and table views
-  const [changeView, setChangeView] = useState(false);
+  // Satte to set view for Client Page, whether its block or table view
+  const [activeView, setActiveView] = useState(localStorage.getItem("viewMode") || "block");
   
   // Ref for detecting clicks outside dropdown menus
   const popupRef = useRef(null);
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const clientsPerPage = 7; // Adjust to fit your layout
+  
+  //Edit & Delete Dropdown
+  const [clientMenuDropdown, setClientMenuDropdown] = useState(null);
+  const [clientMenuPosition, setClientMenuPosition] = useState({ top: 0, left: 0 });
 
   // State for social media account credentials
   const [socialMediaAccounts, setSocialMediaAccounts] = useState({
@@ -55,22 +64,50 @@ const Client = () => {
   // Close dropdown menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (popupRef.current && !popupRef.current.contains(e.target)) {
+      // For table view dropdown (portal)
+      if (
+        clientMenuDropdown !== null &&
+        !e.target.closest(".post-actions-dropdown") &&
+        !e.target.closest(".popup-icon")
+      ) {
+        setClientMenuDropdown(null);
+      }
+  
+      // For block view dropdown
+      if (
+        popupOpen !== null &&
+        !e.target.closest(".post-actions-dropdown") &&
+        !e.target.closest(".popup-icon")
+      ) {
         setPopupOpen(null);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [popupOpen, clientMenuDropdown]);
 
   // Toggle dropdown menu for a specific client
   const togglePopup = (clientId) => {
     setPopupOpen(popupOpen === clientId ? null : clientId);
   };
 
-  // Toggle between card and table views
-  const toggleView = () => {
-    setChangeView((prev) => !prev);
+    //menu dropdown handler
+    const menuDropdown = (event, clientId) => {
+      event.stopPropagation();
+      if (clientMenuDropdown === clientId) {
+        setClientMenuDropdown(null);
+      } else {
+        const rect = event.currentTarget.getBoundingClientRect();
+        setClientMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left });
+        setClientMenuDropdown(clientId);
+      }
+    };
+
+
+  // Changes view of Client View
+   const toggleView = (view) => {
+    setActiveView(view);
+    localStorage.setItem("viewMode", view); // <- persists selection
   };
 
   // Open modal to add new client
@@ -84,7 +121,11 @@ const Client = () => {
     setEditClient(client);
     setShowClientModal(true);
     setPopupOpen(null);
+    setClientMenuDropdown(null);
   };
+
+   //handles for ui inputs
+   const handleRefresh = () => window.location.reload();
 
   // Save client data (both create and update)
   const handleSaveClient = async (clientData) => {
@@ -141,6 +182,12 @@ const Client = () => {
     c.companyName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+    // Pagination
+    const indexOfLastClient = currentPage * clientsPerPage;
+    const indexOfFirstClient = indexOfLastClient - clientsPerPage;
+    const currentClients = filteredClients.slice(indexOfFirstClient, indexOfLastClient);
+    const totalPages = Math.ceil(filteredClients.length / clientsPerPage);
+
   return (
     <div className={`posts-container ${showClientModal ? "blurred" : ""}`}>
       {/* Header Section - Only this part was reorganized */}
@@ -150,27 +197,49 @@ const Client = () => {
           <p>Welcome,</p>
           <h2 className="user-name">Amber Broos</h2>
         </div>
-
-        {/* Search and actions below welcome message */}
-        <div className="posts-actions">
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder="Search clients"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <FaSearch className="search-icon" />
-          </div>
-          <div className="icon-row">
-            <FaSyncAlt className="refresh-icon" title="Refresh Data" />
-            <CiViewTable size={30} className="action-icon" onClick={toggleView} title="Toggle View" />
-          </div>
-        </div>
       </div>
 
+        {/* Search and actions below welcome message */}
+        <div className="search-container">
+          <div className="posts-actions">
+            <div className="search-box">
+              <input
+                type="text"
+                placeholder="Search clients"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <FaSearch className="search-icon" />
+            </div>
+          </div>
+          <div className="posts-actions">
+            <div className="icon-row">
+              <FaSyncAlt className="refresh-icon" title="Refresh Data" onclick={handleRefresh} id="client"/>
+              <div>
+                {/* Changes Views of page, whether it's Block View or Table View */}
+                <button
+                  className={`client-select-view-btn ${activeView === "block" ? "client-select-view-btn-selected" : ""}`}
+                  id="left"
+                  onClick={() => toggleView("block")}
+                  disabled={activeView === "block"}
+                >
+                Block
+                </button>
+                <button
+                  className={`client-select-view-btn ${activeView === "table" ? "client-select-view-btn-selected" : ""}`}
+                  id="right"
+                  onClick={() => toggleView("table")}
+                  disabled={activeView === "table"}
+                >
+                  Table
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
       {/* Card View */}
-      {!changeView && (
+      {activeView === "block" && (
         <div className="client-list">
           <button className="add-client-btn" onClick={handleAddClient}>
             <FaPlus />
@@ -200,7 +269,8 @@ const Client = () => {
       )}
 
       {/* Table View */}
-      {changeView && (
+      {activeView === "table" && (
+        <div>
         <table className="posts-table">
           <thead>
             <tr>
@@ -210,7 +280,7 @@ const Client = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredClients.map((client) => (
+            {currentClients.map((client) => (
               <tr key={client._id}>
                 <td>{client.companyName}</td>
                 <td>{client.companyDetail}</td>
@@ -218,18 +288,24 @@ const Client = () => {
                   <div className="popup-container-2">
                     <FaEllipsisV
                       className="popup-icon"
-                      onClick={() => togglePopup(client._id)}
+                      onClick={(e) => menuDropdown(e, client._id)} 
                     />
-                    {popupOpen === client._id && (
-                      <div className="post-actions-dropdown" ref={popupRef}>
-                        <button onClick={() => handleEditClient(client)}>Edit</button>
+                    {clientMenuDropdown === client._id && 
+                     createPortal(
+                       <div className="post-actions-dropdown" ref={popupRef} 
+                       style={{top: clientMenuPosition.top, left: clientMenuPosition.left
+                       }}>
+                        <button onClick={() => handleEditClient(client)}>
+                          Edit
+                        </button>
                         <button 
                           className="delete-btn" 
                           onClick={() => handleDeleteClient(client._id)}
                         >
                           Delete
                         </button>
-                      </div>
+                      </div>,
+                      document.body
                     )}
                   </div>
                 </td>
@@ -237,6 +313,62 @@ const Client = () => {
             ))}
           </tbody>
         </table>
+         {/* Pagination */}
+ 
+         {/* Only show pagination controls if there's more than one page */}
+         {totalPages > 1 && (
+         <div className="pagination-container">
+           <p>
+             Showing {indexOfFirstClient + 1} to {" " }
+             {Math.min(indexOfLastClient, filteredClients.length)} of {" "} 
+             {filteredClients.length} entries
+           </p>
+ 
+           <div className="pagination">
+             {/* Go to first page */}
+             <FaAnglesLeft 
+                 className="pagination-navigation" 
+                 onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
+             />
+ 
+             {/* Go to previous page */}
+             <FaAngleLeft 
+               className="pagination-navigation" 
+             onClick={() => setCurrentPage(currentPage - 1)}
+             disabled={currentPage === 1} 
+             />
+ 
+             {/* Page buttons */}
+             {[...Array(totalPages).keys()]
+               .slice(Math.max(0, currentPage - 2), currentPage + 1)
+               .map((number) => (
+                 <button
+                   key={number + 1}
+                   onClick={() => setCurrentPage(number + 1)}
+                   className={currentPage === number + 1 ? "active" : ""}
+                 >
+                   {number + 1}
+                 </button>
+               ))}
+ 
+             {/* Go to next page */}
+             <FaAngleRight 
+                 className="pagination-navigation"
+                 onClick={() => setCurrentPage(currentPage + 1)}
+                 disabled={currentPage === totalPages}
+             />
+ 
+             {/* Go to last page */}
+             <FaAnglesRight
+               className="pagination-navigation"
+               onClick={() => setCurrentPage(totalPages)}
+               disabled={currentPage === totalPages}
+             />
+           </div>
+         </div>
+       )}
+ 
+         </div>
       )}
 
       {/* Client Modal */}

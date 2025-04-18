@@ -70,7 +70,8 @@ body {
 }
 
 .nav-links a {
-  color: #000066; /* dark blue */
+  color: var(--text-color); /* dark blue */
+  font-size: 16px;
   margin: 0 20px;
   text-decoration: none;
   font-weight: 600;
@@ -79,13 +80,14 @@ body {
 
 /* Active navbar link */
 .nav-links a:hover {
-  color: #5382da; /* light blue or whatever color you prefer */
+  color: var(--nav-active-text); /* light blue or whatever color you prefer */
   background-color: transparent; /* ensures no background */
 }
 
 /* Active link styling */
 .nav-links a.active {
-  color: #00001a;
+  color: var(--nav-active-text);
+  font-weight: bold;
   background-color: transparent;
 }
 
@@ -317,23 +319,18 @@ body {
 
 .calendar-toolbar {
   border-radius: 0 0 10px 10px;
-  overflow: hidden;
+  overflow: visible;
   padding-bottom: 0;
   margin-bottom: 0;
-  
+  height: auto;
+  max-height: none;
+  min-height: 400px;
 }
 
 .search-container {
   padding-right: 10px !important;
 }
 
-.fc-daygrid-body-unbalanced,
-.fc-daygrid-body,
-.fc-scrollgrid {
-  margin: 0 !important;
-  padding: 0 !important;
-  border: none !important;
-}
 
 /* 📌 **Posts Page Styles** */
 .posts-container {
@@ -378,6 +375,7 @@ body {
 .action-icon {
   cursor: pointer;
   font-size: 18px;
+  color: white;
 }
 
 .dropdown-menu button {
@@ -412,6 +410,7 @@ body {
   gap: 5px;
   cursor: pointer;
   transition: 0.3s;
+  font-weight: bold;
 }
 
 .create-post-btn:hover {
@@ -528,45 +527,70 @@ body {
 /* Calendar Design */
 .fc {
   color: var(--text-color) !important;
-  border-color: solid var(--table-border) !important;
-  background-color: #ffffff !important;
+  border: none !important;  /* Remove outer border */
+  border-radius: 8px !important;
+  background-color: var(--table-bg) !important;
   max-width: 1500px;
   height: calc(95vh - 200px); /* ⬅️ 自动根据视窗高度计算 */
   font-size: 14px;
   margin: auto;
-  overflow: hidden;
-}
-
-.fc-theme-standard td{
-  border-color: #0D286E !important;
-}
-
-.fc-scroller{
   overflow: hidden !important;
 }
 
-.fc-scrollgrid th{
+
+.fc-scroller {
+  overflow: hidden !important;
+}
+
+.fc-scrollgrid th {
   border: 1px solid #0D286E !important;
   border-top-left-radius: 8px !important;
   border-top-right-radius: 5px !important;
 }
 
 .fc-scrollgrid td {
-  border-left: 1px solid #0D286E !important;
+  border-left: 1px solid #0D286E !important; /* Inner borders between days */
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 }
 
+/* Color the corners for the inner grid */
+/* Top-left corner */
+.fc-scrollgrid th:first-child {
+  border-top-left-radius: 10px !important;
+  border: 1px solid var(--table-border) !important; /* Optional: Adjust border if needed */
+}
+
+/* Top-right corner */
+.fc-scrollgrid th:last-child {
+  border-top-right-radius: 10px !important;
+  border: 1px solid var(--table-border) !important; /* Optional: Adjust border if needed */
+}
+
+/* Bottom-left corner */
+.fc-scrollgrid td:first-child {
+  border-bottom-left-radius: 10px !important;
+  border: 1px solid var(--table-border) !important; /* Optional: Adjust border if needed */
+}
+
+/* Bottom-right corner */
+.fc-scrollgrid td:last-child {
+  border-bottom-right-radius: 10px !important;
+  border: 1px solid var(--table-border) !important; /* Optional: Adjust border if needed */
+}
+
 
 .fc-daygrid-day-frame {
-  display:flex;
+  display: flex;
   flex-direction: column;
   margin-top: 5px;
   padding-right: 10px;
   padding: 4px !important;
   justify-content: flex-start;
   align-items: center;
+  border-radius: 8px; /* Apply border radius to day cells */
 }
+
 .fc-day-today .fc-daygrid-day-number {
   background-color: var(--table-current-day) !important; 
   color: white !important;
@@ -586,7 +610,8 @@ body {
   background-color: #f0f2f5; /* light grey */
   color: #0f172a;            /* deep navy or blue-black */
   font-weight: bold;
-  border: 1px solid #184188; /* keep border consistent */
+  border: 1px solid #184188; /* Keep inner borders for header */
+  font-size: 16px;
 }
 
 .fc-col-header-cell .fc-scrollgrid-sync-inner {
@@ -610,16 +635,16 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   padding: 4px;
-  background-color: #fff; /* keep clean */
+  background-color: var(--table-bg); /* keep clean */
+  color: var(--text-color)
 }
 
-
-/* Displays current day on the calendar*/
-.fc-day-today{
+/* Displays current day on the calendar */
+.fc-day-today {
   background: none !important;
 }
 
-.fc-today-button{
+.fc-today-button {
   padding: 10px 25px;
   background-color: var(--button-bg);
   border: 1px solid var(--button-border);
@@ -630,7 +655,7 @@ body {
   font-size: 16px;
 }
 
-.fc-today-button:hover{
+.fc-today-button:hover {
   background-color: var(--button-hover)
 }
 
@@ -654,12 +679,13 @@ body {
 }
 
 /* Organizes the toolbars */
-.fc-toolbar-left{
+.fc-toolbar-left {
   display: flex;
   align-items: center;
   gap: 10px; /* Spacing between elements */
 }
-.fc-toolbar-right{
+
+.fc-toolbar-right {
   display: flex;
   align-items: center;
   padding-left: 10px;
@@ -669,7 +695,7 @@ body {
 }
 
 /* Events within the calendar */
-.fc-event{
+.fc-event {
   background-color: transparent !important;
   color: black !important;
   border-radius: 5px;
@@ -678,8 +704,8 @@ body {
   font-weight: bold;
 }
 
-.fc-event-title{
-  color:black;
+.fc-event-title {
+  color: black;
 }
 
 /* Changes the colours of the borders according to Light/Dark mode */
@@ -691,13 +717,7 @@ body {
   border-color: var(--calendar-lines) !important;
 }
 
-/* Fixes for border issues within Dark Mode*/
-[data-selected-theme="dark"] .fc {
-  border-radius: 8px; 
-  overflow: hidden; 
-  background-color: var(--table-bg); 
-}
-
+/* Fixes for border issues within Dark Mode */
 [data-selected-theme="dark"] .fc {
   border-radius: 8px; 
   overflow: hidden; 
@@ -706,6 +726,116 @@ body {
 
 [data-selected-theme="dark"] .fc-scrollgrid {
   border-radius: 8px; 
+}
+
+[data-selected-theme="dark"] .fc-scrollgrid th {
+  background-color: #f0f2f5 !important;
+  border-radius: 0 !important;
+}
+
+/* Expands the calendar */
+.fc,
+.fc-scroller-harness,
+.fc-scroller,
+.fc-daygrid-body,
+.fc-scrollgrid-sync-table {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+.fc-view-harness {
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.fc .fc-daygrid-day-frame {
+  min-height: 100px; /* Define grid cell height */
+}
+
+.fc-scrollgrid {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.fc-scrollgrid thead tr th:last-child {
+  border-top-right-radius: 8px !important;
+}
+
+.fc-scrollgrid tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 8px !important;
+}
+
+.fc-scrollgrid tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 8px !important;
+}
+
+/* Remove any inner radius — handled by container now */
+.fc-scrollgrid td,
+.fc-scrollgrid th,
+.fc-daygrid-body,
+.fc-scrollgrid-section,
+.fc-daygrid {
+  border-radius: 0 !important;
+}
+
+.fc-scrollgrid th,
+.fc-theme-standard td {
+  border: 1px solid var(--table-border) !important; /* Inner borders */
+}
+
+[data-selected-theme="dark"] .fc {
+  border: none !important;  /* Remove outer border in dark mode */
+}
+
+[data-selected-theme="dark"] .fc-scrollgrid th,
+[data-selected-theme="dark"] .fc-scrollgrid td {
+  border: 1px solid var(--calendar-lines) !important; /* Inner borders in dark mode */
+}
+
+
+
+/* End of Calendar Design */
+
+
+
+/* Toggle between block and table view in Client Page */
+.client-select-view-btn{
+  background-color: var(--client-select-view);
+  color: var(--button-text);
+  padding: 10px 25px;
+  border-color: var(--client-select-view);
+  align-items: center;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: bold;
+}
+
+
+.client-select-view-btn#right{
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-left: none;
+  border-right: none; /* avoid double border */
+  border-top: none;
+  border-bottom: none;
+}
+
+.client-select-view-btn#left{
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-left: none; /* avoid double border */
+  border-right: none;
+  border-top: none;
+  border-bottom: none;
+}
+
+.client-select-view-btn-selected{
+  background-color: var(--client-selected-view);
+  border-color:var(--client-selected-view);
+  color: var(--client-selected-text);
+  cursor: default;
+  transition: 0.5s;
 }
 
 /* Client List (Wrap to Next Line When Full) */
@@ -2040,13 +2170,21 @@ body {
 }
 
 .refresh-icon {
-  font-size: 20px;
-  font-size: 30px;
+  font-size: 25px;
   cursor: pointer;
   color: var(--icon-color);
   transition: 0.3s;
   margin-right: 0px;
   margin-left: auto;
+}
+
+/* Just for client page, need to adjust */
+.refresh-icon#client {
+  font-size: 25px;
+  cursor: pointer;
+  color: var(--icon-color);
+  transition: 0.3s;
+  margin-top: 5px;
 }
 
 .delete-selected-btn{
@@ -2065,7 +2203,7 @@ body {
 .create-user-btn {
   background-color: var(--button-bg);
   color: var(--button-text);
-  padding: 13px 20px;
+  padding: 10px 15px;
   border-radius: 5px;
   border-color: var(--button-bg);
   display: flex;
@@ -2549,6 +2687,12 @@ body {
   --options: white;
   --options-color: black;
   --options-highlight: #d6d6d6;
+
+  --user-stats: #6c7789;
+
+  --client-select-view: #0D286E;
+  --client-selected-view: #a2a2a2;
+  --client-selected-text: black;
 }
 
 /* Dark Theme */
@@ -2612,6 +2756,10 @@ body {
   --options-highlight: #202125;
 
   --user-stats: #6c7789;
+
+  --client-select-view: #3983f6;
+  --client-selected-view: #0a0f5c;
+  --client-selected-text: white;
 
 }
 
