@@ -310,9 +310,34 @@ body {
   border-radius: 5px;
 }
 
+.search-toolbar-container {
+  padding-right: 10px !important;
+  padding-bottom: 60px !important;
+}
+
+.calendar-toolbar {
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  
+}
+
+.search-container {
+  padding-right: 10px !important;
+}
+
+.fc-daygrid-body-unbalanced,
+.fc-daygrid-body,
+.fc-scrollgrid {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
 /* 📌 **Posts Page Styles** */
 .posts-container {
-  padding: 20px;
+  padding: 60px;
 }
 
 /* 🏠 **Header Section (Welcome, Refresh, Create Post)** */
@@ -502,13 +527,14 @@ body {
 /* FullCalendar Section */
 /* Calendar Design */
 .fc {
-  color: var(--text-color)!important;
+  color: var(--text-color) !important;
   border-color: solid var(--table-border) !important;
-  background-color: var(--table-bg);
-  max-width: 1500px; 
-  height: 500px;     
-  font-size: 14px;    
-  margin: auto;     
+  background-color: #ffffff !important;
+  max-width: 1500px;
+  height: calc(95vh - 200px); /* ⬅️ 自动根据视窗高度计算 */
+  font-size: 14px;
+  margin: auto;
+  overflow: hidden;
 }
 
 .fc-theme-standard td{
@@ -516,13 +542,13 @@ body {
 }
 
 .fc-scroller{
-  overflow-y: hidden !important;
+  overflow: hidden !important;
 }
 
 .fc-scrollgrid th{
   border: 1px solid #0D286E !important;
   border-top-left-radius: 8px !important;
-  border-top-right-radius: 8px !important;
+  border-top-right-radius: 5px !important;
 }
 
 .fc-scrollgrid td {
@@ -531,10 +557,13 @@ body {
   border-bottom-right-radius: 8px;
 }
 
+
 .fc-daygrid-day-frame {
   display:flex;
   flex-direction: column;
   margin-top: 5px;
+  padding-right: 10px;
+  padding: 4px !important;
   justify-content: flex-start;
   align-items: center;
 }
@@ -553,8 +582,11 @@ body {
   align-items: center;
 }
 
-.fc-col-header-cell {
-  font-size: 16px;
+.fc .fc-col-header-cell {
+  background-color: #f0f2f5; /* light grey */
+  color: #0f172a;            /* deep navy or blue-black */
+  font-weight: bold;
+  border: 1px solid #184188; /* keep border consistent */
 }
 
 .fc-col-header-cell .fc-scrollgrid-sync-inner {
@@ -571,6 +603,16 @@ body {
   height: 100%;
   font-weight: bold; 
 }
+
+.fc .fc-daygrid-day-frame {
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 4px;
+  background-color: #fff; /* keep clean */
+}
+
 
 /* Displays current day on the calendar*/
 .fc-day-today{

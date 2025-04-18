@@ -2,36 +2,43 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaSearch, FaSyncAlt, FaPlus, FaEllipsisV } from "react-icons/fa";
 import { CiViewTable } from "react-icons/ci";
 import AddClientModal from "./AddClientModal";
-import { createPortal } from "react-dom";
 
 const Client = () => {
+  // State for storing client data from API
   const [clients, setClients] = useState([]);
+  
+  // State for search functionality
   const [searchQuery, setSearchQuery] = useState("");
+  
+  // State for controlling modal visibility
   const [showClientModal, setShowClientModal] = useState(false);
+  
+  // State for client being edited (null when adding new client)
   const [editClient, setEditClient] = useState(null);
+  
+  // State for tracking which client's dropdown menu is open
   const [popupOpen, setPopupOpen] = useState(null);
+  
+  // State for toggling between card and table views
   const [changeView, setChangeView] = useState(false);
+  
+  // Ref for detecting clicks outside dropdown menus
   const popupRef = useRef(null);
 
-
-  // Social accounts
+  // State for social media account credentials
   const [socialMediaAccounts, setSocialMediaAccounts] = useState({
-    Facebook: { 
-      companyToken: "", 
-      pageId: "" 
-    },
+    Facebook: { companyToken: "", pageId: "" },
     Twitter: {
       apiKey: "",
       apiKeySecret: "",
       accessToken: "",
       accessTokenSecret: ""
     },
-    
     LinkedIn: { companyToken: "", pageId: "" },
     Instagram: { companyToken: "", pageId: "" },
   });
 
-  // Fetch clients
+  // Fetch clients data from API when component mounts
   useEffect(() => {
     const fetchClients = async () => {
       try {
@@ -45,7 +52,7 @@ const Client = () => {
     fetchClients();
   }, []);
 
-  // Outside click to close popup
+  // Close dropdown menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (popupRef.current && !popupRef.current.contains(e.target)) {
@@ -56,35 +63,35 @@ const Client = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Toggle dropdown menu for a specific client
   const togglePopup = (clientId) => {
     setPopupOpen(popupOpen === clientId ? null : clientId);
   };
 
+  // Toggle between card and table views
   const toggleView = () => {
     setChangeView((prev) => !prev);
   };
 
-
-
-  //--------- 📌 Client Funtion-------------- //
-
+  // Open modal to add new client
   const handleAddClient = () => {
     setEditClient(null);
     setShowClientModal(true);
   };
 
+  // Open modal to edit existing client
   const handleEditClient = (client) => {
     setEditClient(client);
     setShowClientModal(true);
     setPopupOpen(null);
   };
 
+  // Save client data (both create and update)
   const handleSaveClient = async (clientData) => {
     try {
       const url = editClient
         ? `http://localhost:5000/api/clients/${editClient._id}`
         : "http://localhost:5000/api/clients";
-
       const method = editClient ? "PUT" : "POST";
 
       const res = await fetch(url, {
@@ -96,6 +103,7 @@ const Client = () => {
       if (!res.ok) throw new Error("Save failed");
       const result = await res.json();
 
+      // Update clients list
       if (editClient) {
         setClients((prev) =>
           prev.map((c) => (c._id === editClient._id ? result.client : c))
@@ -112,6 +120,7 @@ const Client = () => {
     }
   };
 
+  // Delete a client with confirmation
   const handleDeleteClient = async (clientId) => {
     if (!window.confirm("Are you sure you want to delete this client?")) return;
 
@@ -121,30 +130,29 @@ const Client = () => {
       });
 
       if (!res.ok) throw new Error("Delete failed");
-
       setClients((prev) => prev.filter((c) => c._id !== clientId));
     } catch (err) {
       console.error("Error deleting client:", err);
     }
   };
 
+  // Filter clients based on search query
   const filteredClients = clients.filter((c) =>
     c.companyName.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  //--------- 📌End Client-------------- //
-
 
   return (
-    <div className={`posts-container ${showClientModal ? "blurred" : ""}`}> {/* Blurs when editing menu or creating client*/}
-      {/* Header */}
+    <div className={`posts-container ${showClientModal ? "blurred" : ""}`}>
+      {/* Header Section - Only this part was reorganized */}
       <div className="posts-header">
+        {/* Welcome message at top */}
         <div className="welcome-message">
           <p>Welcome,</p>
           <h2 className="user-name">Amber Broos</h2>
         </div>
 
+        {/* Search and actions below welcome message */}
         <div className="posts-actions">
-
           <div className="search-box">
             <input
               type="text"
@@ -158,21 +166,16 @@ const Client = () => {
             <FaSyncAlt className="refresh-icon" title="Refresh Data" />
             <CiViewTable size={30} className="action-icon" onClick={toggleView} title="Toggle View" />
           </div>
-
         </div>
-
-        
       </div>
 
-      
-
-      {/* Block View */}
+      {/* Card View */}
       {!changeView && (
         <div className="client-list">
-        <button className="add-client-btn" onClick={handleAddClient}>
-          <FaPlus />
-          <p>Add Client</p>
-        </button>
+          <button className="add-client-btn" onClick={handleAddClient}>
+            <FaPlus />
+            <p>Add Client</p>
+          </button>
           {filteredClients.map((client) => (
             <div key={client._id} className="client-object">
               <div className="popup-container">
@@ -180,7 +183,12 @@ const Client = () => {
                 {popupOpen === client._id && (
                   <div className="post-actions-dropdown" ref={popupRef}>
                     <button onClick={() => handleEditClient(client)}>Edit</button>
-                    <button className="delete-btn" onClick={() => handleDeleteClient(client._id)}>Delete</button>
+                    <button 
+                      className="delete-btn" 
+                      onClick={() => handleDeleteClient(client._id)}
+                    >
+                      Delete
+                    </button>
                   </div>
                 )}
               </div>
@@ -206,7 +214,7 @@ const Client = () => {
               <tr key={client._id}>
                 <td>{client.companyName}</td>
                 <td>{client.companyDetail}</td>
-                <td stylel={{positon:"relative"}}>
+                <td style={{position:"relative"}}>
                   <div className="popup-container-2">
                     <FaEllipsisV
                       className="popup-icon"
@@ -215,7 +223,12 @@ const Client = () => {
                     {popupOpen === client._id && (
                       <div className="post-actions-dropdown" ref={popupRef}>
                         <button onClick={() => handleEditClient(client)}>Edit</button>
-                        <button className="delete-btn" onClick={() => handleDeleteClient(client._id)}>Delete</button>
+                        <button 
+                          className="delete-btn" 
+                          onClick={() => handleDeleteClient(client._id)}
+                        >
+                          Delete
+                        </button>
                       </div>
                     )}
                   </div>
@@ -226,8 +239,7 @@ const Client = () => {
         </table>
       )}
 
-
-      {/* Modal */}
+      {/* Client Modal */}
       {showClientModal && (
         <AddClientModal
           onClose={() => {

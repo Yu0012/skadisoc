@@ -144,6 +144,10 @@ const EventCalendar = () => {
             headerToolbar={false}
             events={events}
             dayHeaderFormat={{ weekday: "long" }}
+            showNonCurrentDates={true}
+            contentHeight="auto"
+            expandRows={true}
+            fixedWeekCount={false}
             eventTimeFormat={{
               hour: "2-digit",
               minute: "2-digit",
@@ -165,6 +169,32 @@ const EventCalendar = () => {
               const clickedDate = new Date(info.dateStr);
               setCreateInitialData({ scheduledDate: clickedDate });
               setIsCreateModalOpen(true);
+            }}
+
+            // ✅ Hide full rows that are completely outside the current month (no height leftovers)
+            viewDidMount={() => {
+              const calendarApi = calendarRef.current?.getApi?.();
+              if (!calendarApi) return;
+
+              const calendarMonth = calendarApi.getDate().getMonth();
+              const rows = document.querySelectorAll(".fc-daygrid-body tr");
+
+              rows.forEach((row) => {
+                const allTds = Array.from(row.querySelectorAll("td"));
+                const isFullRowOutsideMonth = allTds.every((td) => {
+                  const dateStr = td.getAttribute("data-date");
+                  if (!dateStr) return false;
+                  const cellDate = new Date(dateStr);
+                  return cellDate.getMonth() !== calendarMonth;
+                });
+
+                if (isFullRowOutsideMonth) {
+                  row.style.display = "none";
+                  row.style.height = "0px";
+                  row.style.padding = "0";
+                  row.style.margin = "0";
+                }
+              });
             }}
           />
         </div>
