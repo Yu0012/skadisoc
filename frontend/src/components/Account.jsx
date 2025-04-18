@@ -70,7 +70,7 @@ const Accounts = () => {
   };
   
   // close dropdown when clicking outside
-  useEffect(() => {
+  useEffect(() => {    
     const handleClickOutside = (event) => {
       if (!event.target.closest(".post-actions-dropdown")) {
         setAccountMenuDropdown(null);
@@ -128,18 +128,21 @@ const Accounts = () => {
     setCreateUserDropdown(!createUserDropdown);
   };
 
-  // Close popup when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        setCreateUserDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  // Close popup when clicking outside (may not be good as user may accidentally leave data in form)
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (modalRef.current && !modalRef.current.contains(event.target)) {
+  //       setCreateUserDropdown(false);
+  //     }
+  //   };
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, []);
+
+    //handles for ui inputs
+    const handleRefresh = () => window.location.reload();
 
   // Save new account to MongoDB
   const handleSubmit = async (e) => {
@@ -246,7 +249,7 @@ const Accounts = () => {
         </div>
 
         <div className="posts-actions">
-          <FaSyncAlt className="refresh-icon" title="Refresh Data" />
+          <FaSyncAlt className="refresh-icon" onClick={handleRefresh} title="Refresh Data" />
           <button className="create-user-btn" onClick={toggleCreateUserDropdown}>
             <FaPlus /> Add User
           </button>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaSearch, FaSyncAlt, FaPlus, FaEllipsisV } from "react-icons/fa";
 import AddClientModal from "./AddClientModal";
 import { createPortal } from "react-dom";
+import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
 
 const Client = () => {
   const [clients, setClients] = useState([]);
@@ -11,10 +12,12 @@ const Client = () => {
   const [popupOpen, setPopupOpen] = useState(null);
   const [activeView, setActiveView] = useState(localStorage.getItem("viewMode") || "block");
   const popupRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const clientsPerPage = 7; // Adjust to fit your layout
 
-    //Edit & Delete Dropdown
-    const [clientMenuDropdown, setClientMenuDropdown] = useState(null);
-    const [clientMenuPosition, setClientMenuPosition] = useState({ top: 0, left: 0 });
+  //Edit & Delete Dropdown
+  const [clientMenuDropdown, setClientMenuDropdown] = useState(null);
+  const [clientMenuPosition, setClientMenuPosition] = useState({ top: 0, left: 0 });
 
 
   // Social accounts
@@ -48,16 +51,30 @@ const Client = () => {
     fetchClients();
   }, []);
 
-  // Outside click to close popup
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (popupRef.current && !popupRef.current.contains(e.target)) {
+      // For table view dropdown (portal)
+      if (
+        clientMenuDropdown !== null &&
+        !e.target.closest(".post-actions-dropdown") &&
+        !e.target.closest(".popup-icon")
+      ) {
+        setClientMenuDropdown(null);
+      }
+  
+      // For block view dropdown
+      if (
+        popupOpen !== null &&
+        !e.target.closest(".post-actions-dropdown") &&
+        !e.target.closest(".popup-icon")
+      ) {
         setPopupOpen(null);
       }
     };
+    
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [popupOpen, clientMenuDropdown]);
 
   const togglePopup = (clientId) => {
     setPopupOpen(popupOpen === clientId ? null : clientId);
@@ -153,6 +170,13 @@ const Client = () => {
   const filteredClients = clients.filter((c) =>
     c.companyName.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  
+  // Pagination
+  const indexOfLastClient = currentPage * clientsPerPage;
+  const indexOfFirstClient = indexOfLastClient - clientsPerPage;
+  const currentClients = filteredClients.slice(indexOfFirstClient, indexOfLastClient);
+  const totalPages = Math.ceil(filteredClients.length / clientsPerPage);
+
   //--------- 📌End Client-------------- //
 
 
@@ -233,6 +257,7 @@ const Client = () => {
 
       {/* Table View */}
       {activeView === "table" && (
+        <div>
         <table className="posts-table">
           <thead>
             <tr>
@@ -242,7 +267,7 @@ const Client = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredClients.map((client) => (
+            {currentClients.map((client) => (
               <tr key={client._id}>
                 <td>{client.companyName}</td>
                 <td>{client.companyDetail}</td>
@@ -268,6 +293,64 @@ const Client = () => {
             ))}
           </tbody>
         </table>
+
+        {/* Pagination */}
+
+        {/* Only show pagination controls if there's more than one page */}
+        {totalPages > 1 && (
+        <div className="pagination-container">
+          <p>
+            Showing {indexOfFirstClient + 1} to {" " }
+            {Math.min(indexOfLastClient, filteredClients.length)} of {" "} 
+            {filteredClients.length} entries
+          </p>
+
+          <div className="pagination">
+            {/* Go to first page */}
+            <FaAnglesLeft 
+                className="pagination-navigation" 
+                onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
+            />
+
+            {/* Go to previous page */}
+            <FaAngleLeft 
+              className="pagination-navigation" 
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1} 
+            />
+
+            {/* Page buttons */}
+            {[...Array(totalPages).keys()]
+              .slice(Math.max(0, currentPage - 2), currentPage + 1)
+              .map((number) => (
+                <button
+                  key={number + 1}
+                  onClick={() => setCurrentPage(number + 1)}
+                  className={currentPage === number + 1 ? "active" : ""}
+                >
+                  {number + 1}
+                </button>
+              ))}
+
+            {/* Go to next page */}
+            <FaAngleRight 
+                className="pagination-navigation"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+            />
+
+            {/* Go to last page */}
+            <FaAnglesRight
+              className="pagination-navigation"
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+            />
+          </div>
+        </div>
+      )}
+
+        </div>
+        
       )}
 
 
