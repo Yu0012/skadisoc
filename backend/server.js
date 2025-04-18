@@ -55,7 +55,13 @@ const postSchema = new mongoose.Schema({
   selectedPlatforms: [String],
   filePath: String, // Store file path if uploaded
   posted: { type: Boolean, default: false },
-  status: { type: String, enum: ['draft', 'scheduled', 'posted'], default: 'draft' }
+  status: { type: String, enum: ['draft', 'scheduled', 'posted'], default: 'draft' },
+  platformPostIds: {
+    facebook: String,
+    instagram: String,
+    twitter: String,
+    linkedin: String
+  },
 });
 const Post = mongoose.model("Post", postSchema);
 
@@ -437,7 +443,7 @@ const postToFacebook = async (post, client) => {
 
     if (response.data.id) {
       console.log(`Post successful: ${response.data.id}`);
-      return true;
+      return response.data.id; // ⬅️ Return post ID
     }
   } catch (error) {
     console.error("Error posting to Facebook:", error.response?.data || error.message);
@@ -488,7 +494,7 @@ async function postToInstagram(post, client) {
     );
 
     console.log('✅ Instagram Post ID:', publishResponse.data.id);
-    return true;
+    return publishResponse.data.id; // ⬅️ Return post ID
 
   } catch (error) {
     console.error('Error posting to Instagram:', error.response?.data || error.message);
@@ -559,28 +565,31 @@ const checkAndPostScheduledPosts = async () => {
       }
 
       if (post.selectedPlatforms.includes("facebook")) {
-        const success = await postToFacebook(post, client);
-        if (success) {
+        const fbPostId = await postToFacebook(post, client);
+        if (fbPostId) {
           post.posted = true;
           post.status = 'posted';
+          post.platformPostIds = { ...post.platformPostIds, facebook: fbPostId };
           await post.save();
         }
       }
 
       else if (post.selectedPlatforms.includes("instagram")) {
-        const success = await postToInstagram(post, client);
-        if (success) {
+        const igPostId = await postToInstagram(post, client);
+        if (igPostId) {
           post.posted = true;
           post.status = 'posted';
+          post.platformPostIds = { ...post.platformPostIds, instagram: igPostId };
           await post.save();
         }
       }
 
       else if (post.selectedPlatforms.includes("twitter")) {
-        const success = await postToTwitter(post, client);
-        if (success) {
+        const tweetId = await postToTwitter(post, client);
+        if (tweetId) {
           post.posted = true;
           post.status = 'posted';
+          post.platformPostIds = { ...post.platformPostIds, twitter: tweetId };
           await post.save();
         }
       }
