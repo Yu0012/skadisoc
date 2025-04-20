@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../styles.css";
 import { FaSearch, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa";
+import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
 import { ImCross } from "react-icons/im";
 import { createPortal } from "react-dom";
 
@@ -10,7 +11,7 @@ const Accounts = () => {
   const [category, setCategory] = useState("Username");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [accountsPerPage] = useState(10);
+  const [accountsPerPage] = useState(7);
   const [createUserDropdown, setCreateUserDropdown] = useState(false);
 
   //refs for modal and outside click detection
@@ -31,6 +32,7 @@ const Accounts = () => {
 
   // Edit Account
   const [editAccount, setEditAccount] = useState(null);
+
 
 
   // Fetch accounts from MongoDB
@@ -200,7 +202,9 @@ const Accounts = () => {
   // Pagination Logic
   const indexOfLastAccount = currentPage * accountsPerPage;
   const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
-  const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
+  const currentAccounts = accounts.slice(indexOfFirstAccount, indexOfLastAccount);
+  const totalPages = Math.ceil(accounts.length / accountsPerPage);
+  
 
    //handles for ui inputs
    const handleRefresh = () => window.location.reload();
@@ -304,7 +308,60 @@ const Accounts = () => {
           ))}
         </tbody>
       </table>
+    {/* Pagination */}
+    <div className="pagination-container">
+      {/* Shows how many accounts */}
+      <p>
+        Showing {indexOfFirstAccount + 1} to{" "}
+        {Math.min(indexOfLastAccount, accounts.length)} of{" "}
+        {accounts.length} entries
+      </p>
+
+      {/* Displays buttons and adds pages depending on number of accounts */}
+      <div className="pagination">
+        {/* Go to first page */}
+        <FaAnglesLeft
+          className="pagination-navigation"
+          onClick={() => setCurrentPage(1)}
+          disabled={currentPage === 1}
+        />
+
+        {/* Go to previous page */}
+        <FaAngleLeft
+          className="pagination-navigation"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        />
+
+        {/* Page buttons */}
+        {[...Array(totalPages).keys()]
+          .slice(Math.max(0, currentPage - 2), Math.min(currentPage + 1, totalPages))
+          .map((number) => (
+            <button
+              key={number + 1}
+              onClick={() => setCurrentPage(number + 1)}
+              className={currentPage === number + 1 ? "active" : ""}
+            >
+              {number + 1}
+            </button>
+          ))}
+
+        {/* Go to next page */}
+        <FaAngleRight
+          className="pagination-navigation"
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        />
+
+        {/* Go to last page */}
+        <FaAnglesRight
+          className="pagination-navigation"
+          onClick={() => setCurrentPage(totalPages)}
+          disabled={currentPage === totalPages}
+        />
+        </div>
     </div>
+  </div>
   );
 };
 

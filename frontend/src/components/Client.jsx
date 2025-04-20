@@ -316,14 +316,15 @@ const Client = () => {
          {/* Pagination */}
  
          {/* Only show pagination controls if there's more than one page */}
-         {totalPages > 1 && (
          <div className="pagination-container">
+          {/* Shows how many posts */}
            <p>
              Showing {indexOfFirstClient + 1} to {" " }
              {Math.min(indexOfLastClient, filteredClients.length)} of {" "} 
              {filteredClients.length} entries
            </p>
- 
+           
+          {/* Displays buttons and adds pages depending on number of accounts */}
            <div className="pagination">
              {/* Go to first page */}
              <FaAnglesLeft 
@@ -366,7 +367,6 @@ const Client = () => {
              />
            </div>
          </div>
-       )}
  
          </div>
       )}

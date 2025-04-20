@@ -262,22 +262,29 @@ const Posts = () => {
 
       {/* Pagination */}
       <div className="pagination-container">
+        {/* Shows how many posts */}
         <p>
           Showing {indexOfFirstPost + 1} to{" "}
           {Math.min(indexOfLastPost, filteredPosts.length)} of{" "}
           {filteredPosts.length} entries
         </p>
+        
+        {/* Displays buttons and adds pages depending on number of accounts */}
         <div className="pagination">
-        <FaAnglesLeft 
-             className="pagination-navigation" 
-             onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
-        />
-        <FaAngleLeft 
-          className="pagination-navigation" 
-        onClick={() => setCurrentPage(currentPage - 1)}
-        disabled={currentPage === 1} 
-       />
+          {/* Go to first page */}
+          <FaAnglesLeft 
+              className="pagination-navigation" 
+              onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
+          />
 
+          {/* Go to previous page */}
+          <FaAngleLeft 
+            className="pagination-navigation" 
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1} 
+          />
+
+          {/* Page buttons */}
           {[...Array(totalPages).keys()]
             .slice(Math.max(0, currentPage - 2), currentPage + 1)
             .map((number) => (
@@ -289,19 +296,23 @@ const Posts = () => {
                 {number + 1}
               </button>
             ))}
+
+          {/* Go to next page */}
           <FaAngleRight 
               className="pagination-navigation"
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}
           />
-            <FaAnglesRight
-              className="pagination-navigation"
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages}
-            />
+
+          {/* Go to last page */}
+          <FaAnglesRight
+            className="pagination-navigation"
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage === totalPages}
+          />
         </div>
       </div>
-      </div>
+    </div>
       
       {/* Create/Edit Post Modal */}
       {isModalOpen && (
