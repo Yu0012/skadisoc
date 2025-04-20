@@ -579,16 +579,8 @@ body {
   border: 1px solid var(--table-border) !important; /* Optional: Adjust border if needed */
 }
 
-
-.fc-daygrid-day-frame {
-  display: flex;
-  flex-direction: column;
-  margin-top: 5px;
-  padding-right: 10px;
-  padding: 4px !important;
-  justify-content: flex-start;
-  align-items: center;
-  border-radius: 8px; /* Apply border radius to day cells */
+.fc-daygrid-day {
+  padding: 0px !important;
 }
 
 .fc-day-today .fc-daygrid-day-number {
@@ -634,6 +626,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  align-items: center;
   padding: 4px;
   background-color: var(--table-bg); /* keep clean */
   color: var(--text-color)
@@ -747,10 +740,6 @@ body {
 .fc-view-harness {
   height: auto !important;
   overflow: visible !important;
-}
-
-.fc .fc-daygrid-day-frame {
-  min-height: 100px; /* Define grid cell height */
 }
 
 .fc-scrollgrid {
