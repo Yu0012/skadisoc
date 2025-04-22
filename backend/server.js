@@ -8,6 +8,7 @@ const fs = require('fs');
 const { platform } = require('os');
 const mime = require("mime-types");
 const axios = require("axios");
+const {TwitterApi} = require("twitter-api-v2");
 const FormData = require("form-data");
 
 
@@ -48,12 +49,19 @@ const upload = multer({ storage });
 // ✅ **Post Schema**
 const postSchema = new mongoose.Schema({
   content: { type: String, required: true },
-  hashtags: String,
+  title: String,
   client: String,
   scheduledDate: Date,
   selectedPlatforms: [String],
   filePath: String, // Store file path if uploaded
   posted: { type: Boolean, default: false },
+  status: { type: String, enum: ['draft', 'scheduled', 'posted'], default: 'draft' },
+  platformPostIds: {
+    facebook: String,
+    instagram: String,
+    twitter: String,
+    linkedin: String
+  },
 });
 const Post = mongoose.model("Post", postSchema);
 
@@ -86,7 +94,7 @@ const accountSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   phoneNum: { type: String, required: true },
-  clientAccess: { type: String, required: true },
+  address: { type: String, required: true },
   password: { type: String, required: true },
 }, { timestamps: true });
 const Account = mongoose.model("Account", accountSchema);
@@ -98,7 +106,7 @@ const Account = mongoose.model("Account", accountSchema);
 // ✅ Create a new post (with optional file upload)
 app.post('/api/posts', upload.single('file'), async (req, res) => {
   try {
-    const { content, hashtags, client, scheduledDate } = req.body;
+    const { title, content, client, scheduledDate } = req.body;
 
     let selectedPlatforms = [];
     if (req.body.selectedPlatforms) {
@@ -113,14 +121,22 @@ app.post('/api/posts', upload.single('file'), async (req, res) => {
       return res.status(400).json({ error: "Content is required" });
     }
 
+    const parsedDate = scheduledDate ? new Date(scheduledDate) : null;
+
+    let status = 'draft';
+    if (parsedDate) status = 'scheduled';
+
     const newPost = new Post({
+      title,
       content,
-      hashtags,
       client,
-      scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
-      selectedPlatforms, // Now correctly stored as an array
+      scheduledDate: parsedDate,
+      selectedPlatforms,
       filePath: req.file ? `/uploads/${req.file.filename}` : null,
+      posted: false,
+      status
     });
+
 
     await newPost.save();
     res.status(201).json({ message: "Post created successfully", post: newPost });
@@ -203,7 +219,7 @@ app.get('/api/posts/:id', async (req, res) => {
 // ✅ Update post by ID
 app.put('/api/posts/:id', upload.single('file'), async (req, res) => {
   try {
-    const { content, hashtags, client, scheduledDate } = req.body;
+    const { title, content, client, scheduledDate } = req.body;
 
     let selectedPlatforms = [];
     if (req.body.selectedPlatforms) {
@@ -214,13 +230,21 @@ app.put('/api/posts/:id', upload.single('file'), async (req, res) => {
       }
     }
 
+    const parsedDate = scheduledDate ? new Date(scheduledDate) : null;
+
+    let status = 'draft';
+    if (parsedDate) status = 'scheduled';
+
     const updatedFields = {
+      title,
       content,
-      hashtags,
       client,
-      scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
+      scheduledDate: parsedDate,
       selectedPlatforms,
+      posted: false,
+      status
     };
+
 
     if (req.file) {
       updatedFields.filePath = `/uploads/${req.file.filename}`;
@@ -410,17 +434,16 @@ const postToFacebook = async (post, client) => {
     const url = `https://graph.facebook.com/${pageId}/photos`;
 
     const formData = new FormData();
-    formData.append("message", `${post.content}\n\n${post.hashtags || ""}`);
+    formData.append("message", `${post.content}`);
     formData.append("access_token", pageAccessToken);
     formData.append("source", fs.createReadStream(path.join(__dirname, post.filePath)));
-
     const response = await axios.post(url, formData, {
       headers: formData.getHeaders(),
     });
 
     if (response.data.id) {
       console.log(`Post successful: ${response.data.id}`);
-      return true;
+      return response.data.id; // ⬅️ Return post ID
     }
   } catch (error) {
     console.error("Error posting to Facebook:", error.response?.data || error.message);
@@ -440,14 +463,14 @@ async function postToInstagram(post, client) {
     const accessToken = instagramAccount.companyToken;
     const igUserId = instagramAccount.pageId;
 
-    const mediaUrl = `${"https://89cc-2001-e68-5456-3b90-7949-5b30-1168-d19e.ngrok-free.app"}${post.filePath}`;
+    const mediaUrl = `${"https://ff74-2001-e68-5456-3b90-c599-ce4-184d-5774.ngrok-free.app"}${post.filePath}`;
 
     if (!mediaUrl) {
       console.error("❌ No valid image URL for Instagram post.");
       return;
     }
 
-    const message = `${post.content}\n\n${post.hashtags || ""}`;
+    const message = `${post.content}`;
 
     // Step 1: Upload Media
     const mediaResponse = await axios.post(
@@ -471,12 +494,60 @@ async function postToInstagram(post, client) {
     );
 
     console.log('✅ Instagram Post ID:', publishResponse.data.id);
-    return true;
+    return publishResponse.data.id; // ⬅️ Return post ID
 
   } catch (error) {
     console.error('Error posting to Instagram:', error.response?.data || error.message);
     return false;
   }
+}
+
+const postToTwitter = async (post, client) => { 
+  try {
+    const twitterAccount = client.socialAccounts.find(acc => acc.platform === "Twitter");
+    if (!twitterAccount || !twitterAccount.apiKey || !twitterAccount.apiKeySecret || !twitterAccount.accessToken || !twitterAccount.accessTokenSecret) {
+      console.error(`No valid Twitter account for client: ${client.companyName}`);
+      return false;
+    }
+
+    const { apiKey, apiKeySecret, accessToken, accessTokenSecret } = twitterAccount;
+
+    const twitterClient = new TwitterApi({
+      appKey: apiKey,
+      appSecret: apiKeySecret,
+      accessToken: accessToken,
+      accessSecret: accessTokenSecret,
+    });
+
+    const imagePath = path.join(__dirname, post.filePath);
+
+    if (['.jpg', '.jpeg', '.png'].includes(path.extname(imagePath).toLowerCase())) {
+      const mediaData = await twitterClient.v1.uploadMedia(imagePath); // Upload image
+      tweetResponse = await twitterClient.v2.tweet(post.content, { media: { media_ids: [mediaData] }}); // Post tweet with image
+      console.log(`Post successful on Twitter`);
+    }
+
+    else if (['.mp4', '.avi', '.mkv', '.mov', '.gif'].includes(path.extname(imagePath).toLowerCase())) {
+      const mediaData = await twitterClient.v1.uploadMedia(imagePath, { type: 'video' }); // Upload video
+      tweetResponse = await twitterClient.v2.tweet(post.content, { media: { media_ids: [mediaData] }}); // Post tweet with video
+      console.log(`Post successful on Twitter`);
+    }
+    else {
+      tweetResponse = await twitterClient.v2.tweet(post.content); // Post tweet without media
+    }
+    
+    const tweetId = tweetResponse?.data?.id;
+
+    if (tweetId) {
+      console.log(`Tweet ID: ${tweetId}`);
+      return tweetId; // ⬅️ Return tweet ID
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error posting to Twitter:", error.response?.data || error.message);
+  }
+  return false;
 }
 
 
@@ -494,16 +565,35 @@ const checkAndPostScheduledPosts = async () => {
       }
 
       if (post.selectedPlatforms.includes("facebook")) {
-        await postToFacebook(post, client);
-        post.posted = true;
-        await post.save();
+        const fbPostId = await postToFacebook(post, client);
+        if (fbPostId) {
+          post.posted = true;
+          post.status = 'posted';
+          post.platformPostIds = { ...post.platformPostIds, facebook: fbPostId };
+          await post.save();
+        }
       }
 
-      if (post.selectedPlatforms.includes("instagram")) {
-        await postToInstagram(post, client);
-        post.posted = true;
-        await post.save();
+      else if (post.selectedPlatforms.includes("instagram")) {
+        const igPostId = await postToInstagram(post, client);
+        if (igPostId) {
+          post.posted = true;
+          post.status = 'posted';
+          post.platformPostIds = { ...post.platformPostIds, instagram: igPostId };
+          await post.save();
+        }
       }
+
+      else if (post.selectedPlatforms.includes("twitter")) {
+        const tweetId = await postToTwitter(post, client);
+        if (tweetId) {
+          post.posted = true;
+          post.status = 'posted';
+          post.platformPostIds = { ...post.platformPostIds, twitter: tweetId };
+          await post.save();
+        }
+      }
+
     }
   } catch (error) {
     console.error("Error checking scheduled posts:", error);
