@@ -463,7 +463,7 @@ async function postToInstagram(post, client) {
     const accessToken = instagramAccount.companyToken;
     const igUserId = instagramAccount.pageId;
 
-    const mediaUrl = `${"https://ff74-2001-e68-5456-3b90-c599-ce4-184d-5774.ngrok-free.app"}${post.filePath}`;
+    const mediaUrl = `${"https://d242-58-71-215-67.ngrok-free.app"}${post.filePath}`;
 
     if (!mediaUrl) {
       console.error("❌ No valid image URL for Instagram post.");

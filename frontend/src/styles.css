@@ -80,13 +80,13 @@ body {
 
 /* Active navbar link */
 .nav-links a:hover {
-  color: var(--nav-active-text); /* light blue or whatever color you prefer */
+  color: rgb(241, 164, 20); /* light blue or whatever color you prefer */
   background-color: transparent; /* ensures no background */
 }
 
 /* Active link styling */
 .nav-links a.active {
-  color: var(--nav-active-text);
+  color: rgb(241, 164, 20);
   font-weight: bold;
   background-color: transparent;
 }
