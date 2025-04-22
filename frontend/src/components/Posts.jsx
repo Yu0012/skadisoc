@@ -19,7 +19,7 @@ const Posts = () => {
   const [editingPost, setEditingPost] = useState(null);
   const [isPlatformSelectOpen, setIsPlatformSelectOpen] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState(null);
-  
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const platforms = [{id: "facebook", name: "Facebook"}, {id: "instagram", name: "Instagram"}, {id: "twitter", name: "Twitter"}, {id: "linkedin", name: "LinkedIn"}]
 
 
@@ -115,6 +115,31 @@ const Posts = () => {
     }
   };
 
+  // 📌 Filtered posts based on search query
+  const filteredPosts = posts.filter((post) => {
+    const valueToSearch = category === "All Categories"
+      ? Object.values(post).join(" ").toLowerCase()
+      : Array.isArray(post[category])
+        ? post[category].join(", ").toLowerCase()
+        : post[category]?.toString().toLowerCase() || "";
+  
+    return valueToSearch.includes(searchQuery.toLowerCase());
+  });
+  
+
+  // 📌 Sort posts based on selected criteria
+  const sortedPosts = [...filteredPosts].sort((a, b) => {
+    if (!sortConfig.key) return 0;
+  
+    const valA = a[sortConfig.key]?.toString().toLowerCase() || "";
+    const valB = b[sortConfig.key]?.toString().toLowerCase() || "";
+  
+    if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
+    if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
+    return 0;
+  });
+  
+
 //close dropdown menu in outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -126,16 +151,11 @@ const Posts = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  // 📌 Filtered posts based on search query
-  const filteredPosts = posts.filter((post) => {
-    const matchesSearch = post.content?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = category === "All Categories" || post.status === category;
-    return matchesSearch && matchesCategory;
-  });
+
 //pagination logic
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
   //update "select all" check box based on current posts
@@ -170,6 +190,19 @@ const Posts = () => {
     setSelectedPosts([]);
   };
 
+  const handleSort = (key) => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        return {
+          key,
+          direction: prev.direction === "asc" ? "desc" : "asc",
+        };
+      }
+      return { key, direction: "asc" };
+    });
+  };
+  
+
   return (
     <div className="posts-container">
       {/*Header and actions*/}
@@ -185,16 +218,18 @@ const Posts = () => {
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
-          <option>All Categories</option>
-          <option>Published</option>
-          <option>Scheduled</option>
+          <option value="All Categories">All Categories</option>
+          <option value="client">Client</option>
+          <option value="content">Content</option>
+          <option value="selectedPlatforms">Platform</option>
+          <option value="status">Status</option>
         </select>
 
 
         <div className="search-box">
           <input
             type="text"
-            placeholder={`Search by ${category}`}
+            placeholder={`Search by ${category === "All Categories" ? "any field" : category}`}
             value={searchQuery}
             onChange={handleSearch}
           />
@@ -221,12 +256,11 @@ const Posts = () => {
                 onChange={handleSelectAll}
               />
             </th> */}
-            <th>Client</th>
+            <th onClick={() => handleSort("client")}>Client</th>
             <th>Content</th>
-            <th>Hashtags</th>
-            <th>Platforms</th>
-            <th>Status</th>            
-            <th></th>
+            <th onClick={() => handleSort("selectedPlatforms")}>Platforms</th>
+            <th  onClick={() => handleSort("status")}>Status</th>            
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -247,7 +281,6 @@ const Posts = () => {
               </td> */}
               <td>{post.client || "-"}</td>
               <td>{post.content}</td>
-              <td>{post.hashtags || "-"}</td>
               <td>{post.selectedPlatforms.join(", ") || "-"}</td>
               <td>{post.status || "-"}</td>
               <td style={{ textAlign: "right" }}>
@@ -373,7 +406,7 @@ const Posts = () => {
                 }
               });
             }}
-            platform={selectedPlatforms}
+            platform={editingPost?.selectedPlatforms?.[0] || selectedPlatforms}
           />
       )}
 
