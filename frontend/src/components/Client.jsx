@@ -205,6 +205,11 @@ const Client = () => {
         <div className="posts-actions">
           <div className="icon-row">
               <FaSyncAlt className="refresh-icon" id="client" title="Refresh Data" onClick={handleRefresh}/>
+              {activeView === "table" && (
+                <button className="create-user-btn" onClick={handleAddClient}>
+                  Add Client
+                </button>
+              )}
               <div>
                 {/* Changes Views of page, whether it's Block View or Table View */}
                 <button
