@@ -125,15 +125,18 @@ const Navbar = () => {
           {notifDropdownOpen && (
             <div className="dropdown-menu notifications-dropdown">
               <h4>Notifications</h4>
-              {hasNotifications ? (
-                notifications.map((notif) => <p key={notif.id}>{notif.message}</p>)
-              ) : (
-                <p>No new notifications</p>
-              )}
               <hr />
-              <Link to="/notifications" className="view-all" onClick={() => setNotifDropdownOpen(false)}>
+              <div className="notifications-notifs">
+                {hasNotifications ? (
+                  notifications.map((notif) => <p key={notif.id}>{notif.message}</p>)
+                ) : (
+                  <p>No new notifications</p>
+                )}
+              </div>
+              <hr />
+              <button className="notification-button" onClick={() => {setNotifDropdownOpen(false), handleUserNav("/notifications")}}>
                 View All
-              </Link>
+              </button>
             </div>
           )}
         </div>
@@ -148,14 +151,14 @@ const Navbar = () => {
           />
           {userDropdownOpen && (
             <div className="user-dropdown">
-              <div onClick={() => handleUserNav("/profile")}>User Profile</div>
+              <button onClick={() => handleUserNav("/profile")}>User Profile</button>
               <hr />
-              <div onClick={() => handleUserNav("/settings")}>User Settings</div>
-              <div onClick={() => handleUserNav("/support")}>Help & Support</div>
+              <button onClick={() => handleUserNav("/settings")}>User Settings</button>
+              <button onClick={() => handleUserNav("/support")}>Help & Support</button>
               <hr />
-              <div onClick={() => handleUserNav("/logout")} className="logout">
+              <button className="logout" onClick={() => handleUserNav("/logout")} >
                 Sign Out
-              </div>
+              </button>
             </div>
           )}
         </div>

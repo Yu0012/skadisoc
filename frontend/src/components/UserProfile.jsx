@@ -114,7 +114,7 @@ const UserProfile = () => {
 
             {/* Stats display */}
             <div className="user-stats">
-              <h3>📊 Activity Summary</h3>
+              <h3>Activity Summary 📊</h3>
               <ul>
                 <li>Total Posts: <strong>{stats.totalPosts}</strong></li>
                 <li>Published Posts: <strong>{stats.published}</strong></li>

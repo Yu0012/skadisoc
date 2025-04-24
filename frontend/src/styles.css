@@ -75,6 +75,8 @@ body {
   color: var(--text-color);
   font-size: 16px;
   transition: 0.3s;
+  padding: 5px; 
+  border-radius: 10px; 
 }
 
 /* Active navbar link */
@@ -87,6 +89,7 @@ body {
   color: var(--nav-hover);
   background-color: var(--nav-bg-hover);
 }
+
 
 /* 🔔 Right Side Icons */
 .nav-icons {
@@ -116,11 +119,28 @@ body {
   width: 250px;
   background: white;
   border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
   padding: 10px;
   display: flex;
   flex-direction: column;
   z-index: 100;
+}
+
+.notifications-notifs p{
+  text-align: center;
+}
+
+
+.notification-button{
+  background: var(--options);
+  border: 1px solid var(--options);
+  color: var(--options-color) !important;
+  border-radius: 5px;
+  text-align: center !important;
+}
+
+.notification-button:hover{
+  background-color: var(--options-highlight) !important;
 }
 
 .notification-item {
@@ -158,27 +178,36 @@ body {
   width: 180px;
   background-color:var(--options);
   border: 1px solid var(--options);
-  border-radius: 8px;
+  border-radius: 5px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   font-size: 14px;
+  padding: 5px;
   z-index: 999;
   overflow: hidden;
 }
 
-.user-dropdown a,
-.user-dropdown div {
-  display: block;
+.user-dropdown button{
   padding: 10px 16px;
-  text-decoration: none;
-  color: var(--options-color);
   font-size: 14px;
+  text-decoration: none;
+  text-align: left;
   cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  width: 100%;
+  color: var(--options-color) !important;
   transition: background 0.2s ease;
 }
 
-.user-dropdown a:hover,
-.user-dropdown div:hover {
-  background-color: #f0f0f0;
+.user-dropdown button:hover{
+  background: var(--options-highlight);
+}
+
+
+.logout:hover {
+  background-color: #fc3d47 !important;
+  color: white !important;
 }
 
 .user-dropdown hr {
@@ -188,8 +217,7 @@ body {
 }
 
 .user-dropdown .logout {
-  color: rgb(255, 0, 0);
-  font-weight: bold;
+  color: white;
 }
 
 /* 📂 Dropdown Menu */
@@ -198,7 +226,8 @@ body {
   right: 0;
   top: 50px;
   width: 200px;
-  background: white;
+  background: var(--options);
+  color: var(--options-color);
   border-radius: 8px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   padding: 10px;
@@ -210,7 +239,8 @@ body {
 .dropdown-menu a {
   padding: 10px;
   text-decoration: none;
-  color: #333;
+  border-radius: 5px;
+  color: var(--options-color);
   font-size: 14px;
   font-weight: 500;
   transition: 0.3s;
@@ -266,12 +296,18 @@ body {
 
 /* For the Delete option within menu */
 .dropdown-menu.client a#Delete{
-  color: red;
-  font-weight: bold;
+  color: #CF6679;
 }
 
 .dropdown-menu.client a#Delete:hover {
   background: #ffe6e6; 
+}
+
+
+.dropdown-menu.notifications-dropdown h4{
+  text-align: center;
+  padding: 5px !important;
+  margin: 0px !important;
 }
 
 /* 🔽 Export Button Styling */
@@ -296,18 +332,7 @@ body {
   background-color: black;
 }
 
-/* 🚪 Logout Link */
-.logout {
-  color: red;
-  font-weight: bold;
-}
 
-
-.logout:hover{
-  color: white !important;
-  background-color: red !important;
-  border-radius: 5px;
-}
 
 /* 📌 **Posts Page Styles** */
 .posts-container {
@@ -371,8 +396,7 @@ body {
 }
 
 .delete-btn {
-  color: red;
-  font-weight: bold;
+  color: #CF6679;
 }
 
 /* ➕ Create Post Button */
@@ -391,8 +415,8 @@ body {
 }
 
 .create-post-btn:hover {
-  background-color: black;
-  border: 1px solid black;
+  background-color: var(--button-hover);
+  border: 1px solid var(--button-hover);
 }
 
 /* 🔍 Search Bar + Dropdown + Export in One Line */
@@ -586,11 +610,12 @@ body {
   cursor: pointer;
   border-radius: 5px;
   transition: 0.3s;
-  font-size: 16px;
+  font-weight: bold;
 }
 
 .fc-today-button:hover{
-  background-color: var(--button-hover)
+  background-color: var(--button-hover);
+  border: 1px solid var(--button-hover);
 }
 
 .fc-nav-button {
@@ -1148,8 +1173,7 @@ input:checked + .slider:before {
 
 /* Style delete button */
 .dropdown-menu .delete-btn {
-  color: red;
-  font-weight: bold;
+  color: #CF6679;
 }
 
 .pagination-container {
@@ -1219,7 +1243,7 @@ input:checked + .slider:before {
 }
 
 .dropdown:hover {
-  background-color: black;
+  background-color: var(--button-hover);
 }
 
 .dropdown:focus {
@@ -1481,7 +1505,7 @@ input::-webkit-inner-spin-button {
   left: -10px;
   min-width: 140px; /* Smaller than user dropdown */
   background: var(--options);
-  border-radius: 6px;
+  border-radius: 5px;
   border: 1px solid var(--options);
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
   padding: 5px;
@@ -1499,7 +1523,7 @@ input::-webkit-inner-spin-button {
   border: none;
   background: none;
   width: 100%;
-  color: var(--options-color);
+  color: var(--options-color) !important;
 }
 
 .post-actions-dropdown button:hover {
@@ -1508,8 +1532,7 @@ input::-webkit-inner-spin-button {
 
 /* Delete Button - Keep it bold but smaller */
 .post-actions-dropdown .delete-btn {
-  color: rgb(255, 43, 43);
-  font-weight: bold;
+  color: white;
   font-size: 14px;
 }
 
@@ -1554,7 +1577,7 @@ input::-webkit-inner-spin-button {
 
 .popup-menu button {
   border: none;
-  color: black;
+  color: var(--options-color) !important;
   background: var(--dropdown-bg);
   padding: 8px 10px;
   cursor: pointer;
@@ -1623,14 +1646,14 @@ input::-webkit-inner-spin-button {
 .profile-card p {
   margin: 4px 0;
   font-size: 14px;
-  color: var(--client-text);
+  color: var(--user-text);
 }
 
 .edit-btn {
   margin-top: 14px;
   padding: 8px 16px;
   background: #f0f0f0;
-  border: 1px solid #ccc;
+  border: 1px solid black;
   border-radius: 6px;
   font-size: 13px;
   cursor: pointer;
@@ -1652,8 +1675,8 @@ input::-webkit-inner-spin-button {
 }
 
 .profile-card {
-  background: var(--client-block);
-  color: var(--client-text);
+  background-color: var(--user-background);
+  color: var(--user-text);
   padding: 30px;
   border-radius: 16px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
@@ -1679,7 +1702,7 @@ input::-webkit-inner-spin-button {
 .profile-card p {
   margin: 4px 0;
   font-size: 14px;
-  color: var(--client-text);
+  color: var(--user-text);
 }
 
 .edit-btn {
@@ -1695,7 +1718,8 @@ input::-webkit-inner-spin-button {
 }
 
 .edit-btn:hover {
-  background: #e4e4e4;
+  background: var(--button-hover);
+  border-color: var(--button-hover);
 }
 
 .user-stats {
@@ -1705,13 +1729,13 @@ input::-webkit-inner-spin-button {
   border-radius: 12px;
   text-align: left;
   font-size: 14px;
-  color: #333;
+  color: var(--user-stats-text);
 }
 
 .user-stats h3 {
   font-size: 15px;
   margin-bottom: 10px;
-  color: #222;
+  color: var(--user-stats-text);
   display: flex;
   align-items: center;
 }
@@ -2030,8 +2054,7 @@ body {
 
 .post-actions-dropdown .delete-btn:hover {
   background-color: #fc3d47;
-  color: white;
-  font-weight: bold;
+  color: white !important;
   font-size: 14px;
 }
 
@@ -2053,7 +2076,7 @@ body {
 
 
 .delete-selected-btn{
-  background-color: red;
+  background-color: #CF6679;
   color: white;
   padding: 10px 15px;
   border: none;
@@ -2065,12 +2088,13 @@ body {
   transition: 0.3s;
   margin-top: 10px;
 }
+
 .create-user-btn {
   background-color: var(--button-bg);
   color: var(--button-text);
   padding: 10px 15px;
   border-radius: 5px;
-  border-color: var(--button-bg);
+  border: 1px solid var(--button-bg);
   display: flex;
   align-items: center;
   gap: 5px;
@@ -2081,6 +2105,7 @@ body {
 
 .create-user-btn:hover{
   background-color: var(--button-hover);
+  border: 1px solid var(--button-hover);
   color: white;
 }
 
@@ -2490,14 +2515,17 @@ body {
 
  /* Light Theme (Default) */
  :root {
+  --accent-color: #0a0f5c;
+  --darker-accent-color: #383d86;
+
   --bg-color: white;
   --bg-color-secondary: #f5f7fb;
   --text-color: #0a0f5c;
 
-  --button-bg: #0a0f5c;
-  --button-border: #0a0f5c;
+  --button-bg: var(--accent-color);
+  --button-border: var(--accent-color);
   --button-text: white;
-  --button-hover: black;
+  --button-hover: var(--darker-accent-color);
 
   --nav-hover: white;
   --nav-bg-hover:#0a0f5c;
@@ -2548,7 +2576,10 @@ body {
   --options-color: black;
   --options-highlight: #d6d6d6;
 
-  --user-stats: #6c7789;
+  --user-background: white;
+  --user-stats: #6da5fa;
+  --user-text: black;
+  --user-stats-text: white;
 
   --client-select-view: #0D286E;
   --client-selected-view: #a2a2a2;
@@ -2557,33 +2588,36 @@ body {
 
 /* Dark Theme */
 [data-selected-theme="dark"] {
-  --bg-color: #1f2027;
+  --accent-color: #007BFF;
+  --darker-accent-color: #005B96;
+
+  --bg-color: #003366;
   --bg-color-secondary:#272831;
   --text-color: white;
 
-  --button-bg: #3983f6;
-  --button-border: #3983f6;
+  --button-bg: var(--accent-color);
+  --button-border: var(--accent-color);
   --button-text: rgb(255, 255, 255);
-  --button-hover: #0D286E;
+  --button-hover: var(--darker-accent-color);
 
   --nav-hover: #0a0f5c;
   --nav-bg-hover: white;
-  --nav-active-text: #2eb4fb;  /* Active link color in dark mode */
+  --nav-active-text: var(--accent-color);  /* Active link color in dark mode */
 
   --welcome-text: #a2a1a1;
   --username-text: #4a6eff;
 
-  --table-bg: #32323b;
-  --table-border: #6c7789;
+  --table-bg: #3B3B3B;
+  --table-border: #757575;
   --table-current-day: #4a6eff;
   
-  --calendar-lines: #6c7789;
+  --calendar-lines: #757575;
 
   --search-bar: #33343a;
   --search-bar-border: #202125;
   --search-bar-color: white;
 
-  --category-dropdown: #3983f6;
+  --category-dropdown: var(--accent-color);
 
   --icon-color: white;
 
@@ -2592,8 +2626,8 @@ body {
   --client-border: #6c7789;
   --client-ellipsis: white;
 
-  --add-client: #3983f6;
-  --add-client-border: #3983f6;
+  --add-client: var(--accent-color);
+  --add-client-border: var(--accent-color);
 
   --pagination: #0a0f5c;
   --pagination-border: #6c7789;
@@ -2615,10 +2649,13 @@ body {
   --options-color: white;
   --options-highlight: #202125;
 
-  --user-stats: #6c7789;
+  --user-background: #005B96;
+  --user-stats: #003366;
+  --user-text: white;
+  --user-stats-text: white;
 
-  --client-select-view: #3983f6;
-  --client-selected-view: #0a0f5c;
+  --client-select-view: var(--accent-color);
+  --client-selected-view: #a2a2a2;
   --client-selected-text: white;
 
 
