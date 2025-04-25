@@ -563,20 +563,7 @@ body {
   justify-content: flex-start;
   align-items: center;
 }
-.fc-day-today .fc-daygrid-day-number {
-  background-color: var(--table-current-day) !important; 
-  color: white !important;
-  border-radius: 6px;
-  padding: 3px 6px; 
-  font-size: 14px; 
-  font-weight: bold; 
-  display: inline-block;
-  line-height: 1; 
-  width: fit-content; 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+
 
 .fc-col-header-cell {
   font-size: 16px;
@@ -597,34 +584,7 @@ body {
   font-weight: bold; 
 }
 
-/* Displays current day on the calendar*/
-.fc-day-today{
-  background: none !important;
-}
 
-.fc-today-button{
-  padding: 10px 25px;
-  background-color: var(--button-bg);
-  border: 1px solid var(--button-border);
-  color: white;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: 0.3s;
-  font-weight: bold;
-}
-
-.fc-today-button:hover{
-  background-color: var(--button-hover);
-  border: 1px solid var(--button-hover);
-}
-
-.fc-nav-button {
-  font-size: 20px;
-  padding: 1px;
-  margin: 1px;
-  cursor: pointer;
-  color: var(--icon-color);
-}
 
 /* The rounded border for the current date */
 .fc-current-date {
@@ -643,6 +603,7 @@ body {
   align-items: center;
   gap: 10px; /* Spacing between elements */
 }
+
 .fc-toolbar-right{
   display: flex;
   align-items: center;
@@ -690,6 +651,58 @@ body {
 
 [data-selected-theme="dark"] .fc-scrollgrid {
   border-radius: 8px; 
+}
+
+/* 1. Collapse all adjacent table borders into one */
+.fc-scrollgrid-sync-table {
+  border-collapse: collapse !important;
+}
+
+/* 2. Kill FullCalendar’s default cell borders */
+.fc-theme-standard td {
+  border: none !important;
+}
+
+/* 3. Draw exactly one 1px border around every header‐cell and day‐cell */
+.fc-scrollgrid th,
+.fc-scrollgrid td {
+  border: 1px solid #0D286E !important;
+  padding: 0; 
+  margin: 0; 
+}
+
+/* (Optional) If you still want no border under the header row: */
+.fc-scrollgrid thead tr th {
+  border-bottom: none !important;
+}
+
+/* Displays current day on the calendar*/
+.fc-day-today{
+  background: none !important;
+}
+
+.fc-today-button{
+  padding: 10px 25px;
+  background-color: var(--button-bg);
+  border: 1px solid var(--button-border);
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.3s;
+  font-weight: bold;
+}
+
+.fc-today-button:hover{
+  background-color: var(--button-hover);
+  border: 1px solid var(--button-hover);
+}
+
+.fc-nav-button {
+  font-size: 20px;
+  padding: 1px;
+  margin: 1px;
+  cursor: pointer;
+  color: var(--icon-color);
 }
 
 /* Client List (Wrap to Next Line When Full) */
@@ -2515,17 +2528,15 @@ body {
 
  /* Light Theme (Default) */
  :root {
-  --accent-color: #0a0f5c;
-  --darker-accent-color: #383d86;
 
   --bg-color: white;
   --bg-color-secondary: #f5f7fb;
   --text-color: #0a0f5c;
 
-  --button-bg: var(--accent-color);
-  --button-border: var(--accent-color);
+  --button-bg: #0a0f5c;
+  --button-border: #0a0f5c;
   --button-text: white;
-  --button-hover: var(--darker-accent-color);
+  --button-hover:  #383d86;
 
   --nav-hover: white;
   --nav-bg-hover:#0a0f5c;
@@ -2588,36 +2599,33 @@ body {
 
 /* Dark Theme */
 [data-selected-theme="dark"] {
-  --accent-color: #007BFF;
-  --darker-accent-color: #005B96;
-
-  --bg-color: #003366;
+  --bg-color: #1f2027;
   --bg-color-secondary:#272831;
   --text-color: white;
 
-  --button-bg: var(--accent-color);
-  --button-border: var(--accent-color);
+  --button-bg: #3688cc;
+  --button-border: #3688cc;
   --button-text: rgb(255, 255, 255);
-  --button-hover: var(--darker-accent-color);
+  --button-hover: #0D286E;
 
   --nav-hover: #0a0f5c;
   --nav-bg-hover: white;
-  --nav-active-text: var(--accent-color);  /* Active link color in dark mode */
+  --nav-active-text:  #3688cc;  /* Active link color in dark mode */
 
   --welcome-text: #a2a1a1;
   --username-text: #4a6eff;
 
-  --table-bg: #3B3B3B;
-  --table-border: #757575;
+  --table-bg: #32323b;
+  --table-border: #6c7789;
   --table-current-day: #4a6eff;
   
-  --calendar-lines: #757575;
+  --calendar-lines: #6c7789;
 
   --search-bar: #33343a;
   --search-bar-border: #202125;
   --search-bar-color: white;
 
-  --category-dropdown: var(--accent-color);
+  --category-dropdown: #3688cc;
 
   --icon-color: white;
 
@@ -2626,8 +2634,8 @@ body {
   --client-border: #6c7789;
   --client-ellipsis: white;
 
-  --add-client: var(--accent-color);
-  --add-client-border: var(--accent-color);
+  --add-client: #3688cc;
+  --add-client-border: #3688cc;
 
   --pagination: #0a0f5c;
   --pagination-border: #6c7789;
@@ -2649,12 +2657,12 @@ body {
   --options-color: white;
   --options-highlight: #202125;
 
-  --user-background: #005B96;
-  --user-stats: #003366;
+  --user-background: #32323b;
+  --user-stats: #6c7789;
   --user-text: white;
   --user-stats-text: white;
 
-  --client-select-view: var(--accent-color);
+  --client-select-view: #3688cc;
   --client-selected-view: #a2a2a2;
   --client-selected-text: white;
 
