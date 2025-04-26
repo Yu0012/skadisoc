@@ -12,6 +12,7 @@ import HelpSupport from "./components/HelpSupport";
 import FacebookPreview from "./components/FacebookPreview";
 import InstagramPreview from "./components/InstagramPreview";
 import TwitterPreview from "./components/TwitterPreview";
+import SocialMediaDashboard from './components/SocialMediaDashboard';
 import "./styles.css";
 
 const App = () => (

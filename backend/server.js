@@ -10,7 +10,9 @@ const mime = require("mime-types");
 const axios = require("axios");
 const {TwitterApi} = require("twitter-api-v2");
 const FormData = require("form-data");
-
+const passport = require('passport');
+const TwitterStrategy = require('passport-twitter').Strategy;
+const session = require('express-session');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -599,6 +601,93 @@ const checkAndPostScheduledPosts = async () => {
     console.error("Error checking scheduled posts:", error);
   }
 };
+
+// Step 1: OAuth Login Route
+app.get('/auth/facebook', (req, res) => {
+  const authUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${process.env.FB_APP_ID}&redirect_uri=${process.env.REDIRECT_URI}&scope=pages_show_list,pages_manage_posts,instagram_basic,instagram_content_publish&response_type=code`;
+  res.redirect(authUrl);
+});
+
+app.get('/auth/facebook/callback', async (req, res) => {
+  const { code } = req.query;
+
+  try {
+    // Step 2: Exchange code for access token
+    const tokenResponse = await axios.get(`https://graph.facebook.com/v18.0/oauth/access_token`, {
+      params: {
+        client_id: process.env.FB_APP_ID,
+        redirect_uri: process.env.REDIRECT_URI,
+        client_secret: process.env.FB_APP_SECRET,
+        code,
+      },
+    });
+
+    const accessToken = tokenResponse.data.access_token;
+    console.log("Access Token:", accessToken);
+
+    // Step 3: Use the access token to fetch user details
+    // Get list of pages
+    const pagesResponse = await axios.get(`https://graph.facebook.com/v18.0/me/accounts`, {
+      params: { access_token: accessToken },
+    });
+    console.log("Pages:", pagesResponse.data);
+
+    const page = pagesResponse.data.data[0]; // Assuming the first page
+    if (!page) return res.status(400).json({ message: 'No page found' });
+
+    // Get Instagram Business ID
+    const igResponse = await axios.get(`https://graph.facebook.com/v18.0/${page.id}?fields=instagram_business_account`, {
+      params: { access_token: page.access_token },
+    });
+
+    const instagramBusinessId = igResponse.data.instagram_business_account?.id || '';
+
+    const userResponse = await axios.get(`https://graph.facebook.com/me?fields=id,name,email&access_token=${accessToken}`);
+    console.log("User Details:", userResponse.data);
+
+    res.json({ message: 'Successfully authenticated!', pageId: page.id, instagramBusinessId });
+  } 
+  
+  catch (error) {
+    console.error("Error during Facebook OAuth:", error.response?.data || error.message);
+    res.status(500).json({ error: "Failed to authenticate with Facebook" });
+  }
+});
+
+
+// Express session
+app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Serialize user
+passport.serializeUser((user, done) => {done(null, user);});
+passport.deserializeUser((obj, done) => {done(null, obj);});
+
+passport.use(new TwitterStrategy({
+  consumerKey: process.env.TWITTER_CONSUMER_KEY,
+  consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
+  callbackURL: "http://localhost:5000/auth/twitter/callback"
+},
+function(token, tokenSecret, profile, done) {
+  // Save tokens to DB for future requests
+  // console.log('Twitter Profile:', profile);
+  console.log('Access Token:', token);
+  console.log('Token Secret:', tokenSecret);
+  return done(null, profile);
+}));
+
+// Step 1: Start the login process
+app.get('/auth/twitter', passport.authenticate('twitter'));
+
+// Step 2: Handle the callback
+app.get('/auth/twitter/callback',
+  passport.authenticate('twitter', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful login
+    res.send("Twitter Login Successful");
+  }
+);
 
 // Run the function every minute
 setInterval(checkAndPostScheduledPosts, 60 * 1000);
