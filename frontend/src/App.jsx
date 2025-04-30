@@ -1,6 +1,8 @@
 import React from "react";
 import { useLocation } from 'react-router-dom';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext"; // ✅ Your context provider
+import AuthForm from "./components/AuthForm";
 import Navbar from "./components/Navbar";
 import Dashboard from "./components/Dashboard";
 import Posts from "./components/Posts"; 
@@ -14,17 +16,19 @@ import FacebookPreview from "./components/FacebookPreview";
 import InstagramPreview from "./components/InstagramPreview";
 import TwitterPreview from "./components/TwitterPreview";
 import SocialMediaDashboard from './components/SocialMediaDashboard';
-import "./styles.css";
+// import "./styles.css";
 
 // 🧠 Create a sub-component inside Router
 const AppContent = () => {
   const location = useLocation();
-  const hideNavbarOn = ["/client-login"];
+  const hideNavbarOn = ["/client-login", "/"];
 
   return (
     <>
       {!hideNavbarOn.includes(location.pathname) && <Navbar />}
       <Routes>
+        <Route path="/" element={<AuthForm />} />
+        <Route path="/authform" element={<AuthForm />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/posts" element={<Posts />} />
         <Route path="/account" element={<Account />} />
@@ -44,9 +48,15 @@ const AppContent = () => {
 
 // 👇 Final exported App wrapped in Router
 const App = () => (
-  <Router>
-    <AppContent />
-  </Router>
+  <AuthProvider>
+    <Router>
+      <AppContent />
+    </Router>
+  </AuthProvider>
+  //   <Router>
+    //   <AppContent />
+   // </Router>
+
 );
 
 export default App;

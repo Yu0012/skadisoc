@@ -21,6 +21,8 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json()); // Use built-in JSON parsing
 app.use(express.static('uploads')); // Serve uploaded files
+app.use(passport.initialize()); // Initialize passport
+
 
 // Connect to MongoDB Atlas
 mongoose.connect(process.env.MONGO_URI, {
@@ -692,7 +694,31 @@ app.get('/auth/twitter/callback',
 // Run the function every minute
 setInterval(checkAndPostScheduledPosts, 60 * 1000);
 
+// Test routes
+app.get('/test', (req, res) => {
+  res.send('✅ Test route works!');
+});
+
+app.get('/', (req, res) => {
+  res.send('🚀 Welcome to the API root');
+});
+
 // ===============================
 // 📌 **Start Server**
 // ===============================
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+// ✅ Initialize Passport and use JWT strategy
+require('./config/passport')(passport); // ← Load passport config
+app.use(passport.initialize());         // ← Initialize passport
+
+// Routes
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
+
+app.get('/test', (req, res) => res.send('✅ Test route working'));
+
+
+app.listen(PORT, () => {
+  console.log(`✅ Server running on http://localhost:${PORT}`);
+});

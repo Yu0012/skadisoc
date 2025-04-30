@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import Lottie from "lottie-react";
 import "../styles.css";
 import logo from "../assets/skadiLogo.png";
@@ -15,6 +16,7 @@ import moonIcon from "../assets/icon-moon.png";
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { permissions, user, logout } = useContext(AuthContext);
   const themes = ['light', 'dark'] //For Light/Dark themes
   const [currentTheme, setCurrentTheme] = useState(
     localStorage.getItem("theme") || "light"
@@ -73,9 +75,20 @@ const Navbar = () => {
     setCurrentTheme(nextTheme);
   };
   const handleUserNav = (path) => {
-    navigate(path);
+    if (path === "/logout") {
+      logout();
+      navigate("/");
+    } else {
+      navigate(path);
+    }
     setUserDropdownOpen(false);
   };
+
+  const hasMenuAccess = (menuName) => {
+    return permissions?.menus?.includes(menuName);
+  };
+
+  if (!user || !permissions || !permissions.menus.length) return null;
 
   return (
     <nav className="navbar">
@@ -84,21 +97,31 @@ const Navbar = () => {
 
       {/* Navigation Links */}
       <div className="nav-links">
-        <Link to="/dashboard" className={location.pathname === "/dashboard" ? "active" : ""}>
-          Dashboard
-        </Link>
-        <Link to="/posts" className={location.pathname === "/posts" ? "active" : ""}>
-          Posts
-        </Link>
-        <Link to="/calendar" className={location.pathname === "/calendar" ? "active" : ""}>
-          Calendar
-        </Link>
-        <Link to="/account" className={location.pathname === "/account" ? "active" : ""}>
-          Account
-        </Link>
-        <Link to="/client" className={location.pathname === "/client" ? "active" : ""}>
-          Client
-        </Link>
+        {hasMenuAccess("dashboard") && (
+          <Link to="/dashboard" className={location.pathname === "/dashboard" ? "active" : ""}>
+            Dashboard
+          </Link>
+        )}
+        {hasMenuAccess("posts") && (
+          <Link to="/posts" className={location.pathname === "/posts" ? "active" : ""}>
+            Posts
+          </Link>
+        )}
+        {hasMenuAccess("calendar") && (
+          <Link to="/calendar" className={location.pathname === "/calendar" ? "active" : ""}>
+            Logs
+          </Link>
+        )}
+        {hasMenuAccess("account") && (
+          <Link to="/account" className={location.pathname === "/account" ? "active" : ""}>
+            Account
+          </Link>
+        )}
+        {hasMenuAccess("client") && (
+          <Link to="/client" className={location.pathname === "/client" ? "active" : ""}>
+            Client
+          </Link>
+        )}
       </div>
 
       {/* Right Side Icons */}
