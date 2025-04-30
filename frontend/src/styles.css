@@ -2774,7 +2774,7 @@ body {
 /* Platform Dropdown Menu New!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
 .platform-dropdown-wrapper {
   position: absolute;
-  top: 210px; /* Adjust this based on your Create Post button's position */
+  top: 250px; /* Adjust this based on your Create Post button's position */
   right: 25px; /* Adjust as needed */
   z-index: 9999;
   width: fit-content;

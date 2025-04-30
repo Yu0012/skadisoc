@@ -234,7 +234,7 @@ const AddClientModal = ({
               type="button"
               className="create-post-btn"
               style={{ backgroundColor: "#6b46c1", marginTop: "10px" }}
-              onClick={() => window.open(`/social-dashboard?clientId=${clientData._id}`, "_blank")}
+              onClick={() => window.open(`/client-login?clientId=${clientData._id}`, "_blank")}
             >
               Open Social Media Dashboard
             </button>
