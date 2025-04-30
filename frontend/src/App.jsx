@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Chatbot from "./components/Chatbot";
 import Dashboard from "./components/Dashboard";
 import Posts from "./components/Posts"; 
 import Account from "./components/Account";
@@ -17,6 +18,7 @@ import "./styles.css";
 const App = () => (
   <Router>
     <Navbar />
+    <Chatbot />
     <Routes>
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/posts" element={<Posts />} />
