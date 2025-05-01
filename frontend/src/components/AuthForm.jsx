@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../AuthForm.css';
+import styles from './AuthForm.module.css'; // Import your CSS file for styling
 import { login } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
 import ForgotPassword from './ForgotPassword';
@@ -112,6 +112,8 @@ const AuthForm = () => {
       const perms = await login(email, password);
       setPermissions(perms);
       alert('Login successful!');
+      console.log('PERMISSIONS:', perms); // Check if this is set
+
 
     } catch (err) {
       alert('Login failed: ' + err.message);
@@ -126,20 +128,21 @@ const AuthForm = () => {
   }, [permissions, navigate]);
 
   return (
-    <div className={`auth-container ${isDarkMode ? 'dark-theme' : ''}`}>
+    
+    <div className={styles['authFormContainer', isDarkMode ? styles.dark : styles.light]}>  
       <button 
-        className="theme-toggle"
+        className={styles['theme-toggle']}
         onClick={toggleTheme}
         aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
       >
         {isDarkMode ? '☀️' : '🌙'}
       </button>
 
-      <div className="floating-icons">
+      <div className={styles['floating-icons']}>
         {icons.map((icon) => (
           <div 
             key={icon.id} 
-            className="floating-icon" 
+            className={styles['floating-icon']} 
             style={{
               color: icon.color,
               top: `${icon.top}%`,
@@ -158,9 +161,9 @@ const AuthForm = () => {
         ))}
       </div>
 
-      <div className="auth-form">
-        <div className="auth-header">
-          <div className="logo-container">
+      <div className={styles['auth-form']}>
+        <div className= {styles['auth-header']}>
+          <div className={styles['logo-container']}>
             <img src={logo} alt="Company Logo" />
           </div>
           <h1>Welcome Back</h1>
@@ -168,17 +171,18 @@ const AuthForm = () => {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="form-fields">
-            <div className="form-group">
+          <div className={styles['form-fields']}>
+            <div className={styles['form-group']}>
               <label htmlFor="email">Email</label>
-              <div className="input-container">
-                <div className="input-icon">
+              <div className={styles['input-container']}>
+                <div className={styles['input-icon']}>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                   </svg>
                 </div>
-                <input
+                <div className={styles.inputField}>
+                  <input
                   id="email"
                   name="email"
                   type="email"
@@ -186,17 +190,19 @@ const AuthForm = () => {
                   required
                   placeholder="your@email.com"
                   value={email}onChange={(e) => setEmail(e.target.value)}
-                />
+                  />
+                </div>
+                
               </div>
             </div>
 
-            <div className="form-group">
-              <div className="label-container">
+            <div className={styles['form-group']}>
+              <div className={styles['label-container']}>
                 <label htmlFor="password">Password</label>
                 <a href="/forgotpassword">Forgot password?</a>
               </div>
-              <div className="input-container">
-                <div className="input-icon">
+              <div className={styles['input-container']}>
+                <div className={styles['input-icon']}>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path
                       fillRule="evenodd"
@@ -205,19 +211,21 @@ const AuthForm = () => {
                     />
                   </svg>
                 </div>
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  required
-                  placeholder="your password"
-                  className="password-input"
-                  value={password}onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className={styles.inputField}>
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    required
+                    placeholder="your password"
+                    className={styles["password-input"]}
+                    value={password}onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
                 <button 
                   type="button" 
-                  className="password-toggle"
+                  className={styles["password-toggle"]}
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
@@ -235,25 +243,25 @@ const AuthForm = () => {
               </div>
             </div>
 
-            <div className="remember-me">
+            <div className={styles["remember-me"]}>
               <input id="remember_me" name="remember_me" type="checkbox" />
               <label htmlFor="remember_me">Stay Signed In</label>
             </div>
 
-            <div className="submit-button">
+            <div className={styles["submit-button"]}>
               <button type="submit">Login</button>
             </div>
           </div>
         </form>
 
-        <div className="divider-container">
-          <div className="divider-line"></div>
-          <div className="divider-text">Or continue with</div>
-          <div className="divider-line"></div>
+        <div className={styles["divider-container"]}>
+          <div className={styles["divider-line"]}></div>
+          <div className={styles["divider-text"]}>Or continue with</div>
+          <div className={styles["divider-line"]}></div>
         </div>
 
-        <div className="social-logins">
-          <button type="button" className="google-btn">
+        <div className={styles['social-login-buttons']}>
+          <button type="button" className={styles['google-btn']}>
             <svg viewBox="0 0 24 24" fill="currentColor">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />

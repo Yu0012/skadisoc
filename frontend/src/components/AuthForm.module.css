@@ -1,4 +1,4 @@
-/* Add this at the very top of your CSS file */
+/* Add this at the very top of your CSS file
 :root {
     --base-font-size: 16px;
     --input-height: 2.5rem;
@@ -16,9 +16,9 @@
   
   html {
     font-size: var(--base-font-size);
-  }
+  } */
   
-  body {
+  .loginWrapper {
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
@@ -26,7 +26,7 @@
   }
   
   /* Then update your input and button styles to use consistent sizing */
-  input {
+  .inputField {
     height: var(--input-height);
     padding: var(--input-padding) var(--input-padding) var(--input-padding) 2.5rem;
     /* rest of your input styles */
@@ -198,7 +198,7 @@
       transition: color 0.3s ease;
     }
     
-    input {
+    .inputField {
       width: 100%;
       padding: 0.5rem 0.75rem 0.5rem 2.5rem;
       background-color: var(--input-bg, white);
@@ -232,7 +232,7 @@
       transition: color 0.3s ease;
     }
     
-    input:focus {
+    .input:focus {
       outline: none;
       border-color: var(--primary-btn, #3b82f6);
       box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);

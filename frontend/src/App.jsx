@@ -17,7 +17,7 @@ import FacebookPreview from "./components/FacebookPreview";
 import InstagramPreview from "./components/InstagramPreview";
 import TwitterPreview from "./components/TwitterPreview";
 import SocialMediaDashboard from './components/SocialMediaDashboard';
-// import "./styles.css";
+import "./styles.css";
 
 // 🧠 Create a sub-component inside Router
 const AppContent = () => {
