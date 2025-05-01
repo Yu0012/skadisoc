@@ -128,7 +128,6 @@ const AuthForm = () => {
   }, [permissions, navigate]);
 
   return (
-    
     <div className={styles['authFormContainer', isDarkMode ? styles.dark : styles.light]}>  
       <button 
         className={styles['theme-toggle']}

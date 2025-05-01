@@ -1,5 +1,5 @@
-/* Add this at the very top of your CSS file
-:root {
+ Add this at the very top of your CSS file
+/* :root {
     --base-font-size: 16px;
     --input-height: 2.5rem;
     --input-padding: 0.75rem;
@@ -16,7 +16,8 @@
   
   html {
     font-size: var(--base-font-size);
-  } */
+  }  */
+
   
   .loginWrapper {
     line-height: 1.5;
