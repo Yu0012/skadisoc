@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext"; // ✅ Your context provider
 import AuthForm from "./components/AuthForm";
+import ForgotPassword from "./components/ForgotPassword";
 import Navbar from "./components/Navbar";
 import Dashboard from "./components/Dashboard";
 import Posts from "./components/Posts"; 
@@ -21,7 +22,7 @@ import SocialMediaDashboard from './components/SocialMediaDashboard';
 // 🧠 Create a sub-component inside Router
 const AppContent = () => {
   const location = useLocation();
-  const hideNavbarOn = ["/client-login", "/"];
+  const hideNavbarOn = ["/client-login", "/", "/authform", "/forgotpassword"];
 
   return (
     <>
@@ -29,6 +30,7 @@ const AppContent = () => {
       <Routes>
         <Route path="/" element={<AuthForm />} />
         <Route path="/authform" element={<AuthForm />} />
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/posts" element={<Posts />} />
         <Route path="/account" element={<Account />} />

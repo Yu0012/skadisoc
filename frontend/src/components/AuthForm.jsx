@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../AuthForm.css';
 import { login } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
+import ForgotPassword from './ForgotPassword';
 
 
 const AuthForm = () => {
@@ -192,7 +193,7 @@ const AuthForm = () => {
             <div className="form-group">
               <div className="label-container">
                 <label htmlFor="password">Password</label>
-                <a href="#">Forgot password?</a>
+                <a href="/forgotpassword">Forgot password?</a>
               </div>
               <div className="input-container">
                 <div className="input-icon">
