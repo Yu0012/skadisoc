@@ -80,13 +80,13 @@ body {
 
 /* Active navbar link */
 .nav-links a:hover {
-  color: var(--nav-active-text); /* light blue or whatever color you prefer */
+  color: rgb(241, 164, 20); /* light blue or whatever color you prefer */
   background-color: transparent; /* ensures no background */
 }
 
 /* Active link styling */
 .nav-links a.active {
-  color: var(--nav-active-text);
+  color: rgb(241, 164, 20);
   font-weight: bold;
   background-color: transparent;
 }
@@ -924,7 +924,6 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  padding: 20px; /* Ensures space around modal */
 }
 
 /* Modal Header */
@@ -933,7 +932,6 @@ body {
   justify-content: space-between; /* Align title to left, close button to right */
   align-items: center;
   border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
 }
 
 /* Close Button */
@@ -954,10 +952,10 @@ body {
 .modal-content {
   background-color: var(--menu-page);
   color: var(--menu-color); 
-  width: 850px;
+  width: 1500px;
   max-width: 90vw;
   border-radius: 12px;
-  padding: 30px;
+  padding: 15px;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
 }
 
@@ -965,7 +963,8 @@ body {
 .modal-body {
   display: flex;
   flex-direction: column;
-  gap: 20px; /* More spacing between sections */
+  gap: 10px; /* More spacing between sections */
+  padding-bottom: 5px;
 }
 
 /* Just push the first label down a bit */
@@ -1007,7 +1006,7 @@ body {
 
 .dropdown-field{
   background-color: var(--category-dropdown);
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 
@@ -1141,9 +1140,19 @@ body {
   min-width: 260px;
 }
 
-.dropdown-field,
+.dropdown-field{
+  width: 98.5%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+}
+
+
+
 .input-field {
-  width: 100%;
+  width: 95%;
   padding: 0.5rem;
   border-radius: 6px;
   border: 1px solid #ccc;
@@ -1244,7 +1253,7 @@ input:checked + .slider:before {
 .post-submit-btn {
   background: var(--button-bg);
   color: white;
-  width: 100%;
+  width: 98.5%;
   padding: 14px;
   border: none;
   border-radius: 8px;
@@ -2246,9 +2255,7 @@ body {
   margin-top: 8px;
 }
 
-.content-container {
-  margin-bottom: 20px;
-}
+
 
 .insert-icon {
   width: 18px;         /* ⬅ Adjust width here */
@@ -2763,4 +2770,120 @@ body {
   display: flex;
   align-items: center;
   gap: 10px; /* spacing between dropdown, search, button, etc. */
+}
+/* Platform Dropdown Menu New!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+.platform-dropdown-wrapper {
+  position: absolute;
+  top: 250px; /* Adjust this based on your Create Post button's position */
+  right: 25px; /* Adjust as needed */
+  z-index: 9999;
+  width: fit-content;
+
+}
+
+.platform-dropdown-horizontal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  background-color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: slideDown 0.25s ease forwards;
+}
+
+.platform-dropdown-horizontal button {
+  background-color: #f1f1f1;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+@keyframes slideDown {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.platform-dropdown-horizontal button {
+  background-color: #f2f2f2;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.platform-dropdown-horizontal button:hover {
+  background-color: #e0e0e0;
+}
+
+.platform-dropdown-horizontal .cancel-btn {
+  background-color: transparent;
+  color: #777;
+  font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .platform-dropdown-wrapper {
+    left: 20px;
+    right: 20px;
+    top: auto;
+    bottom: 30px;
+  }
+
+  .platform-dropdown-horizontal {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .platform-dropdown-horizontal button {
+    width: 100%;
+    text-align: left;
+  }
+}
+
+
+.file-schedule-row {
+  display: flex;
+  align-items:flex-end;
+  justify-content: space-between;
+  margin-top: 0;
+  margin-bottom: 0;
+  width: 98.5%;
+}
+
+
+.attach-file-btn {
+  width: 35px;
+  height: 35px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  background-color: #ffffff;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  color: #1a237e; /* deep blue for the icon */
+  font-size: 18px;
+  margin: 0;
+  padding: 0px;
+}
+
+.attach-file-btn:hover {
+  background-color: #f5f5f5;
+  border-color: #1a237e;
+}
+
+.close-icon{
+  float: right;
 }
