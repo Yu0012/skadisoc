@@ -162,16 +162,24 @@ const Posts = () => {
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
-
-
-
-
   
-//pagination logic
+  // Pagination logic
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+
+  // Prevent out of bounds
+  useEffect(() => {
+    const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+    // Ensure currentPage is within the valid range
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages || 1);
+    } else if (currentPage < 1) {
+      setCurrentPage(1);
+    }
+  }, [filteredPosts.length, postsPerPage, currentPage]);
+  
 
 
   //handle single checkbox change
@@ -321,7 +329,8 @@ const Posts = () => {
           {/* Go to first page */}
           <FaAnglesLeft 
               className="pagination-navigation" 
-              onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
+              onClick={() => setCurrentPage(1)} 
+              disabled={currentPage === 1}
           />
 
           {/* Go to previous page */}

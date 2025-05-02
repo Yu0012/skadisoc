@@ -215,6 +215,11 @@ const Client = () => {
           <div className="posts-actions">
             <div className="icon-row">
               <FaSyncAlt className="refresh-icon" title="Refresh Data" onclick={handleRefresh} id="client"/>
+              {activeView === "table" && (
+                 <button className="create-user-btn" onClick={handleAddClient}>
+                   Add Client
+                 </button>
+               )}
               <div>
                 {/* Changes Views of page, whether it's Block View or Table View */}
                 <button
@@ -329,7 +334,8 @@ const Client = () => {
              {/* Go to first page */}
              <FaAnglesLeft 
                  className="pagination-navigation" 
-                 onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
+                 onClick={() => setCurrentPage(1)} 
+                 disabled={currentPage === 1}
              />
  
              {/* Go to previous page */}

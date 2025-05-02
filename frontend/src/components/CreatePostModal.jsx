@@ -157,7 +157,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform})
           <h2>{initialData?._id ? "Edit Post" : "Create Post"}</h2>
           
         </div>
-
+        <br></br>
         <div className="modal-box">
           <div className="content-section">
             <div className="modal-body">

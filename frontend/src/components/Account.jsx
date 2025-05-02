@@ -202,7 +202,7 @@ const Accounts = () => {
   // Pagination Logic
   const indexOfLastAccount = currentPage * accountsPerPage;
   const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
-  const currentAccounts = accounts.slice(indexOfFirstAccount, indexOfLastAccount);
+  const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
   const totalPages = Math.ceil(accounts.length / accountsPerPage);
   
 
