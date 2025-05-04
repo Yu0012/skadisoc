@@ -153,13 +153,25 @@ app.post('/api/posts', upload.single('file'), async (req, res) => {
 // ✅ Get all posts
 app.get('/api/posts', async (req, res) => {
   try {
-    const posts = await Post.find();
+    const { clientId } = req.query;
+    let filter = {};
+
+    if (clientId) {
+      // 🔁 Find client by ID first, then use companyName to match posts
+      const client = await Client.findById(clientId);
+      if (client) {
+        filter.client = client.companyName;
+      }
+    }
+
+    const posts = await Post.find(filter);
     res.status(200).json(posts);
   } catch (error) {
     console.error("Error fetching posts:", error);
     res.status(500).json({ error: "Failed to fetch posts" });
   }
 });
+
 
 app.get('/api/scheduled-posts', async (req, res) => {
   try {
@@ -271,6 +283,63 @@ app.put('/api/posts/:id', upload.single('file'), async (req, res) => {
   }
 });
 
+app.get('/api/posts/:postId/insights', async (req, res) => {
+  const postId = req.params.postId;
+  const accessToken = req.query.accessToken;
+
+  // 🔒 Token validation before making request
+  if (
+    !accessToken ||
+    typeof accessToken !== 'string' ||
+    !accessToken.startsWith('EAA')
+  ) {
+    console.warn("❌ Invalid or missing Facebook access token:", accessToken);
+    return res.status(400).json({
+      error: "Invalid or missing Facebook access token",
+    });
+  }
+
+  try {
+    let fields = 'likes.summary(true),comments.summary(true),shares';
+    let insights = {};
+
+    try {
+      const response = await axios.get(
+        `https://graph.facebook.com/v18.0/${postId}?fields=${fields}&access_token=${accessToken}`
+      );
+
+      const data = response.data;
+      insights.likes = data.likes?.summary?.total_count || 0;
+      insights.comments = data.comments?.summary?.total_count || 0;
+      insights.shares = data.shares?.count || 0;
+
+      return res.json(insights);
+    } catch (err) {
+      const msg = err.response?.data?.error?.message || '';
+      console.warn("📉 Fallback triggered due to error:", msg);
+
+      if (msg.includes('shares') || msg.includes('type')) {
+        const safeFields = 'likes.summary(true),comments.summary(true)';
+        const safeRes = await axios.get(
+          `https://graph.facebook.com/v18.0/${postId}?fields=${safeFields}&access_token=${accessToken}`
+        );
+        const safeData = safeRes.data;
+
+        insights.likes = safeData.likes?.summary?.total_count || 0;
+        insights.comments = safeData.comments?.summary?.total_count || 0;
+        insights.shares = 0;
+
+        return res.json(insights);
+      } else {
+        return res.status(500).json({ error: msg });
+      }
+    }
+  } catch (error) {
+    console.error('Facebook insights failed:', error?.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to fetch post insights' });
+  }
+});
+
 
 
 
@@ -306,7 +375,8 @@ app.post('/api/clients', async (req, res) => {
 app.get('/api/clients', async (req, res) => {
   try {
     const clients = await Client.find();
-    res.status(200).json(clients);
+    
+    res.json(clients);
   } catch (error) {
     console.error("Error fetching clients:", error);
     res.status(500).json({ error: "Failed to fetch clients" });
@@ -445,10 +515,32 @@ const postToFacebook = async (post, client) => {
       headers: formData.getHeaders(),
     });
 
-    if (response.data.id) {
-      console.log(`Post successful: ${response.data.id}`);
-      return response.data.id; // ⬅️ Return post ID
+    // if (response.data.id) {
+    //   console.log(`Post successful: ${response.data.id}`);
+    //   return response.data.id; // ⬅️ Return post ID
+    // }
+    const photoId = response.data.id;
+    console.log("📸 Facebook Photo ID:", photoId);
+
+    // 🔍 Try to get real post ID
+    try {
+      const postResponse = await axios.get(`https://graph.facebook.com/${photoId}?fields=post_id`, {
+        params: { access_token: pageAccessToken },
+      });
+
+      const realPostId = postResponse.data.post_id;
+      if (realPostId) {
+        console.log("✅ Real Facebook Post ID:", realPostId);
+        return realPostId;
+      } else {
+        console.warn("⚠️ Unable to resolve real post ID, falling back to photo ID");
+        return photoId;
+      }
+    } catch (fallbackErr) {
+      console.warn("⚠️ Failed to fetch real post ID, using photo ID instead:", fallbackErr.message);
+      return photoId;
     }
+
   } catch (error) {
     console.error("Error posting to Facebook:", error.response?.data || error.message);
   }
