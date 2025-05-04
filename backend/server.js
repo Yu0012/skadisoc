@@ -515,31 +515,32 @@ const postToFacebook = async (post, client) => {
       headers: formData.getHeaders(),
     });
 
-    // if (response.data.id) {
-    //   console.log(`Post successful: ${response.data.id}`);
-    //   return response.data.id; // ⬅️ Return post ID
+     if (response.data.id) {
+       console.log(`Post successful: ${response.data.id}`);
+       const postId = (pageId + "_" + response.data.id);
+       return postId; // ⬅️ Return post ID
+     }
+    // const photoId = response.data.id;
+    // console.log("📸 Facebook Photo ID:", photoId);
+
+    // // 🔍 Try to get real post ID
+    // try {
+    //   const postResponse = await axios.get(`https://graph.facebook.com/${photoId}?fields=post_id`, {
+    //     params: { access_token: pageAccessToken },
+    //   });
+
+    //   const realPostId = postResponse.data.post_id;
+    //   if (realPostId) {
+    //     console.log("✅ Real Facebook Post ID:", realPostId);
+    //     return realPostId;
+    //   } else {
+    //     console.warn("⚠️ Unable to resolve real post ID, falling back to photo ID");
+    //     return photoId;
+    //   }
+    // } catch (fallbackErr) {
+    //   console.warn("⚠️ Failed to fetch real post ID, using photo ID instead:", fallbackErr.message);
+    //   return photoId;
     // }
-    const photoId = response.data.id;
-    console.log("📸 Facebook Photo ID:", photoId);
-
-    // 🔍 Try to get real post ID
-    try {
-      const postResponse = await axios.get(`https://graph.facebook.com/${photoId}?fields=post_id`, {
-        params: { access_token: pageAccessToken },
-      });
-
-      const realPostId = postResponse.data.post_id;
-      if (realPostId) {
-        console.log("✅ Real Facebook Post ID:", realPostId);
-        return realPostId;
-      } else {
-        console.warn("⚠️ Unable to resolve real post ID, falling back to photo ID");
-        return photoId;
-      }
-    } catch (fallbackErr) {
-      console.warn("⚠️ Failed to fetch real post ID, using photo ID instead:", fallbackErr.message);
-      return photoId;
-    }
 
   } catch (error) {
     console.error("Error posting to Facebook:", error.response?.data || error.message);
