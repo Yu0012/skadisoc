@@ -20,9 +20,9 @@ const Client = () => {
   // State for tracking which client's dropdown menu is open
   const [popupOpen, setPopupOpen] = useState(null);
   
-  // Satte to set view for Client Page, whether its block or table view
-  const [activeView, setActiveView] = useState(localStorage.getItem("viewMode") || "block");
-  
+  // Platform selection state
+  const [activePlatform, setActivePlatform] = useState(localStorage.getItem("selectedPlatform") || "Facebook");
+
   // Ref for detecting clicks outside dropdown menus
   const popupRef = useRef(null);
 
@@ -47,19 +47,40 @@ const Client = () => {
     Instagram: { companyToken: "", pageId: "" },
   });
 
-  // Fetch clients data from API when component mounts
   useEffect(() => {
     const fetchClients = async () => {
+      let url = "";
+  
+      switch (activePlatform) {
+        case "Facebook":
+          url = "http://localhost:5000/api/facebook-clients";
+          break;
+        case "Instagram":
+          url = "http://localhost:5000/api/instagram-clients";
+          break;
+        case "Twitter":
+          url = "http://localhost:5000/api/twitter-clients"; // progressing
+          break;
+        case "LinkedIn":
+          url = "http://localhost:5000/api/linkedin-clients"; // waiting for API
+          break;
+        default:
+          return;
+      }
+  
       try {
-        const res = await fetch("http://localhost:5000/api/clients");
+        const res = await fetch(url);
         const data = await res.json();
         setClients(data);
       } catch (err) {
-        console.error("Error fetching clients:", err);
+        console.error(`Error fetching ${activePlatform} clients:`, err);
+        setClients([]);
       }
     };
+  
     fetchClients();
-  }, []);
+  }, [activePlatform]);
+  
 
   // Close dropdown menu when clicking outside
   useEffect(() => {
@@ -107,7 +128,7 @@ const Client = () => {
   // Changes view of Client View
    const toggleView = (view) => {
     setActiveView(view);
-    localStorage.setItem("viewMode", view); // <- persists selection
+    localStorage.setItem("selectedPlatform", platform);
   };
 
   // Open modal to add new client
@@ -179,6 +200,7 @@ const Client = () => {
 
   // Filter clients based on search query
   const filteredClients = clients.filter((c) =>
+    c.companyName &&
     c.companyName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -216,46 +238,21 @@ const Client = () => {
             <div className="icon-row">
               <FaSyncAlt className="refresh-icon" title="Refresh Data" onclick={handleRefresh} id="client"/>
               <div>
-                {/* Changes Views of page, whether it's Block View or Table View */}
-                <button
-                  className={`client-select-view-btn ${activeView === "block" ? "client-select-view-btn-selected" : ""}`}
-                  id="left"
-                  onClick={() => toggleView("block")}
-                  disabled={activeView === "block"}
-                >
-                Facebook
-                </button>
-                <button
-                  className={`client-select-view-btn ${activeView === "table" ? "client-select-view-btn-selected" : ""}`}
-                  id="right"
-                  onClick={() => toggleView("table")}
-                  disabled={activeView === "table"}
-                >
-                  Instagram
-                </button>
-                <button
-                  className={`client-select-view-btn ${activeView === "table" ? "client-select-view-btn-selected" : ""}`}
-                  id="right"
-                  onClick={() => toggleView("table")}
-                  disabled={activeView === "table"}
-                >
-                  Twitter
-                </button>
-                <button
-                  className={`client-select-view-btn ${activeView === "table" ? "client-select-view-btn-selected" : ""}`}
-                  id="right"
-                  onClick={() => toggleView("table")}
-                  disabled={activeView === "table"}
-                >
-                  LinkedIn
-                </button>
-              </div>
+                {["Facebook", "Instagram", "Twitter", "LinkedIn"].map((platform) => (
+                  <button
+                    key={platform}
+                    className={`client-select-view-btn ${activePlatform === platform ? "client-select-view-btn-selected" : ""}`}
+                    onClick={() => setActivePlatform(platform)}
+                  >
+                    {platform}
+                  </button>
+                ))}
+            </div>
             </div>
           </div>
         </div>
 
-      {/* Card View */}
-      {activeView === "block" && (
+      {/* Block View for selected platform */}
         <div className="client-list">
           <button className="add-client-btn" onClick={handleAddClient}>
             <FaPlus />
@@ -282,111 +279,7 @@ const Client = () => {
             </div>
           ))}
         </div>
-      )}
-
-      {/* Table View */}
-      {activeView === "table" && (
-        <div>
-        <table className="posts-table">
-          <thead>
-            <tr>
-              <th>Client Name</th>
-              <th>Description</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentClients.map((client) => (
-              <tr key={client._id}>
-                <td>{client.companyName}</td>
-                <td>{client.companyDetail}</td>
-                <td style={{position:"relative"}}>
-                  <div className="popup-container-2">
-                    <FaEllipsisV
-                      className="popup-icon"
-                      onClick={(e) => menuDropdown(e, client._id)} 
-                    />
-                    {clientMenuDropdown === client._id && 
-                     createPortal(
-                       <div className="post-actions-dropdown" ref={popupRef} 
-                       style={{top: clientMenuPosition.top, left: clientMenuPosition.left
-                       }}>
-                        <button onClick={() => handleEditClient(client)}>
-                          Edit
-                        </button>
-                        <button 
-                          className="delete-btn" 
-                          onClick={() => handleDeleteClient(client._id)}
-                        >
-                          Delete
-                        </button>
-                      </div>,
-                      document.body
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-         {/* Pagination */}
- 
-         {/* Only show pagination controls if there's more than one page */}
-         {totalPages > 1 && (
-         <div className="pagination-container">
-           <p>
-             Showing {indexOfFirstClient + 1} to {" " }
-             {Math.min(indexOfLastClient, filteredClients.length)} of {" "} 
-             {filteredClients.length} entries
-           </p>
- 
-           <div className="pagination">
-             {/* Go to first page */}
-             <FaAnglesLeft 
-                 className="pagination-navigation" 
-                 onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
-             />
- 
-             {/* Go to previous page */}
-             <FaAngleLeft 
-               className="pagination-navigation" 
-             onClick={() => setCurrentPage(currentPage - 1)}
-             disabled={currentPage === 1} 
-             />
- 
-             {/* Page buttons */}
-             {[...Array(totalPages).keys()]
-               .slice(Math.max(0, currentPage - 2), currentPage + 1)
-               .map((number) => (
-                 <button
-                   key={number + 1}
-                   onClick={() => setCurrentPage(number + 1)}
-                   className={currentPage === number + 1 ? "active" : ""}
-                 >
-                   {number + 1}
-                 </button>
-               ))}
- 
-             {/* Go to next page */}
-             <FaAngleRight 
-                 className="pagination-navigation"
-                 onClick={() => setCurrentPage(currentPage + 1)}
-                 disabled={currentPage === totalPages}
-             />
- 
-             {/* Go to last page */}
-             <FaAnglesRight
-               className="pagination-navigation"
-               onClick={() => setCurrentPage(totalPages)}
-               disabled={currentPage === totalPages}
-             />
-           </div>
-         </div>
-       )}
- 
-         </div>
-      )}
-
+      
       {/* Client Modal */}
       {showClientModal && (
         <AddClientModal

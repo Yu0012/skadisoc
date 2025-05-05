@@ -15,6 +15,8 @@ const FormData = require("form-data");
 const passport = require('passport');
 const TwitterStrategy = require('passport-twitter').Strategy;
 const session = require('express-session');
+const facebookClientsRoute = require('./routes/facebookClients');
+const instagramClientsRoute = require('./routes/instagramClients');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -24,6 +26,9 @@ app.use(cors());
 app.use(express.json()); // Use built-in JSON parsing
 app.use(express.static('uploads')); // Serve uploaded files
 app.use(passport.initialize()); // Initialize passport
+
+app.use('/api/facebook-clients', facebookClientsRoute);
+app.use('/api/instagram-clients', instagramClientsRoute);
 
 
 // Connect to MongoDB Atlas
@@ -786,7 +791,7 @@ app.get('/auth/facebook/callback', async (req, res) => {
           {
             userId,
             instagramBusinessId,
-            pageName: page.name,
+            username: page.name,
             accessToken: page.access_token,
             permissions: [],
             expiresAt,
