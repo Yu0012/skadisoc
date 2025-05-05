@@ -223,7 +223,7 @@ const Client = () => {
                   onClick={() => toggleView("block")}
                   disabled={activeView === "block"}
                 >
-                Block
+                Facebook
                 </button>
                 <button
                   className={`client-select-view-btn ${activeView === "table" ? "client-select-view-btn-selected" : ""}`}
@@ -231,7 +231,23 @@ const Client = () => {
                   onClick={() => toggleView("table")}
                   disabled={activeView === "table"}
                 >
-                  Table
+                  Instagram
+                </button>
+                <button
+                  className={`client-select-view-btn ${activeView === "table" ? "client-select-view-btn-selected" : ""}`}
+                  id="right"
+                  onClick={() => toggleView("table")}
+                  disabled={activeView === "table"}
+                >
+                  Twitter
+                </button>
+                <button
+                  className={`client-select-view-btn ${activeView === "table" ? "client-select-view-btn-selected" : ""}`}
+                  id="right"
+                  onClick={() => toggleView("table")}
+                  disabled={activeView === "table"}
+                >
+                  LinkedIn
                 </button>
               </div>
             </div>

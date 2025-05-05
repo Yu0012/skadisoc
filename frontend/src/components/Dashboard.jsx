@@ -30,7 +30,7 @@ const Dashboard = () => {
           data.map(async (post) => {
             try {
               const response = await fetch(
-                `http://localhost:5000/api/posts/${post._id}/insights?accessToken=${accessToken}`
+                `http://localhost:5000/api/posts/${platFormPostIds}/insights?accessToken=${accessToken}`
               );
               const insights = await response.json();
               return {

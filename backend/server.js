@@ -8,6 +8,8 @@ const fs = require('fs');
 const { platform } = require('os');
 const mime = require("mime-types");
 const axios = require("axios");
+const FacebookClient = require('./models/FacebookClientSchema');
+const InstagramClient = require('./models/InstagramClientSchema');
 const {TwitterApi} = require("twitter-api-v2");
 const FormData = require("form-data");
 const passport = require('passport');
@@ -717,13 +719,27 @@ app.get('/auth/facebook/callback', async (req, res) => {
       },
     });
 
-    const accessToken = tokenResponse.data.access_token;
-    console.log("Access Token:", accessToken);
+    const shortLivedToken = tokenResponse.data.access_token;
+    console.log("Access Token:", shortLivedToken);
+
+    // Exchange short-lived for long-lived token
+    const longLivedResponse = await axios.get('https://graph.facebook.com/v18.0/oauth/access_token', {
+      params: {
+        grant_type: 'fb_exchange_token',
+        client_id: process.env.FB_APP_ID,
+        client_secret: process.env.FB_APP_SECRET,
+        fb_exchange_token: shortLivedToken,
+      },
+    });
+
+    const longLivedAccessToken = longLivedResponse.data.access_token;
+    const expiresIn = longLivedResponse.data.expires_in || 60 * 24 * 60 * 60;
+    const expiresAt = new Date(Date.now() + expiresIn * 1000);
 
     // Step 3: Use the access token to fetch user details
     // Get list of pages
     const pagesResponse = await axios.get(`https://graph.facebook.com/v18.0/me/accounts`, {
-      params: { access_token: accessToken },
+      params: { access_token: longLivedAccessToken },
     });
     console.log("Pages:", pagesResponse.data);
 
@@ -737,10 +753,55 @@ app.get('/auth/facebook/callback', async (req, res) => {
 
     const instagramBusinessId = igResponse.data.instagram_business_account?.id || '';
 
-    const userResponse = await axios.get(`https://graph.facebook.com/me?fields=id,name,email&access_token=${accessToken}`);
+    const userResponse = await axios.get(`https://graph.facebook.com/me?fields=id,name,email&access_token=${longLivedAccessToken}`);
     console.log("User Details:", userResponse.data);
+    const userId = userResponse.data.id; // ✅ Add this line
 
-    res.json({ message: 'Successfully authenticated!', pageId: page.id, instagramBusinessId });
+    // Save Facebook pages
+    for (const page of pagesResponse.data.data) {
+
+      // Save Facebook client
+      await FacebookClient.findOneAndUpdate(
+        { userId, pageId: page.id },
+        {
+          userId,
+          pageId: page.id,
+          pageAccessToken: page.access_token,
+          pageName: page.name,
+          permissions: [],
+          expiresAt,
+        },
+        { upsert: true, new: true }
+      );
+
+      // Step 6: Get Instagram Business Account (if any)
+      const igResponse = await axios.get(`https://graph.facebook.com/v18.0/${page.id}?fields=instagram_business_account`, {
+        params: { access_token: page.access_token },
+      });
+
+      const instagramBusinessId = igResponse.data.instagram_business_account?.id;
+      if (instagramBusinessId) {
+        await InstagramClient.findOneAndUpdate(
+          { userId, instagramBusinessId },
+          {
+            userId,
+            instagramBusinessId,
+            pageName: page.name,
+            accessToken: page.access_token,
+            permissions: [],
+            expiresAt,
+          },
+          { upsert: true, new: true }
+        );
+      }
+    }
+
+    // ✅ Only one response here
+    return res.json({
+      message: 'Facebook pages saved successfully.',
+      pageId: page.id,
+      instagramBusinessId
+    });
   } 
   
   catch (error) {
@@ -783,6 +844,51 @@ app.get('/auth/twitter/callback',
     res.send("Twitter Login Successful");
   }
 );
+
+const refreshFacebookToken = async (client) => {
+  try {
+    const response = await axios.get('https://graph.facebook.com/v18.0/oauth/access_token', {
+      params: {
+        grant_type: 'fb_exchange_token',
+        client_id: process.env.FB_APP_ID,
+        client_secret: process.env.FB_APP_SECRET,
+        fb_exchange_token: client.pageAccessToken,
+      },
+    });
+
+    const newAccessToken = response.data.access_token;
+    const expiresIn = response.data.expires_in || 60 * 24 * 60 * 60; // 60 days
+    const newExpiresAt = new Date(Date.now() + expiresIn * 1000);
+
+    await FacebookClient.findByIdAndUpdate(client._id, {
+      pageAccessToken: newAccessToken,
+      expiresAt: newExpiresAt
+    });
+
+    console.log(`🔄 Refreshed token for page "${client.pageName}"`);
+  } catch (error) {
+    console.error(`❌ Failed to refresh token for "${client.pageName}":`, error.response?.data || error.message);
+  }
+};
+
+const checkAndRefreshTokens = async () => {
+  const now = new Date();
+  const threshold = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000); // 5 days from now
+
+  try {
+    const expiringTokens = await FacebookClient.find({ expiresAt: { $lte: threshold } });
+
+    for (const client of expiringTokens) {
+      await refreshFacebookToken(client);
+    }
+  } catch (err) {
+    console.error("❌ Error while checking/refreshing tokens:", err.message);
+  }
+};
+
+// 🔁 Check Facebook tokens once a day
+setInterval(checkAndRefreshTokens, 24 * 60 * 60 * 1000); // Every 24 hours
+checkAndRefreshTokens(); // Run immediately on server start
 
 // Run the function every minute
 setInterval(checkAndPostScheduledPosts, 60 * 1000);
