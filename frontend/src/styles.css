@@ -3057,3 +3057,110 @@ body {
   --chatbot-outgoing: #3177b0;
   --chatbot-textarea: #515161;
 }
+
+.calendar-sidebar {
+  position: fixed;
+  top: 100px;
+  right: 0;
+  width: 260px;
+  background-color: #fff;
+  border-left: 1px solid #e0e0e0;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: -2px 2px 6px rgba(0, 0, 0, 0.08);
+  transition: width 0.3s ease;
+  z-index: 999;
+  padding: 16px;
+  font-family: "Segoe UI", sans-serif;
+  border-radius: 8px 0 0 8px;
+}
+
+.calendar-sidebar.collapsed {
+  width: 44px;
+  padding: 12px 6px;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.collapse-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 6px;
+  color: #444;
+}
+
+.client-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-radius: 6px;
+  margin-top: 6px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.client-checkbox:hover {
+  background-color: #f5f5f5;
+}
+
+.client-checkbox input[type="checkbox"] {
+  accent-color: #007bff;
+  transform: scale(1.15);
+}
+
+.client-checkbox span {
+  font-size: 14px;
+  color: #222;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.react-calendar {
+  margin-top: 12px;
+  border: none;
+  width: 100%;
+}
+
+.react-calendar__tile.highlight-date {
+  background: #007bff;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+}
+
+.react-calendar__tile.square-highlight {
+  position: relative;
+  font-weight: bold;
+  color: #000; /* Black text (optional) */
+  z-index: 1;
+}
+
+.react-calendar__tile.square-highlight::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+  border: 2px solid black;
+  box-sizing: border-box;
+  z-index: -1;
+}
