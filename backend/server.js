@@ -17,6 +17,7 @@ const TwitterStrategy = require('passport-twitter').Strategy;
 const session = require('express-session');
 const facebookClientsRoute = require('./routes/facebookClients');
 const instagramClientsRoute = require('./routes/instagramClients');
+const twitterClientsRoute = require('./routes/twitterClients');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
