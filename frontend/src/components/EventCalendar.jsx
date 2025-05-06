@@ -17,23 +17,23 @@ import interactionPlugin from "@fullcalendar/interaction";
 import CreatePostModal from "./CreatePostModal";
 
 const EventCalendar = () => {
-  // Calendar and state references
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState([]); // Holds all calendar events
   const [currentMonth, setCurrentMonth] = useState("");
   const [currentYear, setCurrentYear] = useState("");
-  const calendarRef = useRef(null);
+  const calendarRef = useRef(null); // Reference to calendar instance
 
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [createInitialData, setCreateInitialData] = useState({});
+  // Modal state
+  const [selectedEvent, setSelectedEvent] = useState(null); // Selected event for detail view
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); // Create post modal visibility
+  const [createInitialData, setCreateInitialData] = useState({}); // Data passed to create modal
 
-  // Sidebar state
-  const [availableClients, setAvailableClients] = useState([]);
-  const [activeClients, setActiveClients] = useState(new Set());
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  // Sidebar filters
+  const [availableClients, setAvailableClients] = useState([]); // All distinct clients
+  const [activeClients, setActiveClients] = useState(new Set()); // Clients currently selected
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar toggle state
 
-  // Fetch posts and initialize state
+  // Initial fetch of all posts
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -51,7 +51,7 @@ const EventCalendar = () => {
     fetchPosts();
   }, []);
 
-  // Update events when active clients change
+  // Re-fetch filtered events when filters change
   useEffect(() => {
     const fetchFilteredPosts = async () => {
       try {
@@ -66,7 +66,7 @@ const EventCalendar = () => {
     fetchFilteredPosts();
   }, [activeClients]);
 
-  // Format event data for FullCalendar
+  // Format API response to FullCalendar-compatible objects
   const formatEvents = (posts) => {
     return posts.map(post => ({
       id: post._id,
@@ -83,7 +83,7 @@ const EventCalendar = () => {
     }));
   };
 
-  // Set current month and year
+  // Set initial month/year title
   useEffect(() => {
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
@@ -96,7 +96,7 @@ const EventCalendar = () => {
     setCurrentYear(date.getFullYear());
   };
 
-  // Navigation buttons
+  // Navigation controls
   const goToToday = () => {
     const calendarApi = calendarRef.current.getApi();
     calendarApi.today();
@@ -127,7 +127,7 @@ const EventCalendar = () => {
     updateTitle(calendarApi.getDate());
   };
 
-  // Custom render for events
+  // Render content inside calendar events
   const renderEventContent = (eventInfo) => {
     const time = eventInfo.timeText;
     const title = eventInfo.event.title;
@@ -139,14 +139,14 @@ const EventCalendar = () => {
     );
   };
 
-  // Manual refresh
+  // Reloads entire page
   const handleRefresh = () => {
     window.location.reload();
   };
 
   return (
     <div className="posts-container">
-      {/* Welcome Header */}
+      {/* Header Section */}
       <div className="posts-header">
         <div className="welcome-message">
           <p>Welcome,</p>
@@ -154,23 +154,21 @@ const EventCalendar = () => {
         </div>
       </div>
 
-      {/* Calendar Controls */}
+      {/* Calendar Navigation Row */}
       <div className="search-toolbar-container">
-        <div className="search-container calendar-controls-row">
-          <div className="fc-toolbar-left">
-            <FaAnglesLeft className="fc-nav-button" onClick={goToPrevDouble} />
-            <FaAngleLeft className="fc-nav-button" onClick={goToPrev} />
-            <p className="fc-current-date">{currentMonth}, {currentYear}</p>
-            <FaAngleRight className="fc-nav-button" onClick={goToNext} />
-            <FaAnglesRight className="fc-nav-button" onClick={goToNextDouble} />
-          </div>
-          <div className="fc-toolbar-right">
-            <FaSyncAlt className="refresh-icon" onClick={handleRefresh} title="Refresh Data" />
-            <button className="fc-today-button" onClick={goToToday}>Today</button>
-          </div>
+        <div className="search-container calendar-controls-row calendar-nav-bar" style={{ justifyContent: "flex-end" }}>
+        <div className="calendar-nav-group" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+    <button className="fc-today-button" onClick={goToToday}>Today</button>
+    <FaAnglesLeft className="fc-nav-button" onClick={goToPrevDouble} />
+    <FaAngleLeft className="fc-nav-button" onClick={goToPrev} />
+    <p className="fc-current-date">{currentMonth}, {currentYear}</p>
+    <FaAngleRight className="fc-nav-button" onClick={goToNext} />
+    <FaAnglesRight className="fc-nav-button" onClick={goToNextDouble} />
+    <FaSyncAlt className="refresh-icon" onClick={handleRefresh} title="Refresh Data" />
+  </div>
         </div>
 
-        {/* FullCalendar Display */}
+        {/* FullCalendar Component */}
         <div className="calendar-toolbar">
           <FullCalendar
             ref={calendarRef}
@@ -185,10 +183,10 @@ const EventCalendar = () => {
             fixedWeekCount={false}
             dayMaxEventRows={true}
             height="auto"
-            eventTimeFormat={{ hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true }}
+            eventTimeFormat={{ hour: "2-digit", minute: "2-digit", hour12: true }}
             datesSet={(info) => {
               updateTitle(info.view.currentStart);
-              setIsSidebarOpen(false); // Auto-close sidebar on page change
+              setIsSidebarOpen(false);
             }}
             eventClick={(info) => {
               const eventProps = {
@@ -199,17 +197,17 @@ const EventCalendar = () => {
               setSelectedEvent(eventProps);
               setIsModalOpen(true);
             }}
-            eventContent={renderEventContent}
             dateClick={(info) => {
               const clickedDate = new Date(info.dateStr);
               setCreateInitialData({ scheduledDate: clickedDate });
               setIsCreateModalOpen(true);
             }}
+            eventContent={renderEventContent}
           />
         </div>
       </div>
 
-      {/* Sidebar with client filters and mini calendar */}
+      {/* Sidebar with filters and mini calendar */}
       <div className={`calendar-sidebar ${isSidebarOpen ? "open" : "collapsed"}`}>
         <div className="sidebar-header">
           {isSidebarOpen && <p className="sidebar-title">📅 CALENDARS</p>}
@@ -218,26 +216,18 @@ const EventCalendar = () => {
           </button>
         </div>
 
-        {/* Select All + Client List */}
         {isSidebarOpen && (
           <>
-            {/* Select All */}
             <label className="client-checkbox">
               <input
                 type="checkbox"
                 checked={activeClients.size === availableClients.length}
                 onChange={(e) => {
-                  if (e.target.checked) {
-                    setActiveClients(new Set(availableClients));
-                  } else {
-                    setActiveClients(new Set());
-                  }
+                  setActiveClients(e.target.checked ? new Set(availableClients) : new Set());
                 }}
               />
               <span>Select All</span>
             </label>
-
-            {/* Individual Clients */}
             {availableClients.map((client, index) => (
               <label key={index} className="client-checkbox">
                 <input
@@ -246,11 +236,7 @@ const EventCalendar = () => {
                   onChange={() => {
                     setActiveClients((prev) => {
                       const updated = new Set(prev);
-                      if (updated.has(client)) {
-                        updated.delete(client);
-                      } else {
-                        updated.add(client);
-                      }
+                      updated.has(client) ? updated.delete(client) : updated.add(client);
                       return updated;
                     });
                   }}
@@ -259,7 +245,7 @@ const EventCalendar = () => {
               </label>
             ))}
 
-            {/* Mini Calendar with outlined posts */}
+            {/* Mini calendar */}
             <Calendar
               calendarType="gregory"
               tileClassName={({ date, view }) => {
@@ -277,7 +263,7 @@ const EventCalendar = () => {
         )}
       </div>
 
-      {/* Modal: View post details */}
+      {/* Post details modal */}
       {isModalOpen && selectedEvent && (
         <div className="modal-overlay">
           <div className="event-modal vertical-detail-modal">
@@ -318,7 +304,7 @@ const EventCalendar = () => {
         </div>
       )}
 
-      {/* Modal: Create post on date click */}
+      {/* Create post modal */}
       {isCreateModalOpen && (
         <CreatePostModal
           isOpen={isCreateModalOpen}
