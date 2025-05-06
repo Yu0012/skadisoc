@@ -1,23 +1,44 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import Lottie from "lottie-react";
 import "../styles.css";
-import logo from "../assets/SOCMEDMT_logo.png";
+import logo from "../assets/skadiLogo.png";
+import logo_light from "../assets/skadiLogo_light_cut.png";
 import bellAnimation from "../assets/bellring.json";
+import bellAnimation_light from "../assets/bellring_light.json";
 import bellStatic from "../assets/bellring-no.png";
+import bellStatic_light from "../assets/bellring-no_light.png";
 import userIcon from "../assets/icon-women.png";
-import sunIcon from "../assets/icon-sun.png";
+import sunIcon from "../assets/icon-sun-light.png";
 import moonIcon from "../assets/icon-moon.png";
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { permissions, user, logout } = useContext(AuthContext);
+  const themes = ['light', 'dark'] //For Light/Dark themes
+  const [currentTheme, setCurrentTheme] = useState(
+    localStorage.getItem("theme") || "light"
+  );
+
 
   const [hasNotifications, setHasNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+
+  //Updates elements with data-selected-theme attribute, also saves theme to localStorage for consistency across pages
+  useEffect(() => {
+    document.documentElement.setAttribute("data-selected-theme", currentTheme);
+    localStorage.setItem("theme", currentTheme);
+  }, [currentTheme]);
+
+  //Ensures dark mode is in sync with the current theme
+  useEffect(() => {
+    setDarkMode(currentTheme === 'dark');
+  }, [currentTheme]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -50,35 +71,57 @@ const Navbar = () => {
   const toggleTheme = () => {
     setDarkMode((prev) => !prev);
     document.body.classList.toggle("dark-mode");
+    const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
+    setCurrentTheme(nextTheme);
   };
-
   const handleUserNav = (path) => {
-    navigate(path);
+    if (path === "/logout") {
+      logout();
+      navigate("/");
+    } else {
+      navigate(path);
+    }
     setUserDropdownOpen(false);
   };
+
+  const hasMenuAccess = (menuName) => {
+    return permissions?.menus?.includes(menuName);
+  };
+
+  if (!user || !permissions || !permissions.menus.length) return null;
 
   return (
     <nav className="navbar">
       {/* Logo */}
-      <img src={logo} alt="SOCMEDMT Logo" className="logo" />
+      <img src={darkMode ? logo : logo_light} alt="SOCMEDMT Logo" className="logo" />
 
       {/* Navigation Links */}
       <div className="nav-links">
-        <Link to="/dashboard" className={location.pathname === "/dashboard" ? "active" : ""}>
-          Dashboard
-        </Link>
-        <Link to="/posts" className={location.pathname === "/posts" ? "active" : ""}>
-          Posts
-        </Link>
-        <Link to="/calendar" className={location.pathname === "/calendar" ? "active" : ""}>
-          Logs
-        </Link>
-        <Link to="/account" className={location.pathname === "/account" ? "active" : ""}>
-          Account
-        </Link>
-        <Link to="/client" className={location.pathname === "/client" ? "active" : ""}>
-          Client
-        </Link>
+        {hasMenuAccess("dashboard") && (
+          <Link to="/dashboard" className={location.pathname === "/dashboard" ? "active" : ""}>
+            Dashboard
+          </Link>
+        )}
+        {hasMenuAccess("posts") && (
+          <Link to="/posts" className={location.pathname === "/posts" ? "active" : ""}>
+            Posts
+          </Link>
+        )}
+        {hasMenuAccess("calendar") && (
+          <Link to="/calendar" className={location.pathname === "/calendar" ? "active" : ""}>
+            Logs
+          </Link>
+        )}
+        {hasMenuAccess("account") && (
+          <Link to="/account" className={location.pathname === "/account" ? "active" : ""}>
+            Account
+          </Link>
+        )}
+        {hasMenuAccess("client") && (
+          <Link to="/client" className={location.pathname === "/client" ? "active" : ""}>
+            Client
+          </Link>
+        )}
       </div>
 
       {/* Right Side Icons */}
@@ -96,9 +139,9 @@ const Navbar = () => {
         <div className="notification-menu">
           <div onClick={() => setNotifDropdownOpen(!notifDropdownOpen)} className="bell-container">
             {hasNotifications ? (
-              <Lottie animationData={bellAnimation} className="bell-icon" />
+              <Lottie animationData={darkMode ? bellAnimation_light : bellAnimation} className="bell-icon" />
             ) : (
-              <img src={bellStatic} alt="No Notifications" className="bell-icon" />
+              <img src={darkMode ? bellStatic_light : bellStatic } alt="No Notifications" className="bell-icon" />
             )}
           </div>
 

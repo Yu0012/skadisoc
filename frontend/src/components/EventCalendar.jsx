@@ -1,17 +1,18 @@
+// Import dependencies
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
 import { FaSyncAlt } from "react-icons/fa";
 import "../styles.css";
 
+// FullCalendar plugins
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
-import leftButton from "../assets/LeftArrow.png";
-import rightButton from "../assets/RightArrow.png";
-import doubleLeftButton from "../assets/DoubleLeftArrow.png";
-import doubleRightButton from "../assets/DoubleRightArrow.png";
+// ✅ Import CreatePostModal
+import CreatePostModal from "./CreatePostModal"; // Adjust the path if necessary
 
 const EventCalendar = () => {
   const [events, setEvents] = useState([]);
@@ -22,6 +23,11 @@ const EventCalendar = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // ✅ New state for create modal logic
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createInitialData, setCreateInitialData] = useState({});
+
+  // ✅ Fetch posts and format for calendar
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -51,6 +57,7 @@ const EventCalendar = () => {
     fetchPosts();
   }, []);
 
+  // ✅ On calendar load, update title
   useEffect(() => {
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
@@ -93,37 +100,51 @@ const EventCalendar = () => {
     updateTitle(calendarApi.getDate());
   };
 
+  // ✅ Render time + title for each calendar event cell
+  const renderEventContent = (eventInfo) => {
+    const time = eventInfo.timeText;
+    const title = eventInfo.event.title;
+
+    return (
+      <div className="custom-event-box">
+        <span className="custom-event-time">{time}</span>
+        <span className="custom-event-title">{title}</span>
+      </div>
+    );
+  };
+
   const handleRefresh = () => {
     window.location.reload();
   };
 
   return (
     <div className="posts-container">
+      {/* Header section */}
       <div className="posts-header">
         <div className="welcome-message">
           <p>Welcome,</p>
           <h2 className="user-name">Amber Broos</h2>
         </div>
-        <div className="posts-actions">
-          <FaSyncAlt className="refresh-icon" onClick={handleRefresh} title="Refresh Data" />
-        </div>
       </div>
 
+      {/* Toolbar + Calendar */}
       <div className="search-toolbar-container">
-        <div className="search-container">
+        <div className="search-container calendar-controls-row">
+          {/* ✅ Navigation Row with Today button on the left side of month/year switch */}
           <div className="fc-toolbar-left">
-            <button className="fc-today-button" onClick={goToToday}>Today</button>
+          <FaAnglesLeft className="fc-nav-button" onClick={goToPrevDouble} />
+            <FaAngleLeft className="fc-nav-button" onClick={goToPrev} />
+            <p className="fc-current-date">{currentMonth}, {currentYear}</p>
+            <FaAngleRight className="fc-nav-button" onClick={goToNext} />
+             <FaAnglesRight className="fc-nav-button" onClick={goToNextDouble} />
           </div>
           <div className="fc-toolbar-right">
-            <img src={doubleLeftButton} className="fc-nav-button" onClick={goToPrevDouble} />
-            <img src={leftButton} className="fc-nav-button" onClick={goToPrev} />
-            <p className="fc-current-date">{currentMonth}, {currentYear}</p>
-            <img src={rightButton} className="fc-nav-button" onClick={goToNext} />
-            <img src={doubleRightButton} className="fc-nav-button" onClick={goToNextDouble} />
+            <FaSyncAlt className="refresh-icon" onClick={handleRefresh} title="Refresh Data" />
+            <button className="fc-today-button" onClick={goToToday}>Today</button>
           </div>
         </div>
 
-        <div className="calendar-toolbar">
+        <div className="calendar-toolbar ">
           <FullCalendar
             ref={calendarRef}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -131,6 +152,18 @@ const EventCalendar = () => {
             headerToolbar={false}
             events={events}
             dayHeaderFormat={{ weekday: "long" }}
+            showNonCurrentDates={true}
+            contentHeight="auto"
+            expandRows={true}
+            fixedWeekCount={false}
+            dayMaxEventRows={true}
+            height="auto"
+            eventTimeFormat={{
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+              hour12: true,
+            }}
             datesSet={(info) => updateTitle(info.view.currentStart)}
             eventClick={(info) => {
               const eventProps = {
@@ -141,10 +174,43 @@ const EventCalendar = () => {
               setSelectedEvent(eventProps);
               setIsModalOpen(true);
             }}
+            eventContent={renderEventContent}
+            dateClick={(info) => {
+              const clickedDate = new Date(info.dateStr);
+              setCreateInitialData({ scheduledDate: clickedDate });
+              setIsCreateModalOpen(true);
+            }}
+
+            // ✅ Hide full rows that are completely outside the current month (no height leftovers)
+            viewDidMount={() => {
+              const calendarApi = calendarRef.current?.getApi?.();
+              if (!calendarApi) return;
+
+              const calendarMonth = calendarApi.getDate().getMonth();
+              const rows = document.querySelectorAll(".fc-daygrid-body tr");
+
+              rows.forEach((row) => {
+                const allTds = Array.from(row.querySelectorAll("td"));
+                const isFullRowOutsideMonth = allTds.every((td) => {
+                  const dateStr = td.getAttribute("data-date");
+                  if (!dateStr) return false;
+                  const cellDate = new Date(dateStr);
+                  return cellDate.getMonth() !== calendarMonth;
+                });
+
+                if (isFullRowOutsideMonth) {
+                  row.style.display = "none";
+                  row.style.height = "0px";
+                  row.style.padding = "0";
+                  row.style.margin = "0";
+                }
+              });
+            }}
           />
         </div>
       </div>
 
+      {/* Modal with event details */}
       {isModalOpen && selectedEvent && (
         <div className="modal-overlay">
           <div className="event-modal vertical-detail-modal">
@@ -153,34 +219,33 @@ const EventCalendar = () => {
 
             <div className="modal-field"><strong>Client:</strong> {selectedEvent.client || '-'}</div>
             <div className="modal-field"><strong>Content:</strong> {selectedEvent.content || '-'}</div>
-            <div className="modal-field"><strong>Hashtags:</strong> {selectedEvent.hashtags || '-'}</div>
+
+            {/* ✅ Dynamic platform links */}
             <div className="modal-field">
               <strong>Platforms:</strong>{" "}
               {selectedEvent.platforms ? (
                 selectedEvent.platforms.split(",").map((platform, index) => {
-                  const trimmed = platform.trim();
+                  const trimmed = platform.trim().toLowerCase();
+
+                  const previewLinks = {
+                    facebook: `/facebook-preview/${selectedEvent.id}`,
+                    instagram: `/instagram-preview/${selectedEvent.id}`,
+                    twitter: `/twitter-preview/${selectedEvent.id}`,
+                  };
+
                   return (
                     <span key={index} style={{ marginRight: "6px" }}>
-                      {trimmed.toLowerCase() === "facebook" ? (
+                      {previewLinks[trimmed] ? (
                         <a
-                          href={`/facebook-preview/${selectedEvent.id}`}
+                          href={previewLinks[trimmed]}
                           target="_blank"
                           rel="noreferrer"
                           className="platform-link"
                         >
-                          {trimmed}
-                        </a>
-                      ) : trimmed.toLowerCase() === "instagram" ? (
-                        <a
-                          href={`/instagram-preview/${selectedEvent.id}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="platform-link"
-                        >
-                          {trimmed}
+                          {platform.trim()}
                         </a>
                       ) : (
-                        trimmed
+                        platform.trim()
                       )}
                     </span>
                   );
@@ -190,27 +255,40 @@ const EventCalendar = () => {
               )}
             </div>
 
-            <div className="modal-field">
-              <strong>Link:</strong>{" "}
-              {selectedEvent.link ? (
-                <a
-                  href={selectedEvent.link}
-                  className="modal-link"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {selectedEvent.link}
-                </a>
-              ) : (
-                "-"
-              )}
-            </div>
-
             <div className="modal-note">
-              This post was scheduled on {new Date(selectedEvent.scheduledDate).toLocaleString()}.
+              This post was scheduled on {" "}
+              {new Date(selectedEvent.scheduledDate).toLocaleString()}.
             </div>
           </div>
         </div>
+      )}
+
+      {/* ✅ CreatePostModal when clicking on empty calendar cell */}
+      {isCreateModalOpen && (
+        <CreatePostModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          initialData={createInitialData}
+          onSave={(newPost) => {
+            setEvents((prev) => [
+              ...prev,
+              {
+                id: newPost._id,
+                title: newPost.client || "Untitled Post",
+                start: newPost.scheduledDate,
+                extendedProps: {
+                  client: newPost.client,
+                  content: newPost.content,
+                  hashtags: newPost.hashtags,
+                  platforms: newPost.selectedPlatforms?.join(", "),
+                  link: newPost.filePath ? `http://localhost:5000${newPost.filePath}` : null,
+                  scheduledDate: newPost.scheduledDate,
+                },
+              },
+            ]);
+            setIsCreateModalOpen(false);
+          }}
+        />
       )}
     </div>
   );

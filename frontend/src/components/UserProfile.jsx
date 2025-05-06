@@ -80,18 +80,21 @@ const UserProfile = () => {
               value={user.name}
               onChange={handleChange}
               className="profile-input"
+              placeholder="Insert Name Here"
             />
             <input
               name="email"
               value={user.email}
               onChange={handleChange}
               className="profile-input"
+              placeholder="Insert Email Here"
             />
             <input
               name="role"
               value={user.role}
               onChange={handleChange}
               className="profile-input"
+              placeholder="Insert Role Here"
             />
             {/* Action buttons */}
             <div className="profile-btn-group">

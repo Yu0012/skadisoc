@@ -17,7 +17,6 @@ const Accounts = () => {
   const modalRef = useRef(null);
   const mainContentRef = useRef(null);
   const [selectedAccounts, setSelectedAccounts] = useState([]);
-  const [isAllSelected, setIsAllSelected] = useState(false);
 
   // Account details 
   const [name, setName] = useState("");
@@ -53,28 +52,6 @@ const Accounts = () => {
     fetchAccounts();
   }, []);
 
-  //checkbox selection handlers
-  const handleCheckboxChange = (accountId) => {
-    setSelectedAccounts((prevSelected) =>
-      prevSelected.includes(accountId)
-        ? prevSelected.filter((id) => id !== accountId)
-        : [...prevSelected, accountId]
-    );
-  };
-
-  const handleSelectAll = () => {
-    if (isAllSelected) {
-      setSelectedAccounts([]);
-    } else {
-      const allAccountIds = filteredAccounts.map((account) => account._id);
-      setSelectedAccounts(allAccountIds);
-    }
-    setIsAllSelected(!isAllSelected);
-  };
-
-  const handleDeselectAll = () => {
-    setSelectedAccounts([]);
-  };
   //menu dropdown handler
   const menuDropdown = (event, accountId) => {
     event.stopPropagation();
@@ -86,16 +63,25 @@ const Accounts = () => {
       setAccountMenuDropdown(accountId);
     }
   };
-  // close dropdown when clicking outside
+
+  // Close popup when clicking outside (may not be good as user may accidentally leave data in form)
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (!event.target.closest(".post-actions-dropdown")) {
-        setAccountMenuDropdown(null);
+      // Close the account dropdown if clicked outside of it
+      if (accountMenuDropdown && !event.target.closest(`.post-actions-dropdown`) && !event.target.closest('.popup-icon')) {
+        setAccountMenuDropdown(null); // Close the dropdown
       }
     };
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
+  
+    // Add event listener on mount
+    document.addEventListener("mousedown", handleClickOutside);
+  
+    // Clean up the event listener on unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [accountMenuDropdown]);
+  
 
   const handleEditAccount = (account) => {
     setEditAccount(account); // store current editing account
@@ -105,6 +91,7 @@ const Accounts = () => {
     setAddress(account.address);
     setPassword(account.password); // or leave empty
     setCreateUserDropdown(true); // show form modal
+    setAccountMenuDropdown(null); // closes menu
   };
 
   const handleDeleteAccount = async (accountId) => {
@@ -144,18 +131,6 @@ const Accounts = () => {
     setCreateUserDropdown(!createUserDropdown);
   };
 
-  // Close popup when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        setCreateUserDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   // Save new account to MongoDB
   const handleSubmit = async (e) => {
@@ -227,13 +202,9 @@ const Accounts = () => {
   const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
   const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
 
-  //automatically updates "select all" checkbox
-  useEffect(() => {
-    const allChecked =
-      filteredAccounts.length > 0 &&
-      selectedAccounts.length === filteredAccounts.length;
-    setIsAllSelected(allChecked);
-  }, [selectedAccounts, filteredAccounts]);
+   //handles for ui inputs
+   const handleRefresh = () => window.location.reload();
+
 
   return (
     <div ref={mainContentRef} className={`posts-container ${createUserDropdown ? "blurred" : ""}`}>
@@ -247,30 +218,34 @@ const Accounts = () => {
 
       {/* Search & Filter */}
       <div className="search-container">
-        {/* Search Category Dropdown */}
-        <select className="dropdown" value={category} onChange={handleCategoryChange}>
-          <option value="ID">ID</option>
-          <option value="Username">Username</option>
-          <option value="Email">Email</option>
-          <option value="Phone">Phone</option>
-          <option value="Address">Address</option>
-        </select>
+        <div className="search-container-left">
+          {/* Search Category Dropdown */}
+          <select className="dropdown" value={category} onChange={handleCategoryChange}>
+            <option value="ID">ID</option>
+            <option value="Username">Username</option>
+            <option value="Email">Email</option>
+            <option value="Phone">Phone</option>
+            <option value="Address">Address</option>
+          </select>
 
-        {/* Search Box */}
-        <div className="search-box">
-          <input
-            type="text"
-            placeholder={`Search by ${category}`}
-            value={searchQuery}
-            onChange={handleSearch}
-          />
-          <FaSearch className="search-icon" />
+          {/* Search Box */}
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder={`Search by ${category}`}
+              value={searchQuery}
+              onChange={handleSearch}
+            />
+            <FaSearch className="search-icon" />
+          </div>
         </div>
 
-        <button className="create-user-btn" onClick={toggleCreateUserDropdown}>
-          <FaPlus /> Add User
-        </button>
-        <FaSyncAlt className="refresh-icon" title="Refresh Data" />
+        <div className="posts-actions">
+        <FaSyncAlt className="refresh-icon" title="Refresh Data" onClick={handleRefresh}/>
+          <button className="create-user-btn" onClick={toggleCreateUserDropdown}>
+              <FaPlus /> Add User
+            </button>
+        </div>
       </div>
 
       {/* Add User Modal */}
@@ -280,7 +255,7 @@ const Accounts = () => {
             <ImCross className="exitButton" onClick={toggleCreateUserDropdown} />
             <form className="form-group" onSubmit={handleSubmit}>
               <a className="form-title">Create New User</a>
-              <label>Name: <input type="text" value={name} onChange={(e) => setName(e.target.value)} required /></label>
+              <label>Name: <input type="text" className="newAccountForm" value={name} onChange={(e) => setName(e.target.value)} required /></label>
               <label>Email: <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
               <label>Phone: <input type="number" value={phoneNum} onChange={(e) => setPhoneNum(e.target.value)} required /></label>
               <label>Address: <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} required /></label>
@@ -295,14 +270,6 @@ const Accounts = () => {
       <table className="posts-table">
         <thead>
           <tr>
-            <th>
-              <input
-                type="checkbox"
-                id="checkbox-selectAll"
-                checked={isAllSelected}
-                onChange={handleSelectAll}
-              />
-            </th>
             <th>Username</th>
             <th>Email</th>
             <th>Phone No.</th>
@@ -313,20 +280,12 @@ const Accounts = () => {
         <tbody>
           {currentAccounts.map((account) => (
             <tr key={account._id}>
-              <td>
-                <input
-                  type="checkbox"
-                  className="checkbox-rowSelection"
-                  checked={selectedAccounts.includes(account._id)}
-                  onChange={() => handleCheckboxChange(account._id)}
-                />
-              </td>
               <td>{account.name}</td>
               <td>{account.email}</td>
               <td>{account.phoneNum}</td>
               <td>{account.address}</td>
               <td>
-                <FaEllipsisV onClick={(e) => menuDropdown(e, account._id)} />
+              <FaEllipsisV className="popup-icon" onClick={(e) => menuDropdown(e, account._id)} />
 
                 {accountMenuDropdown === account._id &&
                   createPortal(
@@ -345,18 +304,6 @@ const Accounts = () => {
           ))}
         </tbody>
       </table>
-
-      {/* Actions for selected checkboxes */}
-      {selectedAccounts.length > 0 && (
-        <div className="checkbox-selection">
-          <button className="unselect-selected-btn" onClick={handleDeselectAll}>
-            Deselect All
-          </button>
-          <button className="delete-selected-btn">
-            Delete Selected Accounts
-          </button>
-        </div>
-      )}
     </div>
   );
 };

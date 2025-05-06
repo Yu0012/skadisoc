@@ -3,6 +3,11 @@ import "../styles.css";
 import { FaSearch, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa";
 import { createPortal } from "react-dom";
 import CreatePostModal from "./CreatePostModal";
+import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
+import facebookIcon from '../assets/facebook.png';
+import twitterIcon from '../assets/twitter.png';
+import instagramIcon from '../assets/instagram.png';
+import linkedinIcon from '../assets/linkedin.png';
 
 const Posts = () => {
   // State declarations
@@ -14,10 +19,21 @@ const Posts = () => {
   const [postMenuDropdown, setPostMenuDropdown] = useState(null);//current opened dropdown
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 }) //positon for dorpdown menu
   const [selectedPosts, setSelectedPosts] = useState([]);// selected post IDs
-  const [isAllSelected, setIsAllSelected] = useState(false);// whether all visible posts are selected
   const [isModalOpen, setIsModalOpen] = useState(false); //modal open state
   const [editingPost, setEditingPost] = useState(null);
+  const [isAllSelected, setIsAllSelected] = useState(false);// whether all visible posts are selected
+  const [isPlatformSelectOpen, setIsPlatformSelectOpen] = useState(false);
+  const [selectedPlatforms, setSelectedPlatforms] = useState(null);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
+
+  //Replaces text to icons for social media
+  const platformIcons = {
+    facebook: <img src={facebookIcon} className="inline-icon" alt="Facebook" />,
+     twitter: <img src={twitterIcon} className="inline-icon" alt="Twitter"/>,
+     instagram: <img src={instagramIcon} className="inline-icon" alt="Instagram"/>,
+     linkedin: <img src={linkedinIcon} className="inline-icon" alt="LinkedIn"/>
+  };
 
   // Fetch posts from backend
   useEffect(() => {
@@ -25,7 +41,7 @@ const Posts = () => {
       try {
         const response = await fetch("http://localhost:5000/api/posts");
         const data = await response.json();
-        setPosts(data);
+        setPosts(data.reverse());
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
@@ -44,16 +60,22 @@ const Posts = () => {
     fetchPosts(); // Reload posts after a new post is added
     setIsModalOpen(false);
   };
+
+  const handleCreatePostClick = () => {
+    setIsPlatformSelectOpen(true);
+  };
   
   //handles for ui inputs
   const handleRefresh = () => window.location.reload();
 
   // Edit Post
   const handleEditPost = async (postId) => {
+    setPostMenuDropdown(null); // 👈 Close dropdown when Edit is clicked
     const fullPost = await fetchPostById(postId);
     if (fullPost) {
       setEditingPost(fullPost);
       setIsModalOpen(true);
+      setPostMenuDropdown(null); 
     } else {
       alert("Failed to load post");
     }
@@ -105,6 +127,31 @@ const Posts = () => {
     }
   };
 
+  // 📌 Filtered posts based on search query
+  const filteredPosts = posts.filter((post) => {
+    const valueToSearch = category === "All Categories"
+      ? Object.values(post).join(" ").toLowerCase()
+      : Array.isArray(post[category])
+        ? post[category].join(", ").toLowerCase()
+        : post[category]?.toString().toLowerCase() || "";
+  
+    return valueToSearch.includes(searchQuery.toLowerCase());
+  });
+
+
+  // 📌 Sort posts based on selected criteria
+  const sortedPosts = [...filteredPosts].sort((a, b) => {
+    if (!sortConfig.key) return 0;
+  
+    const valA = a[sortConfig.key]?.toString().toLowerCase() || "";
+    const valB = b[sortConfig.key]?.toString().toLowerCase() || "";
+  
+    if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
+    if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
+    return 0;
+  });
+  
+  
 //close dropdown menu in outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -116,25 +163,16 @@ const Posts = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  // 📌 Filtered posts based on search query
-  const filteredPosts = posts.filter((post) => {
-    const matchesSearch = post.content?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = category === "All Categories" || post.status === category;
-    return matchesSearch && matchesCategory;
-  });
+
+
+
+  
 //pagination logic
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
-  //update "select all" check box based on current posts
-  useEffect(() => {
-    const allChecked =
-      currentPosts.length > 0 &&
-      currentPosts.every((post) => selectedPosts.includes(post._id));
-    setIsAllSelected(allChecked);
-  }, [selectedPosts, currentPosts]);
 
   //handle single checkbox change
   const handleCheckboxChange = (postID) => {
@@ -145,54 +183,61 @@ const Posts = () => {
     );
   };
 
-  //toggle select all/deselect all
-  const handleSelectAll = () => {
-    if (isAllSelected) {
-      setSelectedPosts([]);
-    } else {
-      setSelectedPosts(currentPosts.map((post) => post._id));
-    }
-    setIsAllSelected(!isAllSelected);
-  };
-
-  const handleDeselectAll = () => {
-    setSelectedPosts([]);
+  const handleSort = (key) => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        return {
+          key,
+          direction: prev.direction === "asc" ? "desc" : "asc",
+        };
+      }
+      return { key, direction: "asc" };
+    });
   };
 
   return (
-    <div className="posts-container">
+    <div>
+     <div className={`posts-container ${isModalOpen ? "blurred" : ""}`}>
       {/*Header and actions*/}
       <div className="posts-header">
-        <h2>Posts</h2>
-        <div className="posts-actions">
-          <FaSyncAlt className="refresh-btn" onClick={handleRefresh} />
-          <button className="create-post-btn" onClick={() => setIsModalOpen(true)}>
-            <FaPlus /> Create Post
-          </button>
-        </div>
+      <div className="welcome-message">
+           <p>Welcome,</p>
+           <h2 className="user-name">Amber Broos</h2>
+       </div>
       </div>
 
       {/*search and catogories filter*/}
       <div className="search-container">
-        <select
-          className="dropdown"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          <option>All Categories</option>
-          <option>Published</option>
-          <option>Scheduled</option>
-        </select>
+        <div className="search-container-left">
+          <select
+            className="dropdown"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+          <option value="All Categories">All Categories</option>
+          <option value="client">Client</option>
+          <option value="content">Content</option>
+          <option value="selectedPlatforms">Platform</option>
+          <option value="status">Status</option>
+          </select>
 
 
-        <div className="search-box">
-          <input
-            type="text"
-            placeholder={`Search by ${category}`}
-            value={searchQuery}
-            onChange={handleSearch}
-          />
-          <FaSearch className="search-icon" />
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder={`Search by ${category === "All Categories" ? "any field" : category}`}
+              value={searchQuery}
+              onChange={handleSearch}
+            />
+            <FaSearch className="search-icon" />
+          </div>
+        </div>
+     
+        <div className="posts-actions">
+          <FaSyncAlt className="refresh-icon" onClick={handleRefresh} />
+          <button className="create-post-btn" onClick={handleCreatePostClick}>
+            <FaPlus /> Create Post
+          </button>
         </div>
       </div>
 
@@ -200,45 +245,36 @@ const Posts = () => {
       <table className="posts-table">
         <thead>
           <tr>
-            <th>
-              <input
-                type="checkbox"
-                checked={isAllSelected}
-                onChange={handleSelectAll}
-              />
-            </th>
-            <th>Client</th>
+            <th onClick={() => handleSort("client")}>Client</th>
+            <th onClick={() => handleSort("title")}>Title</th>
             <th>Content</th>
-            <th>Hashtags</th>
-            <th>Platforms</th>
-            <th>Status</th>            
+            <th onClick={() => handleSort("selectedPlatforms")}>Platforms</th>
+            <th  onClick={() => handleSort("status")}>Status</th>            
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {currentPosts.map((post) => (
             <tr key={post._id}>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={selectedPosts.includes(post._id)}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    handleCheckboxChange(post._id);
-                    setSelectedPostIds((prev) =>
-                      checked ? [...prev, post._id] : prev.filter((id) => id !== post._id)
-                    );
-                  }}
-                />
-              </td>
               <td>{post.client || "-"}</td>
+              <td>{post.title || "-"}</td>
               <td>{post.content}</td>
-              <td>{post.hashtags || "-"}</td>
-              <td>{post.selectedPlatforms.join(", ") || "-"}</td>
-              <td>{post.posted || "-"}</td>
+
+              <td> 
+                   {/* For each post, render the icon that corresponds to the social media that's associated with the post. 
+                       Unavailable icons would render the text instead, and posts without platforms would have a dash instead */}
+                   {post.selectedPlatforms.length > 0
+                     ? post.selectedPlatforms.map((platform, index) => (
+                         <span key={index}>
+                           {platformIcons[platform.toLowerCase()] || platform}
+                         </span>
+                       ))
+                     : "-"}
+              </td>
+              <td>{post.status || "-"}</td>
               <td>
                 {/* Ellipsis icon and dropdown */}
-                <FaEllipsisV onClick={(e) => menuDropdown(e, post._id)} />
+                <FaEllipsisV className="popup-icon" onClick={(e) => menuDropdown(e, post._id)} />
                 {postMenuDropdown === post._id &&
                   createPortal(
                     <div
@@ -279,15 +315,16 @@ const Posts = () => {
           {filteredPosts.length} entries
         </p>
         <div className="pagination">
-          <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
-            «
-          </button>
-          <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            ‹
-          </button>
+        <FaAnglesLeft 
+             className="pagination-navigation" 
+             onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
+        />
+        <FaAngleLeft 
+          className="pagination-navigation" 
+        onClick={() => setCurrentPage(currentPage - 1)}
+        disabled={currentPage === 1} 
+       />
+
           {[...Array(totalPages).keys()]
             .slice(Math.max(0, currentPage - 2), currentPage + 1)
             .map((number) => (
@@ -299,20 +336,40 @@ const Posts = () => {
                 {number + 1}
               </button>
             ))}
-          <button
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            ›
-          </button>
-          <button
-            onClick={() => setCurrentPage(totalPages)}
-            disabled={currentPage === totalPages}
-          >
-            »
-          </button>
+          <FaAngleRight 
+              className="pagination-navigation"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+          />
+            <FaAnglesRight
+              className="pagination-navigation"
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+            />
         </div>
       </div>
+      </div>
+
+      {isPlatformSelectOpen && createPortal(
+         <div className="platform-dropdown-wrapper">
+          <div className="platform-dropdown-horizontal  animate-slide-down">
+           {["Facebook", "Instagram", "Twitter", "LinkedIn"].map((platform) => (
+             <button
+               key={platform}
+               onClick={() => {
+                 setSelectedPlatforms(platform);
+                 setIsModalOpen(true);
+                 setIsPlatformSelectOpen(false);
+               }}
+             >
+               {platform}
+             </button>
+           ))}
+           <button className="cancel-btn" onClick={() => setIsPlatformSelectOpen(false)}>Cancel</button>
+         </div>
+        </div>,
+       document.body
+      )}
       
       {/* Create/Edit Post Modal */}
       {isModalOpen && (
@@ -338,7 +395,7 @@ const Posts = () => {
                 }
               });
             }}
-            
+            platform={editingPost?.selectedPlatforms?.[0] || selectedPlatforms}
           />
       )}
 
