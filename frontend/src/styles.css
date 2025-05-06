@@ -460,7 +460,7 @@ body {
 
 /* 🟦 Category Dropdown */
 .dropdown {
-  background-color: var(--dropdown);
+  background-color: var(--category-dropdown);
   color: white;
   font-weight: bold;
   padding: 10px 15px;
@@ -538,7 +538,7 @@ body {
 
 
 .posts-table th {
-  background: var(--table-bg);
+  background: var(--table-header);
 }
 
 .posts-table tr:hover {
@@ -639,7 +639,7 @@ body {
 
 /* Displays current date */
 .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
-  background-color: var(--button-bg);
+  background-color: var(--modal-calendar-currentday);
   color: white;
   border-radius: 50%;
   width: 24px;
@@ -976,7 +976,7 @@ body {
 }
 
 .content-input::placeholder{
-  color: var(--textarea-placeholder);
+  color: var(--postmodal-textarea);
 }
 
 
@@ -992,7 +992,7 @@ body {
 }
 
 .input-field::placeholder{
-  color: var(--textarea-placeholder);
+  color: var(--postmodal-textarea);
 }
 
 .dropdown-field{
@@ -1134,12 +1134,17 @@ body {
 .dropdown-field{
   width: 98.5%;
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--category-dropdown);
   border-radius: 8px;
-  background-color: white;
+  background-color: var(--category-dropdown);
+  color: white;
   cursor: pointer;
 }
 
+.dropdown-field:hover{
+  background-color: var(--button-hover);
+  border-color: var(--button-hover);
+}
 
 
 .input-field {
@@ -1839,7 +1844,7 @@ input::-webkit-inner-spin-button {
 .user-stats h3 {
   font-size: 15px;
   margin-bottom: 10px;
-  color: var(--user-stats-text);
+  color: var(--user-text);
   display: flex;
   align-items: center;
 }
@@ -2871,9 +2876,9 @@ body {
 .attach-file-btn {
   width: 35px;
   height: 35px;
-  border: 1px solid #dcdcdc;
+  border: 1px solid var(--button-border);
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: var(--button-bg);
   display:flex;
   align-items: center;
   justify-content: center;
@@ -2893,6 +2898,253 @@ body {
 .close-icon{
   float: right;
   cursor: pointer;
+}
+
+.status-highlight{
+  border-radius: 4px;
+}
+
+.status-highlight.posted {
+  color: var(--status-posted);
+}
+
+.status-highlight.draft {
+  color: var(--status-draft);
+}
+
+.status-highlight.scheduled {
+  color: var(--status-scheduled);
+}
+
+/* Post Modal */
+.modal {
+  position: fixed;
+  top: 5%;
+  left: 10%;
+  width: 80%;
+  height: 90%;
+  background-color: #fff;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: sans-serif;
+}
+
+.modal-box {
+  display: flex;
+  width: 95%;
+  height: 90%;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--postmodal-section);
+  padding: 20px;
+  gap: 20px;
+}
+
+.content-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.content-section textarea {
+  width: 95%;
+  height: 150px;
+  resize: none;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.extras input, .extras select {
+  margin-top: 10px;
+  padding: 8px;
+  width: 100%;
+  font-size: 14px;
+}
+
+.platform-toggles {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.platform-btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.platform-btn.on {
+  background-color: #3b5998;
+  color: white;
+}
+
+.platform-btn.off {
+  background-color: #ddd;
+  color: black;
+}
+
+.modal-schedule-btn {
+  padding: 10px;
+  background-color: var(--button-bg);
+  color: white;
+  border: none;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal-schedule-btn:hover{
+  background-color: var(--button-hover);
+}
+
+.preview-section {
+  flex: 1;
+  border-left: 2px solid #ddd;
+  padding-left: 20px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.tabs button {
+  padding: 6px 12px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.post-preview {
+  background: var(--preview);
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  background: gray;
+  border-radius: 50%;
+}
+
+.name {
+  font-weight: bold;
+}
+
+.timestamp {
+  font-size: 12px;
+  color: gray;
+}
+
+.post-content {
+  margin-top: 10px;
+  min-height: 80px;
+}
+
+.post-footer {
+  margin-top: 10px;
+  font-size: 12px;
+  color: gray;
+}
+
+.post-image {
+  margin-top: 10px;
+}
+
+.post-image img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.modal-calendar{
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  z-index: 9999;
+  background-color: none;
+  color: black;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+/* Dark Theme for Calendar and Time Hover Effects */
+.modal-calendar .react-datepicker,
+.modal-calendar .react-datepicker__time,
+.modal-calendar .react-datepicker__time-box {
+  background-color: var(--modal-calendar-bg);
+  color: var(--modal-calendar-text);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-calendar .react-datepicker {
+  border: 1px solid var(--modal-calendar-datepicker);
+}
+
+.modal-calendar .react-datepicker__header {
+  background-color: var(--modal-calendar-datepicker-header);
+  border-bottom: 1px solid var--(modal-calendar-datepicker);
+}
+
+.modal-calendar .react-datepicker__current-month,
+.modal-calendar .react-datepicker-time__header,
+.modal-calendar .react-datepicker__day,
+.modal-calendar .react-datepicker__day-name,
+.modal-calendar .react-datepicker__time-name {
+  color: var(--modal-calendar-text);
+}
+
+/* Hover effects for calendar days */
+.modal-calendar .react-datepicker__day:hover {
+  background-color: var(--modal-calendar-datepicker) !important;
+  color: var(--modal-calendar-text) !important;
+}
+
+/* Hover effects for time slots */
+.modal-calendar .react-datepicker__time-list-item:hover {
+  background-color: var(--modal-calendar-datepicker) !important;
+  color: var(--modal-calendar-text) !important;
+}
+
+/* Selected days and time slots */
+.modal-calendar .react-datepicker__day--selected,
+.modal-calendar .react-datepicker__day--keyboard-selected,
+.modal-calendar .react-datepicker__time-list-item--selected {
+  background-color: var(--modal-calendar-currentday);
+  color: var(--modal-calendar-text);
+}
+
+.modal-calendar .react-datepicker__time-container {
+  border-left: 1px solid var(--modal-calendar-datepicker);
+}
+
+.modal-calendar .react-datepicker__time-list-item {
+  padding: 8px 10px;
+}
+
+#paperclip{
+  color: white;
 }
 
 
@@ -2921,6 +3173,7 @@ body {
 
   --table-bg: #f5f7fb;
   --table-border: #0a0f5c;
+  --table-header: #ebebeb;
   --table-current-day: #0a0f5c;
 
   --search-bar: white;
@@ -2960,7 +3213,7 @@ body {
   --options-highlight: #d6d6d6;
 
   --user-background: white;
-  --user-stats: #6da5fa;
+  --user-stats: #d6d6d6;
   --user-text: black;
   --user-stats-text: white;
 
@@ -2974,6 +3227,20 @@ body {
   --chatbot-incoming: #dfdfdf;
   --chatbot-outgoing: #0D286E;
   --chatbot-textarea: #fff;
+
+  --status-posted: #15803d ;
+  --status-scheduled: 	#1d4ed8;
+  --status-draft: #b45309;
+
+  --postmodal-section: #f7f9fc;
+  --preview: #fff;
+  --postmodal-textarea: #6c7789;
+
+  --modal-calendar-text: black;
+  --modal-calendar-bg: #ffffff;
+  --modal-calendar-datepicker: #e0e0e0;
+  --modal-calendar-datepicker-header: #f4f4f5;
+  --modal-calendar-currentday: #3b82f6;
 }
 
 /* Dark Theme */
@@ -2995,6 +3262,7 @@ body {
   --username-text: #4a6eff;
 
   --table-bg: #32323b;
+  --table-header: #2d2d38;
   --table-border: #6c7789;
   --table-current-day: #4a6eff;
   
@@ -3056,6 +3324,20 @@ body {
   --chatbot-incoming-text:white;
   --chatbot-outgoing: #3177b0;
   --chatbot-textarea: #515161;
+
+  --status-posted: #86efac;
+  --status-scheduled: 	#93c5fd;
+  --status-draft: 	#fcd34d;
+
+  --postmodal-section: #2F3038;
+  --preview: #37373b;
+  --postmodal-textarea: lightgrey;
+  
+  --modal-calendar-text: white;
+  --modal-calendar-bg: #2f3038;
+  --modal-calendar-datepicker: #3a3b45;
+  --modal-calendar-datepicker-header: #272831;
+  --modal-calendar-currentday: #3b82f6;
 }
 
 .calendar-sidebar {

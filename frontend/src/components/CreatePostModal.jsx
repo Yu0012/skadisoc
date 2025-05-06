@@ -189,7 +189,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform})
               
               <div className="file-schedule-row">
                 <button className="attach-file-btn" onClick={triggerFileInput}>
-                  <FaPaperclip />
+                  <FaPaperclip id="paperclip"/>
                 </button>
                 <input
                   type="file"
@@ -201,7 +201,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform})
                 />
               
                   <div className="schedule-row">
-                    <button className="schedule-btn" onClick={toggleDatePicker}>
+                    <button className="modal-schedule-btn" onClick={toggleDatePicker}>
                       <FaCalendarAlt /> Schedule Post
                     </button>
                     {scheduledDate && (
@@ -212,16 +212,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform})
                     {showDatePicker && (
                       <div
                         ref={datePickerRef}
-                        style={{
-                          position: "absolute",
-                          bottom: "100%",
-                          right: "0",
-                          zIndex: 9999,
-                          backgroundColor: "white",
-                          borderRadius: "8px",
-                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
-                          padding: "10px"
-                        }}
+                        className="modal-calendar"
                       >
                         <DatePicker
                           selected={scheduledDate}
