@@ -34,21 +34,50 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform})
     }
   }, [initialData]);
 
+  // useEffect(() => {
+  //   const fetchClients = async () => {
+  //     try {
+  //       const response = await fetch("http://localhost:5000/api/clients");
+  //       if (!response.ok) {
+  //         throw new Error("Failed to fetch clients");
+  //       }
+  //       const data = await response.json();
+  //       setClients(data);
+  //     } catch (error) {
+  //       console.error("Error fetching clients:", error);
+  //     }
+  //   };
+  //   fetchClients();
+  // }, []);
+
+  // Fetch clients based on selected platform NEW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   useEffect(() => {
     const fetchClients = async () => {
+      if (!platform) return;
+  
+      const platformApiMap = {
+        Facebook: "facebook-clients",
+        Instagram: "instagram-clients",
+        Twitter: "twitter-clients",
+        LinkedIn: "linkedin-clients",
+      };
+  
+      const route = platformApiMap[platform];
+      if (!route) return;
+  
       try {
-        const response = await fetch("http://localhost:5000/api/clients");
-        if (!response.ok) {
-          throw new Error("Failed to fetch clients");
-        }
+        const response = await fetch(`http://localhost:5000/api/${route}`);
+        if (!response.ok) throw new Error("Failed to fetch platform clients");
+  
         const data = await response.json();
         setClients(data);
-      } catch (error) {
-        console.error("Error fetching clients:", error);
+      } catch (err) {
+        console.error(`❌ Error fetching ${platform} clients:`, err);
       }
     };
+  
     fetchClients();
-  }, []);
+  }, [platform]);
 
    // Automatically enable the selected platform
    useEffect(() => {
@@ -173,9 +202,6 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform})
                   />
                 </div>
 
-
-
-
               <div className="content-container">
               <label>Content</label>
                 <textarea
@@ -186,7 +212,6 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform})
                 />
               </div>
 
-              
               <div className="file-schedule-row">
                 <button className="attach-file-btn" onClick={triggerFileInput}>
                   <FaPaperclip />
@@ -249,7 +274,6 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform})
                 </div>
               )} */}
 
-
               <div className="">
                 {/* Right */}
                 <div className="client-column">
@@ -266,8 +290,6 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform})
                       </option>
                     ))}
                   </select>
-
-                  
                 </div>
               </div>
 

@@ -26,7 +26,6 @@ const Posts = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
-
   //Replaces text to icons for social media
   const platformIcons = {
     facebook: <img src={facebookIcon} className="inline-icon" alt="Facebook" />,
@@ -49,7 +48,6 @@ const Posts = () => {
     fetchPosts();
   }, []);
   
-
   // 📌 Handle search input
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -163,10 +161,6 @@ const Posts = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-
-
-
-  
 //pagination logic
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;

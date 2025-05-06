@@ -8,8 +8,15 @@ const fs = require('fs');
 const { platform } = require('os');
 const mime = require("mime-types");
 const axios = require("axios");
+const FacebookClient = require('./models/FacebookClientSchema');
+const InstagramClient = require('./models/InstagramClientSchema');
+const {TwitterApi} = require("twitter-api-v2");
 const FormData = require("form-data");
-
+const passport = require('passport');
+const TwitterStrategy = require('passport-twitter').Strategy;
+const session = require('express-session');
+const facebookClientsRoute = require('./routes/facebookClients');
+const instagramClientsRoute = require('./routes/instagramClients');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -22,7 +29,7 @@ app.use(passport.initialize()); // Initialize passport
 
 app.use('/api/facebook-clients', facebookClientsRoute);
 app.use('/api/instagram-clients', instagramClientsRoute);
-
+app.use('/api/twitter-clients', twitterClientsRoute);
 
 // Connect to MongoDB Atlas
 mongoose.connect(process.env.MONGO_URI, {
@@ -86,7 +93,6 @@ const clientSchema = new mongoose.Schema({
       accessTokenSecret: String,
       //Linkedin
       urn: String
-
     }
   ]
 });
@@ -744,9 +750,35 @@ app.get('/auth/twitter', passport.authenticate('twitter'));
 // Step 2: Handle the callback
 app.get('/auth/twitter/callback',
   passport.authenticate('twitter', { failureRedirect: '/login' }),
-  function(req, res) {
-    // Successful login
-    res.send("Twitter Login Successful");
+  async function (req, res) {
+    try {
+      const twitterProfile = req.user; // From passport
+
+      await TwitterClient.findOneAndUpdate(
+        { userId: twitterProfile.id },
+        {
+          userId: twitterProfile.id,
+          username: twitterProfile.username,
+          name: twitterProfile.displayName,
+          accessToken: req.query.oauth_token || "",  // Optional
+          refreshToken: req.query.oauth_verifier || "" // Optional
+        },
+        { upsert: true, new: true }
+      );
+
+      res.json({
+        message: "✅ Twitter client saved",
+        user: {
+          id: twitterProfile.id,
+          username: twitterProfile.username,
+          name: twitterProfile.displayName
+        }
+      });
+
+    } catch (err) {
+      console.error("❌ Failed to save Twitter client:", err);
+      res.status(500).json({ error: "Failed to save Twitter client" });
+    }
   }
 );
 
