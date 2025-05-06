@@ -3164,3 +3164,18 @@ body {
   box-sizing: border-box;
   z-index: -1;
 }
+
+.calendar-controls-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  flex-wrap: wrap;
+}
+
+.calendar-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
