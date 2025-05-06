@@ -515,39 +515,27 @@ const postToFacebook = async (post, client) => {
     const url = `https://graph.facebook.com/${pageId}/photos`;
 
     const formData = new FormData();
-    formData.append("message", `${post.content}`);
     formData.append("access_token", pageAccessToken);
     formData.append("source", fs.createReadStream(path.join(__dirname, post.filePath)));
+    formData.append("published", "false"); // 
     const response = await axios.post(url, formData, {
       headers: formData.getHeaders(),
     });
 
-     if (response.data.id) {
-       console.log(`Post successful: ${response.data.id}`);
-       const postId = (pageId + "_" + response.data.id);
-       return postId; // ⬅️ Return post ID
-     }
-    // const photoId = response.data.id;
-    // console.log("📸 Facebook Photo ID:", photoId);
+    const mediaId = response.data.id;
 
-    // // 🔍 Try to get real post ID
-    // try {
-    //   const postResponse = await axios.get(`https://graph.facebook.com/${photoId}?fields=post_id`, {
-    //     params: { access_token: pageAccessToken },
-    //   });
+    // Publish the post via feed
+    const publishUrl = `https://graph.facebook.com/${pageId}/feed`;
+    const publishResponse = await axios.post(publishUrl, {
+      message: post.content,
+      attached_media: JSON.stringify([{ media_fbid: mediaId }]),
+      access_token: pageAccessToken,
+    });
 
-    //   const realPostId = postResponse.data.post_id;
-    //   if (realPostId) {
-    //     console.log("✅ Real Facebook Post ID:", realPostId);
-    //     return realPostId;
-    //   } else {
-    //     console.warn("⚠️ Unable to resolve real post ID, falling back to photo ID");
-    //     return photoId;
-    //   }
-    // } catch (fallbackErr) {
-    //   console.warn("⚠️ Failed to fetch real post ID, using photo ID instead:", fallbackErr.message);
-    //   return photoId;
-    // }
+    if (publishResponse.data.id) {
+      console.log('✅ Facebook Post ID:', publishResponse.data.id);
+      return publishResponse.data.id; // ⬅️ Return post ID
+    }
 
   } catch (error) {
     console.error("Error posting to Facebook:", error.response?.data || error.message);
