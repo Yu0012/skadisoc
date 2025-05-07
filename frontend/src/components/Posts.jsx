@@ -265,7 +265,12 @@ const Posts = () => {
                        ))
                      : "-"}
               </td>
-              <td>{post.status || "-"}</td>
+              <td>
+                {/* Highlights colours based on text */}
+                <span className={`status-highlight ${post.status?.toLowerCase()}`}>
+                  {post.status || "-"}
+                </span>
+              </td>
               <td>
                 {/* Ellipsis icon and dropdown */}
                 <FaEllipsisV className="popup-icon" onClick={(e) => menuDropdown(e, post._id)} />
