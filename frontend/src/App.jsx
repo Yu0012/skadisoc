@@ -17,7 +17,8 @@ import FacebookPreview from "./components/FacebookPreview";
 import InstagramPreview from "./components/InstagramPreview";
 import TwitterPreview from "./components/TwitterPreview";
 import SocialMediaDashboard from './components/SocialMediaDashboard';
-import "./styles.css";
+import "./styles.css";  
+import Chatbot from "./components/Chatbot"; // Import the Chatbot component
 
 // 🧠 Create a sub-component inside Router
 const AppContent = () => {
@@ -26,7 +27,12 @@ const AppContent = () => {
 
   return (
     <>
-      {!hideNavbarOn.includes(location.pathname) && <Navbar />}
+      {!hideNavbarOn.includes(location.pathname) && (
+        <>
+        <Navbar />
+        <Chatbot />
+      </>
+      )}
       <Routes>
         <Route path="/" element={<AuthForm />} />
         <Route path="/authform" element={<AuthForm />} />
