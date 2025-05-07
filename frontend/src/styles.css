@@ -423,7 +423,7 @@ body {
 /* ➕ Create Post Button */
 .create-post-btn {
   background-color: var(--button-bg) !important;
-  color: white;
+  color: white !important;
   padding: 10px 15px;
   border: 1px solid var(--button-bg);
   border-radius: 5px;
@@ -436,8 +436,8 @@ body {
 }
 
 .create-post-btn:hover {
-  background-color: var(--button-hover);
-  border: 1px solid var(--button-hover);
+  background-color: var(--button-hover) !important;
+  border: 1px solid var(--button-hover) !important;
 }
 
 /* 🔍 Search Bar + Dropdown + Export in One Line */
@@ -3162,7 +3162,7 @@ body {
   --welcome-text: #555;
   --username-text: #0a0f5c;
 
-  --table-bg: #f5f7fb;
+  --table-bg: white;
   --table-border: #0a0f5c;
   --table-header: #ebebeb;
   --table-current-day: #0a0f5c;
