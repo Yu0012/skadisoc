@@ -57,7 +57,7 @@ body {
 
 /* 🔷 Logo Styling */
 .logo {
-  height: 30px;
+  height: 70px;
   margin-right: auto;
 }
 
@@ -76,6 +76,8 @@ body {
   text-decoration: none;
   font-weight: 600;
   transition: color 0.3s ease;
+  padding: 5px; 
+  border-radius: 10px; 
 }
 
 /* Active navbar link */
@@ -119,12 +121,30 @@ body {
   width: 250px;
   background: white;
   border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
   padding: 10px;
   display: flex;
   flex-direction: column;
   z-index: 100;
 }
+
+.notifications-notifs p{
+  text-align: center;
+}
+
+
+.notification-button{
+  background: var(--options);
+  border: 1px solid var(--options);
+  color: var(--options-color) !important;
+  border-radius: 5px;
+  text-align: center !important;
+}
+
+.notification-button:hover{
+  background-color: var(--options-highlight) !important;
+}
+
 
 .notification-item {
   padding: 10px;
@@ -161,27 +181,35 @@ body {
   width: 180px;
   background-color:var(--options);
   border: 1px solid var(--options);
-  border-radius: 8px;
+  border-radius: 5px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   font-size: 14px;
+  padding: 5px;
   z-index: 999;
   overflow: hidden;
 }
 
-.user-dropdown a,
-.user-dropdown div {
-  display: block;
+.user-dropdown button{
   padding: 10px 16px;
-  text-decoration: none;
-  color: var(--options-color);
   font-size: 14px;
+  text-decoration: none;
+  text-align: left;
   cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  width: 100%;
+  color: var(--options-color) !important;
   transition: background 0.2s ease;
+ }
+
+ .user-dropdown button:hover{
+  background: var(--options-highlight);
 }
 
-.user-dropdown a:hover,
-.user-dropdown div:hover {
-  background-color: #f0f0f0;
+.logout:hover {
+  background-color: #fc3d47 !important;
+  color: white !important;
 }
 
 .user-dropdown hr {
@@ -191,8 +219,7 @@ body {
 }
 
 .user-dropdown .logout {
-  color: rgb(255, 0, 0);
-  font-weight: bold;
+  color: white;
 }
 
 /* 📂 Dropdown Menu */
@@ -201,7 +228,8 @@ body {
   right: 0;
   top: 50px;
   width: 200px;
-  background: white;
+  background: var(--options);
+  color: var(--options-color);
   border-radius: 8px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   padding: 10px;
@@ -213,7 +241,8 @@ body {
 .dropdown-menu a {
   padding: 10px;
   text-decoration: none;
-  color: #333;
+  border-radius: 5px;
+  color: var(--options-color);
   font-size: 14px;
   font-weight: 500;
   transition: 0.3s;
@@ -269,12 +298,18 @@ body {
 
 /* For the Delete option within menu */
 .dropdown-menu.client a#Delete{
-  color: red;
-  font-weight: bold;
+  color: #CF6679;
 }
 
 .dropdown-menu.client a#Delete:hover {
   background: #ffe6e6; 
+}
+
+
+.dropdown-menu.notifications-dropdown h4{
+  text-align: center;
+  padding: 5px !important;
+  margin: 0px !important;
 }
 
 /* 🔽 Export Button Styling */
@@ -299,18 +334,6 @@ body {
   background-color: black;
 }
 
-/* 🚪 Logout Link */
-.logout {
-  color: red;
-  font-weight: bold;
-}
-
-
-.logout:hover{
-  color: white !important;
-  background-color: red !important;
-  border-radius: 5px;
-}
 
 .search-toolbar-container {
   padding-right: 10px !important;
@@ -394,13 +417,12 @@ body {
 }
 
 .delete-btn {
-  color: red;
-  font-weight: bold;
+  color: #CF6679;
 }
 
 /* ➕ Create Post Button */
 .create-post-btn {
-  background-color: var(--button-bg);
+  background-color: var(--button-bg) !important;
   color: white;
   padding: 10px 15px;
   border: 1px solid var(--button-bg);
@@ -414,8 +436,8 @@ body {
 }
 
 .create-post-btn:hover {
-  background-color: black;
-  border: 1px solid black;
+  background-color: var(--button-hover);
+  border: 1px solid var(--button-hover);
 }
 
 /* 🔍 Search Bar + Dropdown + Export in One Line */
@@ -438,7 +460,7 @@ body {
 
 /* 🟦 Category Dropdown */
 .dropdown {
-  background-color: var(--dropdown);
+  background-color: var(--category-dropdown);
   color: white;
   font-weight: bold;
   padding: 10px 15px;
@@ -516,7 +538,7 @@ body {
 
 
 .posts-table th {
-  background: var(--table-bg);
+  background: var(--table-header);
 }
 
 .posts-table tr:hover {
@@ -527,7 +549,7 @@ body {
 /* Calendar Design */
 .fc {
   color: var(--text-color) !important;
-  border: none !important;  /* Remove outer border */
+  border-color: solid var(--table-border) !important;
   border-radius: 8px !important;
   background-color: var(--table-bg) !important;
   max-width: 1500px;
@@ -539,32 +561,29 @@ body {
 
 
 .fc-scroller {
-  overflow: hidden !important;
+  overflow-y: hidden !important;
 }
 
 .fc-scrollgrid th {
   border: 1px solid #0D286E !important;
   border-top-left-radius: 8px !important;
-  border-top-right-radius: 5px !important;
+  border-top-right-radius: 8px !important;
 }
 
-.fc-scrollgrid td {
-  border-left: 1px solid #0D286E !important; /* Inner borders between days */
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
-}
 
 /* Color the corners for the inner grid */
 /* Top-left corner */
 .fc-scrollgrid th:first-child {
   border-top-left-radius: 10px !important;
   border: 1px solid var(--table-border) !important; /* Optional: Adjust border if needed */
+  border-bottom: none !important;
 }
 
 /* Top-right corner */
 .fc-scrollgrid th:last-child {
   border-top-right-radius: 10px !important;
   border: 1px solid var(--table-border) !important; /* Optional: Adjust border if needed */
+  border-bottom: none !important;
 }
 
 /* Bottom-left corner */
@@ -583,20 +602,6 @@ body {
   padding: 0px !important;
 }
 
-.fc-day-today .fc-daygrid-day-number {
-  background-color: var(--table-current-day) !important; 
-  color: white !important;
-  border-radius: 6px;
-  padding: 3px 6px; 
-  font-size: 14px; 
-  font-weight: bold; 
-  display: inline-block;
-  line-height: 1; 
-  width: fit-content; 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 .fc .fc-col-header-cell {
   background-color: #f0f2f5; /* light grey */
@@ -621,6 +626,7 @@ body {
   font-weight: bold; 
 }
 
+
 .fc .fc-daygrid-day-frame {
   min-height: 100px;
   display: flex;
@@ -628,46 +634,31 @@ body {
   justify-content: flex-start;
   align-items: center;
   padding: 4px;
-  background-color: var(--table-bg); /* keep clean */
   color: var(--text-color)
 }
 
-/* Displays current day on the calendar */
-.fc-day-today {
-  background: none !important;
-}
-
-.fc-today-button {
-  padding: 10px 25px;
-  background-color: var(--button-bg);
-  border: 1px solid var(--button-border);
+/* Displays current date */
+.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  background-color: var(--modal-calendar-currentday);
   color: white;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: 0.3s;
-  font-size: 16px;
-}
-
-.fc-today-button:hover {
-  background-color: var(--button-hover)
-}
-
-.fc-nav-button {
-  font-size: 20px;
-  padding: 1px;
-  margin: 1px;
-  cursor: pointer;
-  color: var(--icon-color);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  font-weight: bold;
 }
 
 /* The rounded border for the current date */
 .fc-current-date {
-  color: #0D286E;
+  color: var(--current-date-color);
   font-size: 16px;
   font-weight: bold;
-  background-color: white;
+  background-color: var(--current-date);
   padding: 10px 25px;
-  border: 2px solid #0D286E;
+  border: 2px solid var(--current-date-border);
   border-radius: 10px; 
 }
 
@@ -685,6 +676,39 @@ body {
   gap: 10px;
   justify-content: flex-end; /* Moves the navigation buttons to the right */
   flex-grow: 1; /* Makes sure it takes available space */
+}
+
+.fc-scrollgrid thead tr th {
+  border-bottom: none !important;
+}
+
+/* Displays current day on the calendar*/
+.fc-day-today {
+  background-color: var(--table-bg)!important;
+}
+
+.fc-today-button{
+  padding: 10px 25px;
+  background-color: var(--button-bg);
+  border: 1px solid var(--button-border);
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.3s;
+  font-weight: bold;
+}
+
+.fc-today-button:hover{
+  background-color: var(--button-hover);
+  border: 1px solid var(--button-hover);
+}
+
+.fc-nav-button {
+  font-size: 20px;
+  padding: 1px;
+  margin: 1px;
+  cursor: pointer;
+  color: var(--icon-color);
 }
 
 /* Events within the calendar */
@@ -710,20 +734,10 @@ body {
   border-color: var(--calendar-lines) !important;
 }
 
-/* Fixes for border issues within Dark Mode */
-[data-selected-theme="dark"] .fc {
-  border-radius: 8px; 
-  overflow: hidden; 
-  background-color: var(--table-bg); 
-}
-
-[data-selected-theme="dark"] .fc-scrollgrid {
-  border-radius: 8px; 
-}
-
 [data-selected-theme="dark"] .fc-scrollgrid th {
-  background-color: #f0f2f5 !important;
+  background-color: var(--table-bg) !important;
   border-radius: 0 !important;
+  color: var(--text-color);
 }
 
 /* Expands the calendar */
@@ -735,11 +749,6 @@ body {
   overflow: visible !important;
   height: auto !important;
   max-height: none !important;
-}
-
-.fc-view-harness {
-  height: auto !important;
-  overflow: visible !important;
 }
 
 .fc-scrollgrid {
@@ -759,41 +768,22 @@ body {
   border-bottom-right-radius: 8px !important;
 }
 
-/* Remove any inner radius — handled by container now */
-.fc-scrollgrid td,
-.fc-scrollgrid th,
-.fc-daygrid-body,
-.fc-scrollgrid-section,
-.fc-daygrid {
-  border-radius: 0 !important;
-}
-
 .fc-scrollgrid th,
 .fc-theme-standard td {
   border: 1px solid var(--table-border) !important; /* Inner borders */
 }
 
-[data-selected-theme="dark"] .fc {
-  border: none !important;  /* Remove outer border in dark mode */
-}
-
-[data-selected-theme="dark"] .fc-scrollgrid th,
-[data-selected-theme="dark"] .fc-scrollgrid td {
-  border: 1px solid var(--calendar-lines) !important; /* Inner borders in dark mode */
-}
 
 
 
 /* End of Calendar Design */
 
-
-
 /* Toggle between block and table view in Client Page */
 .client-select-view-btn{
-  background-color: var(--client-selected-view);
-  color: var(--client-selected-text);
+  background-color: var(--client-select-view);
+  color: var(--button-text);
   padding: 10px 25px;
-  border-color: var(--client-selected-view);
+  border-color: var(--client-select-view);
   align-items: center;
   cursor: pointer;
   transition: 0.3s;
@@ -820,9 +810,9 @@ body {
 }
 
 .client-select-view-btn-selected{
-  background-color: var(--client-select-view);
-  border-color:var(--client-select-view);
-  color: var(--button-text);
+  background-color: var(--client-selected-view);
+  border-color:var(--client-selected-view);
+  color: var(--client-selected-text);
   cursor: default;
   transition: 0.5s;
 }
@@ -967,6 +957,7 @@ body {
   padding-bottom: 5px;
 }
 
+
 /* Just push the first label down a bit */
 .modal-body label:first-of-type {
   margin-top: 10px; /* or 12px for more breathing space */
@@ -985,7 +976,7 @@ body {
 }
 
 .content-input::placeholder{
-  color: var(--textarea-placeholder);
+  color: var(--postmodal-textarea);
 }
 
 
@@ -1001,7 +992,7 @@ body {
 }
 
 .input-field::placeholder{
-  color: var(--textarea-placeholder);
+  color: var(--postmodal-textarea);
 }
 
 .dropdown-field{
@@ -1072,7 +1063,7 @@ body {
 }
 
 .schedule-btn {
-  background-color: var(--button-bg);
+  background-color: var(--button-bg) !important;
   color: var(--button-text);
   border: none;
   padding: 6px 12px;
@@ -1084,7 +1075,7 @@ body {
 }
 
 .schedule-btn:hover {
-  background-color: #1a1abf;
+  background-color: var(--button-hover);
 }
 
 .selected-date {
@@ -1143,12 +1134,17 @@ body {
 .dropdown-field{
   width: 98.5%;
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--category-dropdown);
   border-radius: 8px;
-  background-color: white;
+  background-color: var(--category-dropdown);
+  color: white;
   cursor: pointer;
 }
 
+.dropdown-field:hover{
+  background-color: var(--button-hover);
+  border-color: var(--button-hover);
+}
 
 
 .input-field {
@@ -1263,7 +1259,7 @@ input:checked + .slider:before {
 }
 
 .post-submit-btn:hover {
-  background: black;
+  background: var(--button-hover);
 }
 
 /* Dropdown Menu */
@@ -1280,8 +1276,7 @@ input:checked + .slider:before {
 
 /* Style delete button */
 .dropdown-menu .delete-btn {
-  color: red;
-  font-weight: bold;
+  color: #CF6679;
 }
 
 .pagination-container {
@@ -1292,8 +1287,13 @@ input:checked + .slider:before {
   padding: 10px 20px;
   position: absolute;
   bottom: 10px;
-  right: 20px;
+  right: 80px;
 }
+
+.pagination-container p{
+  margin-left: 60px;
+}
+
 
 .category-dropdown {
   padding: 8px;
@@ -1310,6 +1310,7 @@ input:checked + .slider:before {
   justify-content: space-between;
   align-items: center;
   margin-top: 20px;
+  right: 70px;
 }
 
 .pagination {
@@ -1351,7 +1352,7 @@ input:checked + .slider:before {
 }
 
 .dropdown:hover {
-  background-color: black;
+  background-color: var(--button-hover);
 }
 
 .dropdown:focus {
@@ -1426,7 +1427,7 @@ input:checked + .slider:before {
   position: absolute;
   color: var(--text-color);
   bottom: 10px;
-  right: 20px;
+  right: 70px;
 }
 
 .pagination {
@@ -1613,7 +1614,7 @@ input::-webkit-inner-spin-button {
   left: -10px;
   min-width: 140px; /* Smaller than user dropdown */
   background: var(--options);
-  border-radius: 6px;
+  border-radius: 5px;
   border: 1px solid var(--options);
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
   padding: 5px;
@@ -1631,7 +1632,7 @@ input::-webkit-inner-spin-button {
   border: none;
   background: none;
   width: 100%;
-  color: var(--options-color);
+  color: var(--options-color) !important;
 }
 
 .post-actions-dropdown button:hover {
@@ -1640,8 +1641,7 @@ input::-webkit-inner-spin-button {
 
 /* Delete Button - Keep it bold but smaller */
 .post-actions-dropdown .delete-btn {
-  color: rgb(255, 43, 43);
-  font-weight: bold;
+  color: white;
   font-size: 14px;
 }
 
@@ -1686,7 +1686,7 @@ input::-webkit-inner-spin-button {
 
 .popup-menu button {
   border: none;
-  color: black;
+  color: var(--options-color) !important;
   background: var(--dropdown-bg);
   padding: 8px 10px;
   cursor: pointer;
@@ -1755,14 +1755,14 @@ input::-webkit-inner-spin-button {
 .profile-card p {
   margin: 4px 0;
   font-size: 14px;
-  color: var(--client-text);
+  color: var(--user-text);
 }
 
 .edit-btn {
   margin-top: 14px;
   padding: 8px 16px;
   background: #f0f0f0;
-  border: 1px solid #ccc;
+  border: 1px solid black;
   border-radius: 6px;
   font-size: 13px;
   cursor: pointer;
@@ -1784,8 +1784,8 @@ input::-webkit-inner-spin-button {
 }
 
 .profile-card {
-  background: var(--client-block);
-  color: var(--client-text);
+  background-color: var(--user-background);
+  color: var(--user-text);
   padding: 30px;
   border-radius: 16px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
@@ -1811,7 +1811,7 @@ input::-webkit-inner-spin-button {
 .profile-card p {
   margin: 4px 0;
   font-size: 14px;
-  color: var(--client-text);
+  color: var(--user-text);
 }
 
 .edit-btn {
@@ -1827,7 +1827,8 @@ input::-webkit-inner-spin-button {
 }
 
 .edit-btn:hover {
-  background: #e4e4e4;
+  background: var(--button-hover);
+  border-color: var(--button-hover);
 }
 
 .user-stats {
@@ -1843,7 +1844,7 @@ input::-webkit-inner-spin-button {
 .user-stats h3 {
   font-size: 15px;
   margin-bottom: 10px;
-  color: #222;
+  color: var(--user-text);
   display: flex;
   align-items: center;
 }
@@ -2162,8 +2163,7 @@ body {
 
 .post-actions-dropdown .delete-btn:hover {
   background-color: #fc3d47;
-  color: white;
-  font-weight: bold;
+  color: white !important;
   font-size: 14px;
 }
 
@@ -2186,7 +2186,7 @@ body {
 }
 
 .delete-selected-btn{
-  background-color: red;
+  background-color: #CF6679;
   color: white;
   padding: 10px 15px;
   border: none;
@@ -2203,7 +2203,7 @@ body {
   color: var(--button-text);
   padding: 10px 15px;
   border-radius: 5px;
-  border-color: var(--button-bg);
+  border: 1px solid var(--button-bg);
   display: flex;
   align-items: center;
   gap: 5px;
@@ -2214,6 +2214,7 @@ body {
 
 .create-user-btn:hover{
   background-color: var(--button-hover);
+  border: 1px solid var(--button-hover);
   color: white;
 }
 
@@ -2624,139 +2625,151 @@ body {
   color: #657786;
 }
 
- /* Light Theme (Default) */
- :root {
-  --bg-color: white;
-  --bg-color-secondary: #f5f7fb;
-  --text-color: #0a0f5c;
-
-  --button-bg: #0a0f5c;
-  --button-border: #0a0f5c;
-  --button-text: white;
-  --button-hover: black;
-
-  --nav-hover: white;
-  --nav-bg-hover:#0a0f5c;
-  --nav-active-text: #0a0f5c;  /* Active link color in light mode */
-
-  --calendar-lines: #0a0f5c;
-
-  --welcome-text: #555;
-  --username-text: #0a0f5c;
-
-  --table-bg: #f5f7fb;
-  --table-border: #0a0f5c;
-  --table-current-day: #0a0f5c;
-
-  --search-bar: white;
-  --search-bar-border: #ddd;
-  --search-bar-color: #555;
-
-  --category-dropdown: #0a0f5c;
-
-  --icon-color: #0a0f5c;
-
-  --client-block: white;
-  --client-text: #0D286E;
-  --client-border: #0D286E;
-  --client-ellipsis: #333;
-
-  --add-client: #0D286E;
-  --add-client-border: #0D286E;
-
-  --pagination: #0D286E;
-  --pagination-border: #32323b;
-  --pagination-bg: #f8f9fa;
-
-  --dropdown-bg: white;
-  --dropdown-hover: #ddd;
-  --dropdown-text: black;
-
-  --menu-page: white;
-  --menu-color: #0D286E;
-  --menu-border: #0D286E;
-
-  --textarea: white;
-  --textarea-placeholder: #6c7789;
-  --textarea-text: black;
-
-  --options: white;
-  --options-color: black;
-  --options-highlight: #d6d6d6;
-
-  --user-stats: #6c7789;
-
-  --client-select-view: #0D286E;
-  --client-selected-view: #a2a2a2;
-  --client-selected-text: black;
+/* Chatbot */
+ /* Button */
+ .chatbot-widget {
+  position: fixed;
+  bottom: 30px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background-color: var(--chatbot-button);
+  color: white;
+  font-size: 24px;
+  border: 1px solid var(--chatbot-button);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
 }
 
-/* Dark Theme */
-[data-selected-theme="dark"] {
-  --bg-color: #1f2027;
-  --bg-color-secondary:#272831;
-  --text-color: white;
+.chatbot-widget:hover{
+  box-shadow: 0 0 10px 5px #48abe0;
+}
 
-  --button-bg: #3983f6;
-  --button-border: #3983f6;
-  --button-text: rgb(255, 255, 255);
-  --button-hover: #0D286E;
+.chatbot-cross{
+  font-size: 100px;
+  text-align: center;
+}
 
-  --nav-hover: #0a0f5c;
-  --nav-bg-hover: white;
-  --nav-active-text: #2eb4fb;  /* Active link color in dark mode */
+/* Chatbot Content */
+.chatbot {
+  position: fixed;
+  right: 20px;
+  bottom: 130px;
+  width: 420px;
+  height: 500px;
+  background: var(--chatbot-overlay);
+  border-radius: 15px;
+  box-shadow: 0 0 128px 0 rgba(0,0,0,0.4), 0 32px 64px -48px rgba(0,0,0,0.4);
+  overflow: hidden !important;
+  display: flex;
+  flex-direction: column;
+  z-index: 1100; 
+}
 
-  --welcome-text: #a2a1a1;
-  --username-text: #4a6eff;
-
-  --table-bg: #32323b;
-  --table-border: #6c7789;
-  --table-current-day: #4a6eff;
+.chatbot header{
+  background-color: var(--chatbot-header);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 17px;
+  overflow: hidden;
+  border: 5px solid var(--chatbot-header);
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
   
-  --calendar-lines: #6c7789;
+}
 
-  --search-bar: #33343a;
-  --search-bar-border: #202125;
-  --search-bar-color: white;
+.chatbot header h2 {
+  color: #fff;
+  font-size: 1.4rem;
+  flex-grow: 0.2; 
+  text-align: center; 
+}
 
-  --category-dropdown: #3983f6;
+.chatbot-icon{
+  height: 40px;
+  width: 40px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
 
-  --icon-color: white;
+.chatbox {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0px 20px 00px 20px;
+  position: relative;
+}
 
-  --client-block: #32323b;
-  --client-text: white;
-  --client-border: #6c7789;
-  --client-ellipsis: white;
+#send-btn{
+  color: var(--icon-color);
+}
 
-  --add-client: #3983f6;
-  --add-client-border: #3983f6;
+.chatbox .chat {
+  display: flex;
+}
 
-  --pagination: #0a0f5c;
-  --pagination-border: #6c7789;
-  --pagination-bg: #ccc;
+.chat p{
+  color: #fff;
+  max-width: 50%;
+  font-size: 0.95rem;
+  padding: 10px 16px;
+  margin-top: 7px !important;
+  margin-bottom: 7px !important;
+  border-radius: 10px 10px 0 10px;
+  background: var(--chatbot-outgoing);
+  word-break: break-word;
+}
 
-  --dropdown-bg: white;
-  --dropdown-hover: #ddd;
-  --dropdown-text:white;
+.incoming p {
+  color: var(--chatbot-incoming-text);
+  background: var(--chatbot-incoming);
+  border-radius: 10px 10px 10px 0;
+}
 
-  --menu-page: #272831;
-  --menu-border: #6c7789;
-  --menu-color: white;
+.outgoing{
+  justify-content: flex-end;
+}
 
-  --textarea: #6c7789;
-  --textarea-placeholder: rgb(171, 170, 170);
-  --textarea-text: white;
+.chat-input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--chatbot-textarea);
+  padding: 5px 20px;
+  border-top: 1px solid #bfbfbf;
+}
 
-  --options: #6c7789;
-  --options-color: white;
-  --options-highlight: #202125;
+.chat-input textarea{
+  height: 20px;
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  background-color: var(--chatbot-textarea);
+  color: var(--textarea-text);
+  resize: none;
+  padding: 16px 15px 16px 0;
+  overflow: hidden;
+}
 
-  --user-stats: #6c7789;
+.chat-input textarea::placeholder{
+  color: var(--textarea-placeholder);
+}
 
-  --client-select-view: #3983f6;
-  --client-selected-view: #0a0f5c;
-  --client-selected-text: white;
 
+#send-btn
+{
+  align-self: flex-end;
+  height: 55px;
+  line-height: 55px;
+  font-size: 1.35rem;
+  cursor: pointer;
 }
 
 .page-header {
@@ -2795,7 +2808,8 @@ body {
 }
 
 .platform-dropdown-horizontal button {
-  background-color: #f1f1f1;
+  background-color: var(--button-bg);
+  color: var(--button-text);
   border: none;
   padding: 8px 14px;
   border-radius: 6px;
@@ -2811,23 +2825,20 @@ body {
   }
 }
 
-.platform-dropdown-horizontal button {
-  background-color: #f2f2f2;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
-}
 
 .platform-dropdown-horizontal button:hover {
-  background-color: #e0e0e0;
+  background-color: var(--button-hover);
 }
 
 .platform-dropdown-horizontal .cancel-btn {
-  background-color: transparent;
-  color: #777;
+  background-color: #CF6679;
+  color: var(--button-text);
+  font-weight: bold;
+}
+
+.platform-dropdown-horizontal .cancel-btn:hover {
+  background-color: #cd2443;
+  color: var(--button-text);
   font-weight: bold;
 }
 
@@ -2865,9 +2876,9 @@ body {
 .attach-file-btn {
   width: 35px;
   height: 35px;
-  border: 1px solid #dcdcdc;
+  border: 1px solid var(--button-border);
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: var(--button-bg);
   display:flex;
   align-items: center;
   justify-content: center;
@@ -2886,4 +2897,567 @@ body {
 
 .close-icon{
   float: right;
+  cursor: pointer;
+}
+
+.status-highlight{
+  border-radius: 4px;
+}
+
+.status-highlight.posted {
+  color: var(--status-posted);
+}
+
+.status-highlight.draft {
+  color: var(--status-draft);
+}
+
+.status-highlight.scheduled {
+  color: var(--status-scheduled);
+}
+
+/* Post Modal */
+.modal {
+  position: fixed;
+  top: 5%;
+  left: 10%;
+  width: 80%;
+  height: 90%;
+  background-color: #fff;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: sans-serif;
+}
+
+.modal-box {
+  display: flex;
+  width: 95%;
+  height: 90%;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--postmodal-section);
+  padding: 20px;
+  gap: 20px;
+}
+
+.content-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.content-section textarea {
+  width: 95%;
+  height: 150px;
+  resize: none;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.extras input, .extras select {
+  margin-top: 10px;
+  padding: 8px;
+  width: 100%;
+  font-size: 14px;
+}
+
+.platform-toggles {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.platform-btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.platform-btn.on {
+  background-color: #3b5998;
+  color: white;
+}
+
+.platform-btn.off {
+  background-color: #ddd;
+  color: black;
+}
+
+.modal-schedule-btn {
+  padding: 10px;
+  background-color: var(--button-bg);
+  color: white;
+  border: none;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal-schedule-btn:hover{
+  background-color: var(--button-hover);
+}
+
+.preview-section {
+  flex: 1;
+  border-left: 2px solid #ddd;
+  padding-left: 20px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.tabs button {
+  padding: 6px 12px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.post-preview {
+  background: var(--preview);
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  background: gray;
+  border-radius: 50%;
+}
+
+.name {
+  font-weight: bold;
+}
+
+.timestamp {
+  font-size: 12px;
+  color: gray;
+}
+
+.post-content {
+  margin-top: 10px;
+  min-height: 80px;
+}
+
+.post-footer {
+  margin-top: 10px;
+  font-size: 12px;
+  color: gray;
+}
+
+.post-image {
+  margin-top: 10px;
+}
+
+.post-image img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.modal-calendar{
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  z-index: 9999;
+  background-color: none;
+  color: black;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+/* Dark Theme for Calendar and Time Hover Effects */
+.modal-calendar .react-datepicker,
+.modal-calendar .react-datepicker__time,
+.modal-calendar .react-datepicker__time-box {
+  background-color: var(--modal-calendar-bg);
+  color: var(--modal-calendar-text);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-calendar .react-datepicker {
+  border: 1px solid var(--modal-calendar-datepicker);
+}
+
+.modal-calendar .react-datepicker__header {
+  background-color: var(--modal-calendar-datepicker-header);
+  border-bottom: 1px solid var--(modal-calendar-datepicker);
+}
+
+.modal-calendar .react-datepicker__current-month,
+.modal-calendar .react-datepicker-time__header,
+.modal-calendar .react-datepicker__day,
+.modal-calendar .react-datepicker__day-name,
+.modal-calendar .react-datepicker__time-name {
+  color: var(--modal-calendar-text);
+}
+
+/* Hover effects for calendar days */
+.modal-calendar .react-datepicker__day:hover {
+  background-color: var(--modal-calendar-datepicker) !important;
+  color: var(--modal-calendar-text) !important;
+}
+
+/* Hover effects for time slots */
+.modal-calendar .react-datepicker__time-list-item:hover {
+  background-color: var(--modal-calendar-datepicker) !important;
+  color: var(--modal-calendar-text) !important;
+}
+
+/* Selected days and time slots */
+.modal-calendar .react-datepicker__day--selected,
+.modal-calendar .react-datepicker__day--keyboard-selected,
+.modal-calendar .react-datepicker__time-list-item--selected {
+  background-color: var(--modal-calendar-currentday);
+  color: var(--modal-calendar-text);
+}
+
+.modal-calendar .react-datepicker__time-container {
+  border-left: 1px solid var(--modal-calendar-datepicker);
+}
+
+.modal-calendar .react-datepicker__time-list-item {
+  padding: 8px 10px;
+}
+
+#paperclip{
+  color: white;
+}
+
+
+ /* Light Theme (Default) */
+ :root {
+  --bg-color: white;
+  --bg-color-secondary: #f5f7fb;
+  --text-color: #0a0f5c;
+
+  --button-bg: #0a0f5c;
+  --button-border: #0a0f5c;
+  --button-text: white;
+  --button-hover: black;
+
+  --nav-hover: white;
+  --nav-bg-hover:#0a0f5c;
+  --nav-active-text: #0a0f5c;  /* Active link color in light mode */
+
+  --calendar-lines: #0a0f5c;
+  --current-date: white;
+  --current-date-border: #0a0f5c;
+  --current-date-color: black;
+
+  --welcome-text: #555;
+  --username-text: #0a0f5c;
+
+  --table-bg: #f5f7fb;
+  --table-border: #0a0f5c;
+  --table-header: #ebebeb;
+  --table-current-day: #0a0f5c;
+
+  --search-bar: white;
+  --search-bar-border: #ddd;
+  --search-bar-color: #555;
+
+  --category-dropdown: #0a0f5c;
+
+  --icon-color: #0a0f5c;
+
+  --client-block: white;
+  --client-text: #0D286E;
+  --client-border: #0D286E;
+  --client-ellipsis: #333;
+
+  --add-client: #0D286E;
+  --add-client-border: #0D286E;
+
+  --pagination: #0D286E;
+  --pagination-border: #32323b;
+  --pagination-bg: #f8f9fa;
+
+  --dropdown-bg: white;
+  --dropdown-hover: #ddd;
+  --dropdown-text: black;
+
+  --menu-page: white;
+  --menu-color: #0D286E;
+  --menu-border: #0D286E;
+
+  --textarea: white;
+  --textarea-placeholder: #6c7789;
+  --textarea-text: black;
+
+  --options: white;
+  --options-color: black;
+  --options-highlight: #d6d6d6;
+
+  --user-background: white;
+  --user-stats: #d6d6d6;
+  --user-text: black;
+  --user-stats-text: white;
+
+  --client-select-view: #0D286E;
+  --client-selected-view: #a2a2a2;
+  --client-selected-text: black;
+
+  --chatbot-button: #0D286E;
+  --chatbot-overlay: #ffffff; 
+  --chatbot-header: #0D286E;
+  --chatbot-incoming: #dfdfdf;
+  --chatbot-outgoing: #0D286E;
+  --chatbot-textarea: #fff;
+
+  --status-posted: #15803d ;
+  --status-scheduled: 	#1d4ed8;
+  --status-draft: #b45309;
+
+  --postmodal-section: #f7f9fc;
+  --preview: #fff;
+  --postmodal-textarea: #6c7789;
+
+  --modal-calendar-text: black;
+  --modal-calendar-bg: #ffffff;
+  --modal-calendar-datepicker: #e0e0e0;
+  --modal-calendar-datepicker-header: #f4f4f5;
+  --modal-calendar-currentday: #3b82f6;
+}
+
+/* Dark Theme */
+[data-selected-theme="dark"] {
+  --bg-color: #1f2027;
+  --bg-color-secondary:#272831;
+  --text-color: white;
+
+  --button-bg: #3177b0;
+  --button-border: #3177b0;
+  --button-text: rgb(255, 255, 255);
+  --button-hover: #0D286E;
+
+  --nav-hover: #0a0f5c;
+  --nav-bg-hover: white;
+  --nav-active-text:  #3177b0;  /* Active link color in dark mode */
+
+  --welcome-text: #a2a1a1;
+  --username-text: #4a6eff;
+
+  --table-bg: #32323b;
+  --table-header: #2d2d38;
+  --table-border: #6c7789;
+  --table-current-day: #4a6eff;
+  
+  --calendar-lines: #6c7789;
+  --current-date: #3177b0;
+  --current-date-border: #3177b0;
+  --current-date-color: white;
+  
+
+  --search-bar: #33343a;
+  --search-bar-border: #202125;
+  --search-bar-color: white;
+
+  --category-dropdown: #3177b0;
+
+  --icon-color: white;
+
+  --client-block: #32323b;
+  --client-text: white;
+  --client-border: #6c7789;
+  --client-ellipsis: white;
+
+  --add-client: #3177b0;
+  --add-client-border: #3177b0;
+
+  --pagination: #0a0f5c;
+  --pagination-border: #6c7789;
+  --pagination-bg: #ccc;
+
+  --dropdown-bg: white;
+  --dropdown-hover: #ddd;
+  --dropdown-text:white;
+
+  --menu-page: #272831;
+  --menu-border: #6c7789;
+  --menu-color: white;
+
+  --textarea: #6c7789;
+  --textarea-placeholder: rgb(171, 170, 170);
+  --textarea-text: white;
+
+  --options: #6c7789;
+  --options-color: white;
+  --options-highlight: #202125;
+
+  --user-background: #32323b;
+  --user-stats: #6c7789;
+  --user-text: white;
+  --user-stats-text: white;
+
+  --client-select-view: #3177b0;
+  --client-select-view: #3177b0;
+  --client-selected-text: white;
+
+  --chatbot-button: #3177b0;
+  --chatbot-overlay: #454554; 
+  --chatbot-header: #3177b0;
+  --chatbot-incoming: #6c7789;
+  --chatbot-incoming-text:white;
+  --chatbot-outgoing: #3177b0;
+  --chatbot-textarea: #515161;
+
+  --status-posted: #86efac;
+  --status-scheduled: 	#93c5fd;
+  --status-draft: 	#fcd34d;
+
+  --postmodal-section: #2F3038;
+  --preview: #37373b;
+  --postmodal-textarea: lightgrey;
+  
+  --modal-calendar-text: white;
+  --modal-calendar-bg: #2f3038;
+  --modal-calendar-datepicker: #3a3b45;
+  --modal-calendar-datepicker-header: #272831;
+  --modal-calendar-currentday: #3b82f6;
+}
+
+.calendar-sidebar {
+  position: fixed;
+  top: 100px;
+  right: 0;
+  width: 260px;
+  background-color: #fff;
+  border-left: 1px solid #e0e0e0;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: -2px 2px 6px rgba(0, 0, 0, 0.08);
+  transition: width 0.3s ease;
+  z-index: 999;
+  padding: 16px;
+  font-family: "Segoe UI", sans-serif;
+  border-radius: 8px 0 0 8px;
+}
+
+.calendar-sidebar.collapsed {
+  width: 44px;
+  padding: 12px 6px;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.collapse-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 6px;
+  color: #444;
+}
+
+.client-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-radius: 6px;
+  margin-top: 6px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.client-checkbox:hover {
+  background-color: #f5f5f5;
+}
+
+.client-checkbox input[type="checkbox"] {
+  accent-color: #007bff;
+  transform: scale(1.15);
+}
+
+.client-checkbox span {
+  font-size: 14px;
+  color: #222;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.react-calendar {
+  margin-top: 12px;
+  border: none;
+  width: 100%;
+}
+
+.react-calendar__tile.highlight-date {
+  background: #007bff;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+}
+
+.react-calendar__tile.square-highlight {
+  position: relative;
+  font-weight: bold;
+  color: #000; /* Black text (optional) */
+  z-index: 1;
+}
+
+.react-calendar__tile.square-highlight::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+  border: 2px solid black;
+  box-sizing: border-box;
+  z-index: -1;
+}
+
+.calendar-controls-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  flex-wrap: wrap;
+}
+
+.calendar-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
