@@ -780,10 +780,10 @@ body {
 
 /* Toggle between block and table view in Client Page */
 .client-select-view-btn{
-  background-color: var(--client-select-view);
-  color: var(--button-text);
+  background-color: var(--client-selected-view);
+  color:#000000;
   padding: 10px 25px;
-  border-color: var(--client-select-view);
+  border-color: var(--client-selected-view);
   align-items: center;
   cursor: pointer;
   transition: 0.3s;
@@ -810,9 +810,9 @@ body {
 }
 
 .client-select-view-btn-selected{
-  background-color: var(--client-selected-view);
-  border-color:var(--client-selected-view);
-  color: var(--client-selected-text);
+  background-color: var(--client-select-view);
+  border-color:var(--client-select-view);
+  color: #ffffff;
   cursor: default;
   transition: 0.5s;
 }
