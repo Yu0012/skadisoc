@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../styles.css";
-import { FaTimes, FaCalendarAlt, FaPaperclip } from "react-icons/fa";
+import { FaCalendarAlt, FaPaperclip } from "react-icons/fa";
+import { ImCross } from "react-icons/im";
 import Preview from "./Preview";
 
 const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform}) => {
@@ -20,6 +21,14 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform})
     LinkedIn: false,
     Twitter: false,
   });
+
+  // Names of Social Media
+  const platformDisplayNames = {
+    facebook: "Facebook",
+    instagram: "Instagram",
+    linkedin: "LinkedIn",
+    twitter: "Twitter",
+};
 
   const datePickerRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -109,7 +118,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform})
     if (attachedFile) {
       formData.append("file", attachedFile);
     }
-  
+
     const isEditing = initialData && initialData._id;
     const url = isEditing
       ? `http://localhost:5000/api/posts/${initialData._id}`
@@ -174,19 +183,26 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform})
     const file = e.target.files[0];
     if (file) setAttachedFile(file);
   };
-
   
   if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <FaTimes className="close-icon" onClick={onClose} />
+        <ImCross className="exitButton" onClick={onClose} />
         <div className="modal-header">
-          <h2>{initialData?._id ? "Edit Post" : "Create Post"}</h2>
-          
+          <h2>
+            {initialData?._id
+              ? "Edit Post"
+              : `Create ${
+                // Display name of chosen social media
+                  selectedPlatforms && selectedPlatforms.length > 0
+                    ? selectedPlatforms.map((p) => platformDisplayNames[p] || p).join(", ")
+                    : ""
+                } Post`}
+          </h2>
         </div>
-
+        <br/>
         <div className="modal-box">
           <div className="content-section">
             <div className="modal-body">

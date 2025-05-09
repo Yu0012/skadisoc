@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../styles.css";
 import { FaSearch, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa";
+import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
 import { ImCross } from "react-icons/im";
 import { createPortal } from "react-dom";
 
@@ -201,6 +202,7 @@ const Accounts = () => {
   const indexOfLastAccount = currentPage * accountsPerPage;
   const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
   const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
+  const totalPages = Math.ceil(filteredAccounts.length / accountsPerPage);
 
    //handles for ui inputs
    const handleRefresh = () => window.location.reload();
@@ -304,6 +306,47 @@ const Accounts = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Pagination */}
+      <div className="pagination-container">
+        <p>
+          Showing {indexOfFirstAccount + 1} to{" "}
+          {Math.min(indexOfLastAccount, filteredAccounts.length)} of{" "}
+          {filteredAccounts.length} entries
+        </p>
+        <div className="pagination">
+          <FaAnglesLeft
+            className={`pagination-navigation ${currentPage === 1 ? "disabled" : ""}`}
+            onClick={() => currentPage > 1 && setCurrentPage(1)}
+          />
+
+          <FaAngleLeft
+            className={`pagination-navigation ${currentPage === 1 ? "disabled" : ""}`}
+            onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+          />
+
+          {[...Array(totalPages).keys()]
+            .slice(Math.max(0, currentPage - 2), currentPage + 1)
+            .map((number) => (
+              <button
+                key={number + 1}
+                onClick={() => setCurrentPage(number + 1)}
+                className={currentPage === number + 1 ? "active" : ""}
+              >
+                {number + 1}
+              </button>
+            ))}
+          <FaAngleRight
+            className={`pagination-navigation ${currentPage === totalPages ? "disabled" : ""}`}
+            onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
+          />
+
+          <FaAnglesRight
+            className={`pagination-navigation ${currentPage === totalPages ? "disabled" : ""}`}
+            onClick={() => currentPage < totalPages && setCurrentPage(totalPages)}
+          />
+        </div>
+        </div>
     </div>
   );
 };

@@ -431,13 +431,18 @@ body {
   align-items: center;
   gap: 5px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background-color 0.3s, transform 0.1s;
   font-weight: bold;
 }
 
 .create-post-btn:hover {
   background-color: var(--button-hover) !important;
   border: 1px solid var(--button-hover) !important;
+}
+
+.create-post-btn:active{
+  transform: scale(0.97);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 /* 🔍 Search Bar + Dropdown + Export in One Line */
@@ -694,13 +699,18 @@ body {
   color: white;
   cursor: pointer;
   border-radius: 5px;
-  transition: 0.3s;
+  transition: background-color 0.3s, transform 0.1s;
   font-weight: bold;
 }
 
 .fc-today-button:hover{
   background-color: var(--button-hover);
   border: 1px solid var(--button-hover);
+}
+
+.fc-today-button:active{
+  transform: scale(0.97);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .fc-nav-button {
@@ -735,7 +745,7 @@ body {
 }
 
 [data-selected-theme="dark"] .fc-scrollgrid th {
-  background-color: var(--table-bg) !important;
+  background-color: var(--table-header) !important;
   border-radius: 0 !important;
   color: var(--text-color);
 }
@@ -774,8 +784,6 @@ body {
 }
 
 
-
-
 /* End of Calendar Design */
 
 /* Toggle between block and table view in Client Page */
@@ -783,38 +791,45 @@ body {
   background-color: var(--client-select-view);
   color: var(--button-text);
   padding: 10px 25px;
-  border-color: var(--client-select-view);
+  border: 1px solid var(--client-select-view);
   align-items: center;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background-color 0.3s, transform 0.1s;
   font-weight: bold;
 }
 
-
-.client-select-view-btn#right{
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-  border-left: none;
-  border-right: none; /* avoid double border */
-  border-top: none;
-  border-bottom: none;
+.client-select-view-btn:hover{
+  background-color: var(--client-select-view-hover);
+  border-color: var(--client-select-view-hover);
 }
 
-.client-select-view-btn#left{
+.client-select-view-btn:active{
+  transform: scale(0.97);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+
+.client-select-view-btn.right{
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.client-select-view-btn.left{
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
-  border-left: none; /* avoid double border */
-  border-right: none;
-  border-top: none;
-  border-bottom: none;
 }
 
 .client-select-view-btn-selected{
   background-color: var(--client-selected-view);
-  border-color:var(--client-selected-view);
+  border: 1px solid var(--client-selected-view);
   color: var(--client-selected-text);
   cursor: default;
   transition: 0.5s;
+}
+
+.client-select-view-btn-selected:hover{
+  background-color: var(--client-selected-view);
+  border-color:var(--client-selected-view);
 }
 
 /* Client List (Wrap to Next Line When Full) */
@@ -840,10 +855,16 @@ body {
   width: 210px; 
   height: 170px; 
   cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
 }
 
 .add-client-btn:hover {
   background-color: var(--button-hover);
+}
+
+.add-client-btn:active{
+  transform: scale(0.97);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 /* Client Object */
@@ -1245,6 +1266,7 @@ input:checked + .slider:before {
   transform: translateX(18px);
 }
 
+
 /* Submit Button */
 .post-submit-btn {
   background: var(--button-bg);
@@ -1256,10 +1278,16 @@ input:checked + .slider:before {
   cursor: pointer;
   font-size: 18px;
   font-weight: bold;
+  transition: background-color 0.3s, transform 0.1s;
 }
 
 .post-submit-btn:hover {
   background: var(--button-hover);
+}
+
+.post-submit-btn:active{
+  transform: scale(0.97);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 /* Dropdown Menu */
@@ -1288,10 +1316,6 @@ input:checked + .slider:before {
   position: absolute;
   bottom: 10px;
   right: 80px;
-}
-
-.pagination-container p{
-  margin-left: 60px;
 }
 
 
@@ -1427,7 +1451,7 @@ input:checked + .slider:before {
   position: absolute;
   color: var(--text-color);
   bottom: 10px;
-  right: 70px;
+  right: 0px;
 }
 
 .pagination {
@@ -1444,7 +1468,7 @@ input:checked + .slider:before {
 
 .pagination-navigation {
   font-size: 10px;
-  padding:10px 10px;
+  padding: 10px 10px;
   color: var(--pagination);
   border: 1px solid var(--pagination-border);
   background: var(--pagination-bg);
@@ -1480,6 +1504,8 @@ input::-webkit-inner-spin-button {
   float: right;
   cursor: pointer;
   transition: 0.3s;
+  height: 15px;
+  width: 15px;
 }
 
 .exitButton:hover{
@@ -1633,10 +1659,16 @@ input::-webkit-inner-spin-button {
   background: none;
   width: 100%;
   color: var(--options-color) !important;
+  transition: background-color 0.3s, transform 0.1s;
 }
 
 .post-actions-dropdown button:hover {
   background: var(--options-highlight);
+}
+
+.post-actions-dropdown button:active{
+  transform: scale(0.97);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 /* Delete Button - Keep it bold but smaller */
@@ -1849,15 +1881,11 @@ input::-webkit-inner-spin-button {
   align-items: center;
 }
 
-.user-stats h3::before {
-  content: "📊";
-  margin-right: 6px;
-}
-
 .user-stats ul {
   list-style: none;
   padding: 0;
   margin: 0;
+  color: black;
 }
 
 .user-stats li {
@@ -1978,10 +2006,16 @@ input::-webkit-inner-spin-button {
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
+  transition: background-color 0.3s, transform 0.1s;
 }
 
 .reset-btn:hover{
   background-color: var(--button-hover);
+}
+
+.reset-btn:active{
+  transform: scale(0.97);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .reset-message {
@@ -2208,8 +2242,13 @@ body {
   align-items: center;
   gap: 5px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background-color 0.3s, transform 0.1s;
   font-weight: bold;
+}
+
+.create-user-btn:active{
+  transform: scale(0.97);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .create-user-btn:hover{
@@ -2636,7 +2675,13 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   user-select: none;
+  transition: background-color 0.3s, transform 0.1s;
   touch-action: none;
+}
+
+.chatbot-widget:active{
+  transform: scale(0.97);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
  .chatbot-widget-closed {
@@ -2654,22 +2699,32 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 }
 
+.chatbot-widget-closed:active{
+  transform: scale(0.97);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
 #grip-icon{
-  height: 110px;
+  height: 80px;
   width: 110px;
   cursor: grab;
 }
 
 #message-icon{
-  height: 100px;
+  height: 70px;
   width: 100px;
 }
 
 .chatbot-widget:hover{
+  box-shadow: 0 0 10px 5px #48abe0;
+}
+
+.chatbot-widget-closed:hover{
   box-shadow: 0 0 10px 5px #48abe0;
 }
 
@@ -2807,7 +2862,8 @@ body {
   align-items: center;
   gap: 10px; /* spacing between dropdown, search, button, etc. */
 }
-/* Platform Dropdown Menu New!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+
+/* Platform Dropdown Menu New!*/
 .platform-dropdown-wrapper {
   position: absolute;
   top: 250px; /* Adjust this based on your Create Post button's position */
@@ -2838,7 +2894,12 @@ body {
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  transition: background 0.2s ease;
+  transition: background-color 0.3s, transform 0.1s;
+}
+
+.platform-dropdown-horizontal button:active{
+  transform: scale(0.97);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes slideDown {
@@ -3255,7 +3316,7 @@ body {
   --status-scheduled: 	#1d4ed8;
   --status-draft: #b45309;
 
-  --postmodal-section: #f7f9fc;
+  --postmodal-section: #e8eaee;
   --preview: #fff;
   --postmodal-textarea: #6c7789;
 
@@ -3337,7 +3398,7 @@ body {
   --user-stats-text: white;
 
   --client-select-view: #3177b0;
-  --client-select-view: #3177b0;
+  --client-select-view-hover: #0a0f5c;
   --client-selected-text: white;
 
   --chatbot-button: #3177b0;

@@ -239,8 +239,8 @@ const Posts = () => {
       <table className="posts-table">
         <thead>
           <tr>
-            <th onClick={() => handleSort("client")}>Client</th>
             <th onClick={() => handleSort("title")}>Title</th>
+            <th onClick={() => handleSort("client")}>Client</th>
             <th>Content</th>
             <th onClick={() => handleSort("selectedPlatforms")}>Platforms</th>
             <th  onClick={() => handleSort("status")}>Status</th>            
@@ -250,8 +250,8 @@ const Posts = () => {
         <tbody>
           {currentPosts.map((post) => (
             <tr key={post._id}>
-              <td>{post.client || "-"}</td>
               <td>{post.title || "-"}</td>
+              <td>{post.client || "-"}</td>
               <td>{post.content}</td>
 
               <td> 
@@ -314,15 +314,14 @@ const Posts = () => {
           {filteredPosts.length} entries
         </p>
         <div className="pagination">
-        <FaAnglesLeft 
-             className="pagination-navigation" 
-             onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
-        />
-        <FaAngleLeft 
-          className="pagination-navigation" 
-        onClick={() => setCurrentPage(currentPage - 1)}
-        disabled={currentPage === 1} 
-       />
+          <FaAnglesLeft
+            className={`pagination-navigation ${currentPage === 1 ? "disabled" : ""}`}
+            onClick={() => currentPage > 1 && setCurrentPage(1)}
+          />
+          <FaAngleLeft
+            className={`pagination-navigation ${currentPage === 1 ? "disabled" : ""}`}
+            onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+          />
 
           {[...Array(totalPages).keys()]
             .slice(Math.max(0, currentPage - 2), currentPage + 1)
@@ -335,16 +334,15 @@ const Posts = () => {
                 {number + 1}
               </button>
             ))}
-          <FaAngleRight 
-              className="pagination-navigation"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
+          <FaAngleRight
+            className={`pagination-navigation ${currentPage === totalPages ? "disabled" : ""}`}
+            onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
           />
-            <FaAnglesRight
-              className="pagination-navigation"
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages}
-            />
+
+          <FaAnglesRight
+            className={`pagination-navigation ${currentPage === totalPages ? "disabled" : ""}`}
+            onClick={() => currentPage < totalPages && setCurrentPage(totalPages)}
+          />
         </div>
       </div>
       </div>

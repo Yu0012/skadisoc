@@ -171,14 +171,14 @@ const Navbar = () => {
           />
           {userDropdownOpen && (
             <div className="user-dropdown">
-              <div onClick={() => handleUserNav("/profile")}>User Profile</div>
+              <button onClick={() => handleUserNav("/profile")}>User Profile</button>
               <hr />
-              <div onClick={() => handleUserNav("/settings")}>User Settings</div>
-              <div onClick={() => handleUserNav("/support")}>Help & Support</div>
+              <button onClick={() => handleUserNav("/settings")}>User Settings</button>
+              <button onClick={() => handleUserNav("/support")}>Help & Support</button>
               <hr />
-              <div onClick={() => handleUserNav("/logout")} className="logout">
+              <button className="logout" onClick={() => handleUserNav("/logout")} >
                 Sign Out
-              </div>
+              </button>
             </div>
           )}
         </div>

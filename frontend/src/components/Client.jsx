@@ -238,15 +238,18 @@ const Client = () => {
             <div className="icon-row">
               <FaSyncAlt className="refresh-icon" title="Refresh Data" onclick={handleRefresh} id="client"/>
               <div>
-                {["Facebook", "Instagram", "Twitter", "LinkedIn"].map((platform) => (
+                {["Facebook", "Instagram", "Twitter", "LinkedIn"].map((platform, index, array) => (
                   <button
                     key={platform}
-                    className={`client-select-view-btn ${activePlatform === platform ? "client-select-view-btn-selected" : ""}`}
+                    className={`client-select-view-btn 
+                      ${index === 0 ? "left" : ""} 
+                      ${index === array.length - 1 ? "right" : ""} 
+                      ${activePlatform === platform ? "client-select-view-btn-selected" : ""}`}
                     onClick={() => setActivePlatform(platform)}
                   >
                     {platform}
                   </button>
-                ))}
+                  ))}
             </div>
             </div>
           </div>
