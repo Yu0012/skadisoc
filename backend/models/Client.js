@@ -10,7 +10,12 @@
 // const Client = mongoose.model("Client", clientSchema);
 // export default Client;
 
-import mongoose from "mongoose";
+const mongoose = require('mongoose');
+
+// Create a function to format time to Malaysia timezone
+function toMalaysiaTime(date) {
+    return new Date(date.getTime() + (8 * 60 * 60 * 1000)); // Add 8 hours
+  }  
 
 const clientSchema = new mongoose.Schema({
     companyName: { type: String, required: true },
@@ -24,16 +29,17 @@ const clientSchema = new mongoose.Schema({
     socialMediaAccounts: {
         facebook: {
         pageId: String,
-        accessToken: String,
+        companyToken: String,
         connected: { type: Boolean, default: false }
         },
         instagram: {
-        businessAccountId: String,
-        accessToken: String,
+        pageId: String,
+        companyToken: String,
         connected: { type: Boolean, default: false }
         },
         twitter: {
-        handle: String,
+        apiKey: String,
+        apiKeySecret: String,
         accessToken: String,
         accessTokenSecret: String,
         connected: { type: Boolean, default: false }
@@ -42,25 +48,23 @@ const clientSchema = new mongoose.Schema({
         organizationId: String,
         accessToken: String,
         connected: { type: Boolean, default: false }
-        },
-        youtube: {
-        channelId: String,
-        accessToken: String,
-        refreshToken: String,
-        connected: { type: Boolean, default: false }
-        },
-        tiktok: {
-        accountId: String,
-        accessToken: String,
-        connected: { type: Boolean, default: false }
         }
     },
     logo: { type: String },
     notes: { type: String },
     isActive: { type: Boolean, default: true },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
-    });
+    // createdAt: { type: Date, default: Date.now },
+    // updatedAt: { type: Date, default: Date.now }
+    }, { timestamps: true });
 
-const Client = mongoose.model("Client", clientSchema);
-export default Client;
+// Pre-save hook to handle Malaysia timezone
+clientSchema.pre('save', function(next) {
+    const now = new Date();
+    this.updatedAt = toMalaysiaTime(now);
+    if (!this.createdAt) {
+        this.createdAt = toMalaysiaTime(now);
+    }
+    next();
+  });
+
+module.exports = mongoose.model('Client', clientSchema);

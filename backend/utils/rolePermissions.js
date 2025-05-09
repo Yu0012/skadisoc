@@ -1,12 +1,12 @@
 const rolePermissions = {
     admin: {
-      actions: ['create_post', 'delete_post', 'manage_users'],
+      actions: ['create_user', 'read_user', 'update_user', 'delete_user', 'create_post', 'read_post', 'update_post', 'delete_post', 'assign_clients', 'approve_actions'],
     },
     editor: {
-      actions: ['create_post', 'edit_post'],
+      actions: ['create_post', 'read_post', 'update_post', 'delete_post'],
     },
     viewer: {
-      actions: ['view_post'],
+      actions: ['read_post'],
     },
   };
   
