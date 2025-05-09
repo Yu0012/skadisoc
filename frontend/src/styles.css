@@ -2622,6 +2622,27 @@ body {
   position: fixed;
   bottom: 30px;
   right: 20px;
+  width: 100px;
+  height: 60px;
+  background-color: var(--chatbot-button);
+  color: white;
+  font-size: 24px;
+  border: 1px solid var(--chatbot-button);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  user-select: none;
+  touch-action: none;
+}
+
+ .chatbot-widget-closed {
+  position: fixed;
+  bottom: 30px;
+  right: 20px;
   width: 60px;
   height: 60px;
   background-color: var(--chatbot-button);
@@ -2635,6 +2656,17 @@ body {
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 1000;
+}
+
+#grip-icon{
+  height: 110px;
+  width: 110px;
+  cursor: grab;
+}
+
+#message-icon{
+  height: 100px;
+  width: 100px;
 }
 
 .chatbot-widget:hover{
