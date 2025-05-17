@@ -11,6 +11,7 @@ const axios = require("axios");
 const FacebookClient = require('./models/FacebookClientSchema');
 const InstagramClient = require('./models/InstagramClientSchema');
 const TwitterClient = require('./models/TwitterClientSchema');
+const Post = require('./models/PostSchema');
 const {TwitterApi} = require("twitter-api-v2");
 const FormData = require("form-data");
 const passport = require('passport');
@@ -19,6 +20,7 @@ const session = require('express-session');
 const facebookClientsRoute = require('./routes/facebookClients');
 const instagramClientsRoute = require('./routes/instagramClients');
 const twitterClientsRoute = require('./routes/twitterClients');
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -32,6 +34,7 @@ app.use(passport.initialize()); // Initialize passport
 app.use('/api/facebook-clients', facebookClientsRoute);
 app.use('/api/instagram-clients', instagramClientsRoute);
 app.use('/api/twitter-clients', twitterClientsRoute);
+
 
 // Connect to MongoDB Atlas
 mongoose.connect(process.env.MONGO_URI, {
