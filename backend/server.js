@@ -11,7 +11,7 @@ const axios = require("axios");
 const FacebookClient = require('./models/FacebookClientSchema');
 const InstagramClient = require('./models/InstagramClientSchema');
 const TwitterClient = require('./models/TwitterClientSchema');
-const Post = require('./models/PostSchema');
+const Post = require('./models/Post');
 const {TwitterApi} = require("twitter-api-v2");
 const FormData = require("form-data");
 const passport = require('passport');
@@ -20,7 +20,7 @@ const session = require('express-session');
 const facebookClientsRoute = require('./routes/facebookClients');
 const instagramClientsRoute = require('./routes/instagramClients');
 const twitterClientsRoute = require('./routes/twitterClients');
-
+const postRoutes = require('./routes/postRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -34,7 +34,7 @@ app.use(passport.initialize()); // Initialize passport
 app.use('/api/facebook-clients', facebookClientsRoute);
 app.use('/api/instagram-clients', instagramClientsRoute);
 app.use('/api/twitter-clients', twitterClientsRoute);
-
+app.use('/api/posts', postRoutes);
 
 // Connect to MongoDB Atlas
 mongoose.connect(process.env.MONGO_URI, {
@@ -95,245 +95,6 @@ const accountSchema = new mongoose.Schema({
   password: { type: String, required: true },
 }, { timestamps: true });
 const Account = mongoose.model("Account", accountSchema);
-
-// ===============================
-// 📌 **Post API Routes**
-// ===============================
-
-// ✅ Create a new post (with optional file upload)
-app.post('/api/posts', upload.single('file'), async (req, res) => {
-  try {
-    const { title, content, client, scheduledDate } = req.body;
-
-    let selectedPlatforms = [];
-    if (req.body.selectedPlatforms) {
-      try {
-        selectedPlatforms = JSON.parse(req.body.selectedPlatforms);
-      } catch (error) {
-        console.error("Error parsing selectedPlatforms:", error);
-      }
-    }
-
-    if (!content) {
-      return res.status(400).json({ error: "Content is required" });
-    }
-
-    const parsedDate = scheduledDate ? new Date(scheduledDate) : null;
-
-    let status = 'draft';
-    if (parsedDate) status = 'scheduled';
-
-    const newPost = new Post({
-      title,
-      content,
-      client,
-      scheduledDate: parsedDate,
-      selectedPlatforms,
-      filePath: req.file ? `/uploads/${req.file.filename}` : null,
-      posted: false,
-      status
-    });
-
-
-    await newPost.save();
-    res.status(201).json({ message: "Post created successfully", post: newPost });
-  } catch (error) {
-    console.error("Error creating post:", error);
-    res.status(500).json({ error: "Failed to create post" });
-  }
-});
-
-// ✅ Get all posts
-app.get('/api/posts', async (req, res) => {
-  try {
-    const { clientId } = req.query;
-    let filter = {};
-
-    if (clientId) {
-      // 🔁 Find client by ID first, then use companyName to match posts
-      const client = await Client.findById(clientId);
-      if (client) {
-        filter.client = client.companyName;
-      }
-    }
-
-    const posts = await Post.find(filter);
-    res.status(200).json(posts);
-  } catch (error) {
-    console.error("Error fetching posts:", error);
-    res.status(500).json({ error: "Failed to fetch posts" });
-  }
-});
-
-
-app.get('/api/scheduled-posts', async (req, res) => {
-  try {
-    const now = new Date();
-    const posts = await Post.find({ scheduledDate: { $lte: now }, posted: false });
-    res.json(posts);
-  } catch (error) {
-    console.error("Error fetching scheduled posts:", error);
-    res.status(500).json({ error: "Failed to fetch scheduled posts" });
-  }
-});
-
-// ✅ Delete a post by ID
-app.delete('/api/posts/:id', async (req, res) => {
-  try {
-    const postId = req.params.id;
-    const deletedPost = await Post.findByIdAndDelete(postId);
-
-    if (!deletedPost) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-
-    res.status(200).json({ message: "Post deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting post:", error);
-    res.status(500).json({ message: "Failed to delete post" });
-  }
-});
-
-// Delete multiple posts
-app.post("/api/posts/bulk-delete", async (req, res) => {
-  try {
-    const { ids } = req.body;
-    if (!Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).json({ error: "No IDs provided" });
-    }
-
-    await Post.deleteMany({ _id: { $in: ids } });
-
-    res.json({ message: "Posts deleted" });
-  } catch (error) {
-    console.error("Bulk delete failed:", error);
-    res.status(500).json({ error: "Bulk delete failed" });
-  }
-});
-
-
-// Edit post by ID
-app.get('/api/posts/:id', async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) {
-      return res.status(404).json({ error: 'Post not found' });
-    }
-    res.json(post);
-  } catch (error) {
-    console.error('Error fetching post by ID:', error);
-    res.status(500).json({ error: 'Failed to fetch post' });
-  }
-});
-// ✅ Update post by ID
-app.put('/api/posts/:id', upload.single('file'), async (req, res) => {
-  try {
-    const { title, content, client, scheduledDate } = req.body;
-
-    let selectedPlatforms = [];
-    if (req.body.selectedPlatforms) {
-      try {
-        selectedPlatforms = JSON.parse(req.body.selectedPlatforms);
-      } catch (error) {
-        console.error("Invalid Platform Data:", error);
-      }
-    }
-
-    const parsedDate = scheduledDate ? new Date(scheduledDate) : null;
-
-    let status = 'draft';
-    if (parsedDate) status = 'scheduled';
-
-    const updatedFields = {
-      title,
-      content,
-      client,
-      scheduledDate: parsedDate,
-      selectedPlatforms,
-      posted: false,
-      status
-    };
-
-
-    if (req.file) {
-      updatedFields.filePath = `/uploads/${req.file.filename}`;
-    }
-
-    const updatedPost = await Post.findByIdAndUpdate(
-      req.params.id,
-      updatedFields,
-      { new: true }
-    );
-
-    if (!updatedPost) {
-      return res.status(404).json({ error: "Post not found" });
-    }
-
-    res.status(200).json({ message: "Post updated", post: updatedPost });
-  } catch (error) {
-    console.error("Error updating post:", error);
-    res.status(500).json({ error: "Failed to update post" });
-  }
-});
-
-app.get('/api/posts/:postId/insights', async (req, res) => {
-  const postId = req.params.postId;
-  const accessToken = req.query.accessToken;
-
-  // 🔒 Token validation before making request
-  if (
-    !accessToken ||
-    typeof accessToken !== 'string' ||
-    !accessToken.startsWith('EAA')
-  ) {
-    console.warn("❌ Invalid or missing Facebook access token:", accessToken);
-    return res.status(400).json({
-      error: "Invalid or missing Facebook access token",
-    });
-  }
-
-  try {
-    let fields = 'likes.summary(true),comments.summary(true),shares';
-    let insights = {};
-
-    try {
-      const response = await axios.get(
-        `https://graph.facebook.com/v18.0/${postId}?fields=${fields}&access_token=${accessToken}`
-      );
-
-      const data = response.data;
-      insights.likes = data.likes?.summary?.total_count || 0;
-      insights.comments = data.comments?.summary?.total_count || 0;
-      insights.shares = data.shares?.count || 0;
-
-      return res.json(insights);
-    } catch (err) {
-      const msg = err.response?.data?.error?.message || '';
-      console.warn("📉 Fallback triggered due to error:", msg);
-
-      if (msg.includes('shares') || msg.includes('type')) {
-        const safeFields = 'likes.summary(true),comments.summary(true)';
-        const safeRes = await axios.get(
-          `https://graph.facebook.com/v18.0/${postId}?fields=${safeFields}&access_token=${accessToken}`
-        );
-        const safeData = safeRes.data;
-
-        insights.likes = safeData.likes?.summary?.total_count || 0;
-        insights.comments = safeData.comments?.summary?.total_count || 0;
-        insights.shares = 0;
-
-        return res.json(insights);
-      } else {
-        return res.status(500).json({ error: msg });
-      }
-    }
-  } catch (error) {
-    console.error('Facebook insights failed:', error?.response?.data || error.message);
-    res.status(500).json({ error: 'Failed to fetch post insights' });
-  }
-});
-
-
 
 
 // ===============================
