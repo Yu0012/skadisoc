@@ -62,24 +62,6 @@ const upload = multer({ storage });
 // 📌 **Define Schemas & Models**
 // ===============================
 
-// ✅ **Post Schema**
-const postSchema = new mongoose.Schema({
-  content: { type: String, required: true },
-  title: String,
-  client: String,
-  scheduledDate: Date,
-  selectedPlatforms: [String],
-  filePath: String, // Store file path if uploaded
-  posted: { type: Boolean, default: false },
-  status: { type: String, enum: ['draft', 'scheduled', 'posted'], default: 'draft' },
-  platformPostIds: {
-    facebook: String,
-    instagram: String,
-    twitter: String,
-    linkedin: String
-  },
-});
-const Post = mongoose.model("Post", postSchema);
 
 // ✅ **Client Schema**
 const clientSchema = new mongoose.Schema({
