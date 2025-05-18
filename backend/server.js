@@ -21,6 +21,7 @@ const facebookClientsRoute = require('./routes/facebookClients');
 const instagramClientsRoute = require('./routes/instagramClients');
 const twitterClientsRoute = require('./routes/twitterClients');
 const postRoutes = require('./routes/postRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -35,6 +36,7 @@ app.use('/api/facebook-clients', facebookClientsRoute);
 app.use('/api/instagram-clients', instagramClientsRoute);
 app.use('/api/twitter-clients', twitterClientsRoute);
 app.use('/api/posts', postRoutes);
+app.use('/api/users', userRoutes);
 
 // Connect to MongoDB Atlas
 mongoose.connect(process.env.MONGO_URI, {
@@ -250,14 +252,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
 // Function to post to Facebook
 const postToFacebook = async (post, client) => {
   try {
-    const facebookAccount = client.socialAccounts.find(acc => acc.platform === "Facebook");
-    if (!facebookAccount || !facebookAccount.companyToken || !facebookAccount.pageId) {
-      console.error(`No valid Facebook account for client: ${client.companyName}`);
-      return false;
-    }
-
-    const pageAccessToken = facebookAccount.companyToken;
-    const pageId = facebookAccount.pageId;
+    const pageId = client.pageId;
+    const pageAccessToken = client.pageAccessToken;
 
     const url = `https://graph.facebook.com/${pageId}/photos`;
 
@@ -293,15 +289,9 @@ const postToFacebook = async (post, client) => {
 
 async function postToInstagram(post, client) {
   try {
-    const instagramAccount = client.socialAccounts.find(acc => acc.platform === "Instagram");
-    if (!instagramAccount || !instagramAccount.companyToken || !instagramAccount.pageId) {
-      console.error(`No valid Instagram account for client: ${client.companyName}`);
-      return;
-    }
-
-    const accessToken = instagramAccount.companyToken;
-    const igUserId = instagramAccount.pageId;
-
+    const igUserId = client.instagramBusinessId;
+    const accessToken = client.accessToken;
+    
     const mediaUrl = `${"https://d242-58-71-215-67.ngrok-free.app"}${post.filePath}`;
 
     if (!mediaUrl) {
@@ -343,17 +333,22 @@ async function postToInstagram(post, client) {
 
 const postToTwitter = async (post, client) => { 
   try {
-    const twitterAccount = client.socialAccounts.find(acc => acc.platform === "Twitter");
-    if (!twitterAccount || !twitterAccount.apiKey || !twitterAccount.apiKeySecret || !twitterAccount.accessToken || !twitterAccount.accessTokenSecret) {
-      console.error(`No valid Twitter account for client: ${client.companyName}`);
+    const {
+      appKey,
+      appSecret,
+      accessToken,
+      accessTokenSecret,
+      username,
+    } = client;
+
+    if (!appKey || !appSecret || !accessToken || !accessTokenSecret) {
+      console.error(`❌ Missing Twitter credentials for client: ${username}`);
       return false;
     }
 
-    const { apiKey, apiKeySecret, accessToken, accessTokenSecret } = twitterAccount;
-
     const twitterClient = new TwitterApi({
-      appKey: apiKey,
-      appSecret: apiKeySecret,
+      appKey: appKey,
+      appSecret: appSecret,
       accessToken: accessToken,
       accessSecret: accessTokenSecret,
     });
@@ -371,6 +366,7 @@ const postToTwitter = async (post, client) => {
       tweetResponse = await twitterClient.v2.tweet(post.content, { media: { media_ids: [mediaData] }}); // Post tweet with video
       console.log(`Post successful on Twitter`);
     }
+    
     else {
       tweetResponse = await twitterClient.v2.tweet(post.content); // Post tweet without media
     }
@@ -389,51 +385,70 @@ const postToTwitter = async (post, client) => {
   return false;
 }
 
-
 const checkAndPostScheduledPosts = async () => {
   try {
     const now = new Date();
     const posts = await Post.find({ scheduledDate: { $lte: now }, posted: false });
 
     for (const post of posts) {
-      const client = await Client.findOne({ companyName: post.client });
+      const platforms = post.selectedPlatforms;
 
-      if (!client) {
-        console.error(`Client not found for post: ${post._id}`);
-        continue;
-      }
+      if (platforms.includes("facebook")) 
+      {
+        const client = await FacebookClient.findOne({ pageName: post.client });
 
-      if (post.selectedPlatforms.includes("facebook")) {
+        if (!client) 
+          {
+            console.error(`Facebook client not found for post: ${post._id}`);
+            continue;
+          }
+
         const fbPostId = await postToFacebook(post, client);
-        if (fbPostId) {
-          post.posted = true;
-          post.status = 'posted';
-          post.platformPostIds = { ...post.platformPostIds, facebook: fbPostId };
-          await post.save();
+        if (fbPostId) 
+        {
+          post.platformPostIds.facebook = fbPostId;
         }
       }
 
-      else if (post.selectedPlatforms.includes("instagram")) {
+      else if (platforms.includes("instagram"))
+      {
+        const client = await InstagramClient.findOne ({ username: post.client });
+        if (!client) 
+        {
+          console.error(`Instagram client not found for post: ${post._id}`);
+          continue;
+        }
+
         const igPostId = await postToInstagram(post, client);
-        if (igPostId) {
-          post.posted = true;
-          post.status = 'posted';
-          post.platformPostIds = { ...post.platformPostIds, instagram: igPostId };
-          await post.save();
+        if (igPostId) 
+        {
+          post.platformPostIds.instagram = igPostId;
         }
       }
 
-      else if (post.selectedPlatforms.includes("twitter")) {
+      else if (platforms.includes("twitter"))
+      {
+        const client = await TwitterClient.findOne({ username: post.client });
+        if (!client) 
+        {
+          console.error(`Twitter client not found for post: ${post._id}`);
+          continue;
+        }
+
         const tweetId = await postToTwitter(post, client);
-        if (tweetId) {
-          post.posted = true;
-          post.status = 'posted';
-          post.platformPostIds = { ...post.platformPostIds, twitter: tweetId };
-          await post.save();
+        if (tweetId) 
+        {
+          post.platformPostIds.twitter = tweetId;
         }
       }
 
-    }
+      if (Object.values(post.platformPostIds).some((id) => id)) 
+      {
+        post.posted = true;
+        post.status = 'posted';
+        await post.save();
+      }
+    } 
   } catch (error) {
     console.error("Error checking scheduled posts:", error);
   }
@@ -570,6 +585,8 @@ function(token, tokenSecret, profile, done) {
   // console.log('Twitter Profile:', profile);
   console.log('Access Token:', token);
   console.log('Token Secret:', tokenSecret);
+  profile.accessToken = token;
+  profile.tokenSecret = tokenSecret;  
   return done(null, profile);
 }));
 
@@ -589,7 +606,10 @@ app.get('/auth/twitter/callback',
           userId: twitterProfile.id,
           username: twitterProfile.username,
           name: twitterProfile.displayName,
-          accessToken: req.query.oauth_token || "",  // Optional
+          appKey: process.env.TWITTER_CONSUMER_KEY,
+          appSecret: process.env.TWITTER_CONSUMER_SECRET,
+          accessToken: twitterProfile.accessToken || "",  // Optional
+          accessTokenSecret: twitterProfile.tokenSecret || "", // Optional
           refreshToken: req.query.oauth_verifier || "" // Optional
         },
         { upsert: true, new: true }
@@ -658,6 +678,7 @@ checkAndRefreshTokens(); // Run immediately on server start
 
 // Run the function every minute
 setInterval(checkAndPostScheduledPosts, 60 * 1000);
+checkAndPostScheduledPosts(); // Run immediately on server start
 
 // Test routes
 app.get('/test', (req, res) => {

@@ -3,6 +3,9 @@ import "../styles.css";
 import { FaSearch, FaEllipsisV, FaSyncAlt, FaPlus } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 import { createPortal } from "react-dom";
+import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
+import CreateUserForm from "../components/CreateUserForm";
+
 
 const Accounts = () => {
   //ui and data states
@@ -19,7 +22,7 @@ const Accounts = () => {
   const [selectedAccounts, setSelectedAccounts] = useState([]);
 
   // Account details 
-  const [name, setName] = useState("");
+  const [username, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNum, setPhoneNum] = useState("");
   const [address, setAddress] = useState("");
@@ -37,10 +40,10 @@ const Accounts = () => {
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/accounts");
+        const response = await fetch("http://localhost:5000/api/users");
         if (response.ok) {
           const data = await response.json();
-          setAccounts(data);
+          setAccounts(data.reverse());
         } else {
           console.error("Failed to fetch accounts");
         }
@@ -94,27 +97,25 @@ const Accounts = () => {
     setAccountMenuDropdown(null); // closes menu
   };
 
-  const handleDeleteAccount = async (accountId) => {
-    const confirm = window.confirm("Are you sure you want to delete this account?");
-    if (!confirm) return;
-  
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this user?");
+    if (!confirmDelete) return;
     try {
-      const response = await fetch(`http://localhost:5000/api/accounts/${accountId}`, {
-        method: "DELETE",
+      const response = await fetch(`http://localhost:5000/api/users/${id}`, {
+        method: 'DELETE',
       });
-  
-      if (!response.ok) throw new Error("Delete failed");
-  
-      setAccounts((prev) => prev.filter((acc) => acc._id !== accountId));
+
+      if (response.ok) {
+        // Refresh the user list after deletion
+        const updated = accounts.filter((acc) => acc._id !== id);
+        setAccounts(updated);
+      } else {
+        console.error('Failed to delete user');
+      }
     } catch (err) {
-      console.error("Account delete error:", err);
-      alert("Failed to delete account.");
+      console.error('Error deleting user:', err);
     }
   };
-  
-  
-  
-  
 
   //search input and category changes handlers 
   const handleSearch = (e) => {
@@ -136,14 +137,14 @@ const Accounts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    const accountData = { name, email, phoneNum, address, password };
+    const accountData = { username, email, password };
     const isEditing = !!editAccount;
   
     try {
       const response = await fetch(
         isEditing
           ? `http://localhost:5000/api/accounts/${editAccount._id}`
-          : "http://localhost:5000/api/accounts",
+          : "http://localhost:5000/api/users",
         {
           method: isEditing ? "PUT" : "POST",
           headers: { "Content-Type": "application/json" },
@@ -156,12 +157,22 @@ const Accounts = () => {
       const result = await response.json();
       const saved = result.account || result;
   
-      setAccounts((prev) =>
-        isEditing
-          ? prev.map((acc) => (acc._id === saved._id ? saved : acc))
-          : [...prev, saved]
-      );
-  
+    const fetchAccounts = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/users");
+        if (response.ok) {
+          const data = await response.json();
+          setAccounts(data.reverse());
+        } else {
+          console.error("Failed to fetch accounts");
+        }
+      } catch (error) {
+        console.error("Error fetching accounts:", error);
+      }
+    };
+
+      fetchAccounts();
+
       // Reset state
       setEditAccount(null);
       setCreateUserDropdown(false);
@@ -201,6 +212,7 @@ const Accounts = () => {
   const indexOfLastAccount = currentPage * accountsPerPage;
   const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
   const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
+  const totalPages = Math.ceil(filteredAccounts.length / accountsPerPage);
 
    //handles for ui inputs
    const handleRefresh = () => window.location.reload();
@@ -248,23 +260,22 @@ const Accounts = () => {
         </div>
       </div>
 
-      {/* Add User Modal */}
       {createUserDropdown &&
         createPortal(
-          <div className="newUserMenu" ref={modalRef}>
-            <ImCross className="exitButton" onClick={toggleCreateUserDropdown} />
-            <form className="form-group" onSubmit={handleSubmit}>
-              <a className="form-title">Create New User</a>
-              <label>Name: <input type="text" className="newAccountForm" value={name} onChange={(e) => setName(e.target.value)} required /></label>
-              <label>Email: <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
-              <label>Phone: <input type="number" value={phoneNum} onChange={(e) => setPhoneNum(e.target.value)} required /></label>
-              <label>Address: <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} required /></label>
-              <label>Password: <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required /></label>
-              <input className="create-post-btn" type="submit" value="Save" />
-            </form>
-          </div>,
+          <CreateUserForm
+            username={username}
+            setName={setName}
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            onClose={toggleCreateUserDropdown}
+            onSubmit={handleSubmit}
+            isEditing={!!editAccount}
+          />,
           document.body
         )}
+
 
       {/* Accounts Table */}
       <table className="posts-table">
@@ -272,18 +283,18 @@ const Accounts = () => {
           <tr>
             <th>Username</th>
             <th>Email</th>
-            <th>Phone No.</th>
-            <th>Address</th>
+            <th>Role</th>
+            <th>Access</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {currentAccounts.map((account) => (
             <tr key={account._id}>
-              <td>{account.name}</td>
+              <td>{account.username}</td>
               <td>{account.email}</td>
-              <td>{account.phoneNum}</td>
-              <td>{account.address}</td>
+              <td>{account.roleType}</td>
+              <td>{Array.isArray(account.assignedClients) ? account.assignedClients.join(', ') : account.assignedClients}</td>
               <td>
               <FaEllipsisV className="popup-icon" onClick={(e) => menuDropdown(e, account._id)} />
 
@@ -294,7 +305,7 @@ const Accounts = () => {
                       style={{ top: accountMenuPosition.top, left: accountMenuPosition.left }}
                     >
                       <button onClick={() => handleEditAccount(account)}>Edit</button>
-                      <button className="delete-btn" onClick={() => handleDeleteAccount(account._id)}>Delete</button>
+                      <button className="delete-btn" onClick={() => handleDelete(account._id)}>Delete</button>
                     </div>,
                     document.body
                   )}
@@ -304,6 +315,49 @@ const Accounts = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Pagination */}
+      <div className="pagination-container">
+        <p>
+          Showing {indexOfFirstAccount + 1} to{" "}
+          {Math.min(indexOfLastAccount, filteredAccounts.length)} of{" "}
+          {filteredAccounts.length} entries
+        </p>
+        <div className="pagination">
+          <FaAnglesLeft 
+            className="pagination-navigation" 
+            onClick={() => setCurrentPage(1)} 
+            disabled={currentPage === 1}
+          />
+          <FaAngleLeft 
+            className="pagination-navigation" 
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          />
+          {[...Array(totalPages).keys()]
+            .slice(Math.max(0, currentPage - 2), currentPage + 1)
+            .map((number) => (
+              <button
+                key={number + 1}
+                onClick={() => setCurrentPage(number + 1)}
+                className={currentPage === number + 1 ? "active" : ""}
+              >
+                {number + 1}
+              </button>
+            ))}
+          <FaAngleRight 
+            className="pagination-navigation"
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          />
+          <FaAnglesRight
+            className="pagination-navigation"
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage === totalPages}
+          />
+        </div>
+      </div>
+
     </div>
   );
 };
