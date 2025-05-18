@@ -24,7 +24,7 @@ const Accounts = () => {
   // Account details 
   const [username, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("admin");
+  const [roleType, setRoleType] = useState("admin");
   const [password, setPassword] = useState("");
 
   //Edit & Delete Dropdown
@@ -83,18 +83,6 @@ const Accounts = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [accountMenuDropdown]);
-  
-
-  const handleEditAccount = (account) => {
-    setEditAccount(account); // store current editing account
-    setName(account.name);
-    setEmail(account.email);
-    setPhoneNum(account.phoneNum);
-    setAddress(account.address);
-    setPassword(account.password); // or leave empty
-    setCreateUserDropdown(true); // show form modal
-    setAccountMenuDropdown(null); // closes menu
-  };
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this user?");
@@ -136,7 +124,7 @@ const Accounts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    const accountData = { username, email, password };
+    const accountData = {username,email , password, roleType,};
     const isEditing = !!editAccount;
   
     try {
@@ -268,6 +256,8 @@ const Accounts = () => {
             setEmail={setEmail}
             password={password}
             setPassword={setPassword}
+            role={roleType}
+            setRole={setRoleType}
             onClose={toggleCreateUserDropdown}
             onSubmit={handleSubmit}
             isEditing={!!editAccount}
