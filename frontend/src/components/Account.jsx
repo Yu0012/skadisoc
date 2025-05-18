@@ -130,7 +130,7 @@ const Accounts = () => {
     try {
       const response = await fetch(
         isEditing
-          ? `http://localhost:5000/api/accounts/${editAccount._id}`
+          ? `http://localhost:5000/api/users/${editAccount._id}`
           : "http://localhost:5000/api/users",
         {
           method: isEditing ? "PUT" : "POST",
@@ -164,9 +164,6 @@ const Accounts = () => {
       setEditAccount(null);
       setCreateUserDropdown(false);
       setName("");
-      setEmail("");
-      setPhoneNum("");
-      setAddress("");
       setPassword("");
     } catch (err) {
       console.error("Account save error:", err);
