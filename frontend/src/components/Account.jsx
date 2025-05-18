@@ -24,8 +24,7 @@ const Accounts = () => {
   // Account details 
   const [username, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [phoneNum, setPhoneNum] = useState("");
-  const [address, setAddress] = useState("");
+  const [role, setRole] = useState("admin");
   const [password, setPassword] = useState("");
 
   //Edit & Delete Dropdown
