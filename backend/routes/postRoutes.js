@@ -1,11 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const Post = require('../models/Post');
+const fs = require('fs');
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' }); // adjust if you already have one
-const FacebookClient = require('../models/FacebookClientSchema');
-const InstagramClient = require('../models/InstagramClientSchema');
-const TwitterClient = require('../models/TwitterClientSchema');
+
+
+// Multer setup for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = "uploads/";
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true }); // Ensure upload directory exists
+    }
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+const upload = multer({ storage });
 
 
 // ✅ GET all posts

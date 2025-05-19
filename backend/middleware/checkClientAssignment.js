@@ -1,4 +1,7 @@
 const Client = require('../models/Client');
+const FacebookClient = require('../models/FacebookClient');
+const InstagramClient = require('../models/InstagramClient');
+const TwitterClient = require('../models/TwitterClient');
 
 const checkClientAssignment = () => {
   return async (req, res, next) => {
