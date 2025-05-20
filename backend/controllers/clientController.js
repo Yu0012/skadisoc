@@ -30,17 +30,25 @@ exports.getClients = async (req, res) => {
         console.log('🟢 Fetching clients');
 
         let clients;
+        let query = {};
         if (req.user.role === 'admin') {
-            clients = await Client.find().populate('assignedAdmins', 'username email');
-        } else if (req.user.role === 'editor') {
-            clients = await Client.find({ assignedAdmins: req.user._id }).populate('assignedAdmins', 'username email');
-        } else {
-            console.log('⛔ Fetch client failed: viewer or no permission');
-            return res.status(403).json({ message: 'Permission denied' });
-        }
+            query = { assignedAdmins: req.user._id };
+        } 
 
-        res.json(clients);
-    } catch (err) {
+        else if (req.user.role !== 'superadmin') {
+            return res.status(403).json({ message: 'Permission denied' });
+        } 
+
+        const [facebookClients, instagramClients, twitterClients] = await Promise.all([
+        FacebookClient.find(query).populate('assignedAdmins', 'username'),
+        InstagramClient.find(query).populate('assignedAdmins', 'username'),
+        TwitterClient.find(query).populate('assignedAdmins', 'username'),
+        ]);
+
+        res.json({ facebookClients, instagramClients, twitterClients });
+    } 
+    
+    catch (err) {
         console.error('❌ Error fetching clients:', err);
         res.status(500).json({ message: 'Error fetching clients' });
     }
