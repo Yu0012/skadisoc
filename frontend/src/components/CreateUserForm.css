@@ -1,0 +1,20 @@
+.platform-navbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.platform-navbar button {
+  padding: 8px 16px;
+  border: none;
+  background-color: #e0e0e0;
+  cursor: pointer;
+  border-radius: 5px;
+  text-transform: capitalize;
+}
+
+.platform-navbar button.active {
+  background-color: #0046d4;
+  color: white;
+  font-weight: bold;
+}

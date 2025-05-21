@@ -26,6 +26,8 @@ const Accounts = () => {
   const [email, setEmail] = useState("");
   const [roleType, setRoleType] = useState("admin");
   const [password, setPassword] = useState("");
+  const [assignedClients, setAssignedClients] = useState([]);
+
 
   //Edit & Delete Dropdown
   const [accountMenuDropdown, setAccountMenuDropdown] = useState(null);
@@ -124,7 +126,7 @@ const Accounts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    const accountData = {username,email , password, roleType,};
+    const accountData = {username,email , password, roleType, assignedClients,};
     const isEditing = !!editAccount;
   
     try {
@@ -255,6 +257,8 @@ const Accounts = () => {
             setPassword={setPassword}
             role={roleType}
             setRole={setRoleType}
+            assignedClients={assignedClients}
+            setAssignedClients={setAssignedClients}
             onClose={toggleCreateUserDropdown}
             onSubmit={handleSubmit}
             isEditing={!!editAccount}
