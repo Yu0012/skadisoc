@@ -32,7 +32,15 @@ exports.getClients = async (req, res) => {
         let clients;
         let query = {};
         if (req.user.role === 'admin') {
-            query = { assignedAdmins: req.user._id };
+            const assignedClientIds = req.user.assignedClients || [];
+
+            const [facebookClients, instagramClients, twitterClients] = await Promise.all([
+            FacebookClient.find({ _id: { $in: assignedClientIds } }).populate('assignedAdmins', 'username'),
+            InstagramClient.find({ _id: { $in: assignedClientIds } }).populate('assignedAdmins', 'username'),
+            TwitterClient.find({ _id: { $in: assignedClientIds } }).populate('assignedAdmins', 'username'),
+            ]);
+
+            return res.json({ facebookClients, instagramClients, twitterClients });
         } 
 
         else if (req.user.role !== 'superadmin') {

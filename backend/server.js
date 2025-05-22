@@ -22,6 +22,7 @@ const instagramClientsRoute = require('./routes/instagramClients');
 const twitterClientsRoute = require('./routes/twitterClients');
 const postRoutes = require('./routes/postRoutes');
 const userRoutes = require('./routes/userRoutes');
+const { checkAndPostScheduledPosts } = require('./utils/scheduledPostHandler');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -32,6 +33,7 @@ app.use(express.json()); // Use built-in JSON parsing
 app.use(express.static('uploads')); // Serve uploaded files
 app.use(passport.initialize()); // Initialize passport
 
+//Controllers 
 app.use('/api/facebook-clients', facebookClientsRoute);
 app.use('/api/instagram-clients', instagramClientsRoute);
 app.use('/api/twitter-clients', twitterClientsRoute);
@@ -45,25 +47,9 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.error("MongoDB Connection Error:", err));
 
-// Multer setup for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = "uploads/";
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true }); // Ensure upload directory exists
-    }
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
-const upload = multer({ storage });
-
 // ===============================
 // 📌 **Define Schemas & Models**
 // ===============================
-
 
 // ✅ **Client Schema**
 const clientSchema = new mongoose.Schema({
@@ -87,17 +73,6 @@ const clientSchema = new mongoose.Schema({
 });
 
 const Client = mongoose.model("Client", clientSchema);
-
-// ✅ **Account Schema**
-const accountSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  phoneNum: { type: String, required: true },
-  address: { type: String, required: true },
-  password: { type: String, required: true },
-}, { timestamps: true });
-const Account = mongoose.model("Account", accountSchema);
-
 
 // ===============================
 // 📌 **Client API Routes**
@@ -186,60 +161,6 @@ app.delete('/api/clients/:id', async (req, res) => {
 // 📌 **Accounts API Routes**
 // ===============================
 
-// ✅ Add a new account
-app.post('/api/accounts', async (req, res) => {
-  try {
-    const { name, email, phoneNum, address, password } = req.body;
-
-    if (!name || !email || !phoneNum || !address || !password) {
-      return res.status(400).json({ error: "All fields are required" });
-    }
-
-    const newAccount = new Account({ name, email, phoneNum, address, password });
-    await newAccount.save();
-
-    res.status(201).json({ message: "Account created successfully", account: newAccount });
-  } catch (error) {
-    console.error("Error creating account:", error);
-    res.status(500).json({ error: "Failed to create account" });
-  }
-});
-
-// ✅ Get all accounts
-app.get('/api/accounts', async (req, res) => {
-  try {
-    const accounts = await Account.find();
-    res.status(200).json(accounts);
-  } catch (error) {
-    console.error("Error fetching accounts:", error);
-    res.status(500).json({ error: "Failed to fetch accounts" });
-  }
-});
-
-// UPDATE account
-app.put('/api/accounts/:id', async (req, res) => {
-  try {
-    const updatedAccount = await Account.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!updatedAccount) return res.status(404).json({ error: "Account not found" });
-    res.json({ account: updatedAccount });
-  } catch (error) {
-    console.error("Update failed:", error);
-    res.status(500).json({ error: "Failed to update account" });
-  }
-});
-
-// DELETE account
-app.delete('/api/accounts/:id', async (req, res) => {
-  try {
-    const deleted = await Account.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ error: "Account not found" });
-    res.json({ message: "Account deleted" });
-  } catch (error) {
-    console.error("Delete failed:", error);
-    res.status(500).json({ error: "Failed to delete account" });
-  }
-});
-
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   setHeaders: (res, filePath) => {
     const contentType = mime.lookup(filePath) || 'application/octet-stream';
@@ -248,211 +169,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
     res.setHeader('Cache-Control', 'public, max-age=31536000');
   }
 }));
-
-// Function to post to Facebook
-const postToFacebook = async (post, client) => {
-  try {
-    const pageId = client.pageId;
-    const pageAccessToken = client.pageAccessToken;
-
-    const url = `https://graph.facebook.com/${pageId}/photos`;
-
-    const formData = new FormData();
-    formData.append("access_token", pageAccessToken);
-    formData.append("source", fs.createReadStream(path.join(__dirname, post.filePath)));
-    formData.append("published", "false"); // 
-    const response = await axios.post(url, formData, {
-      headers: formData.getHeaders(),
-    });
-
-    const mediaId = response.data.id;
-
-    // Publish the post via feed
-    const publishUrl = `https://graph.facebook.com/${pageId}/feed`;
-    const publishResponse = await axios.post(publishUrl, {
-      message: post.content,
-      attached_media: JSON.stringify([{ media_fbid: mediaId }]),
-      access_token: pageAccessToken,
-    });
-
-    if (publishResponse.data.id) {
-      console.log('✅ Facebook Post ID:', publishResponse.data.id);
-      return publishResponse.data.id; // ⬅️ Return post ID
-    }
-
-  } catch (error) {
-    console.error("Error posting to Facebook:", error.response?.data || error.message);
-  }
-  return false;
-};
-
-
-async function postToInstagram(post, client) {
-  try {
-    const igUserId = client.instagramBusinessId;
-    const accessToken = client.accessToken;
-    
-    const mediaUrl = `${"https://d242-58-71-215-67.ngrok-free.app"}${post.filePath}`;
-
-    if (!mediaUrl) {
-      console.error("❌ No valid image URL for Instagram post.");
-      return;
-    }
-
-    const message = `${post.content}`;
-
-    // Step 1: Upload Media
-    const mediaResponse = await axios.post(
-      `https://graph.facebook.com/${igUserId}/media`,
-      {
-        image_url: mediaUrl,
-        caption: message,
-        access_token: accessToken,
-      }
-    );
-
-    const creationId = mediaResponse.data.id;
-
-    // Step 2: Publish Media
-    const publishResponse = await axios.post(
-      `https://graph.facebook.com/${igUserId}/media_publish`,
-      {
-        creation_id: creationId,
-        access_token: accessToken,
-      }
-    );
-
-    console.log('✅ Instagram Post ID:', publishResponse.data.id);
-    return publishResponse.data.id; // ⬅️ Return post ID
-
-  } catch (error) {
-    console.error('Error posting to Instagram:', error.response?.data || error.message);
-    return false;
-  }
-}
-
-const postToTwitter = async (post, client) => { 
-  try {
-    const {
-      appKey,
-      appSecret,
-      accessToken,
-      accessTokenSecret,
-      username,
-    } = client;
-
-    if (!appKey || !appSecret || !accessToken || !accessTokenSecret) {
-      console.error(`❌ Missing Twitter credentials for client: ${username}`);
-      return false;
-    }
-
-    const twitterClient = new TwitterApi({
-      appKey: appKey,
-      appSecret: appSecret,
-      accessToken: accessToken,
-      accessSecret: accessTokenSecret,
-    });
-
-    const imagePath = path.join(__dirname, post.filePath);
-
-    if (['.jpg', '.jpeg', '.png'].includes(path.extname(imagePath).toLowerCase())) {
-      const mediaData = await twitterClient.v1.uploadMedia(imagePath); // Upload image
-      tweetResponse = await twitterClient.v2.tweet(post.content, { media: { media_ids: [mediaData] }}); // Post tweet with image
-      console.log(`Post successful on Twitter`);
-    }
-
-    else if (['.mp4', '.avi', '.mkv', '.mov', '.gif'].includes(path.extname(imagePath).toLowerCase())) {
-      const mediaData = await twitterClient.v1.uploadMedia(imagePath, { type: 'video' }); // Upload video
-      tweetResponse = await twitterClient.v2.tweet(post.content, { media: { media_ids: [mediaData] }}); // Post tweet with video
-      console.log(`Post successful on Twitter`);
-    }
-    
-    else {
-      tweetResponse = await twitterClient.v2.tweet(post.content); // Post tweet without media
-    }
-    
-    const tweetId = tweetResponse?.data?.id;
-
-    if (tweetId) {
-      console.log(`Tweet ID: ${tweetId}`);
-      return tweetId; // ⬅️ Return tweet ID
-    }
-
-    return true;
-  } catch (error) {
-    console.error("Error posting to Twitter:", error.response?.data || error.message);
-  }
-  return false;
-}
-
-const checkAndPostScheduledPosts = async () => {
-  try {
-    const now = new Date();
-    const posts = await Post.find({ scheduledDate: { $lte: now }, posted: false });
-
-    for (const post of posts) {
-      const platforms = post.selectedPlatforms;
-
-      if (platforms.includes("facebook")) 
-      {
-        const client = await FacebookClient.findOne({ pageName: post.client });
-
-        if (!client) 
-          {
-            console.error(`Facebook client not found for post: ${post._id}`);
-            continue;
-          }
-
-        const fbPostId = await postToFacebook(post, client);
-        if (fbPostId) 
-        {
-          post.platformPostIds.facebook = fbPostId;
-        }
-      }
-
-      else if (platforms.includes("instagram"))
-      {
-        const client = await InstagramClient.findOne ({ username: post.client });
-        if (!client) 
-        {
-          console.error(`Instagram client not found for post: ${post._id}`);
-          continue;
-        }
-
-        const igPostId = await postToInstagram(post, client);
-        if (igPostId) 
-        {
-          post.platformPostIds.instagram = igPostId;
-        }
-      }
-
-      else if (platforms.includes("twitter"))
-      {
-        const client = await TwitterClient.findOne({ username: post.client });
-        if (!client) 
-        {
-          console.error(`Twitter client not found for post: ${post._id}`);
-          continue;
-        }
-
-        const tweetId = await postToTwitter(post, client);
-        if (tweetId) 
-        {
-          post.platformPostIds.twitter = tweetId;
-        }
-      }
-
-      if (Object.values(post.platformPostIds).some((id) => id)) 
-      {
-        post.posted = true;
-        post.status = 'posted';
-        await post.save();
-      }
-    } 
-  } catch (error) {
-    console.error("Error checking scheduled posts:", error);
-  }
-};
 
 // Step 1: OAuth Login Route
 app.get('/auth/facebook', (req, res) => {
@@ -692,7 +408,6 @@ app.get('/', (req, res) => {
 // ===============================
 // 📌 **Start Server**
 // ===============================
-
 
 // ✅ Initialize Passport and use JWT strategy
 require('./config/passport')(passport); // ← Load passport config
