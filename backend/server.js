@@ -18,6 +18,8 @@ const session = require('express-session');
 const facebookClientsRoute = require('./routes/facebookClients');
 const instagramClientsRoute = require('./routes/instagramClients');
 const twitterClientsRoute = require('./routes/twitterClients');
+const chatbotRoute = require('./routes/chatbot');
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,6 +33,8 @@ app.use(passport.initialize()); // Initialize passport
 app.use('/api/facebook-clients', facebookClientsRoute);
 app.use('/api/instagram-clients', instagramClientsRoute);
 app.use('/api/twitter-clients', twitterClientsRoute);
+
+app.use('/api/chatbot', chatbotRoute);
 
 // Connect to MongoDB Atlas
 mongoose.connect(process.env.MONGO_URI, {

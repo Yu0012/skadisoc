@@ -9,34 +9,56 @@ import icon from "../assets/icon-women.png";
 const Chatbot = () => {
   const [chatbotOverlay, setchatbotOverlay] = useState("closed"); // Triggers overlay opening/closing
   const [input, setInput] = useState(""); // User's message
-
   const chatboxRef = useRef(null);
   const [messages, setMessages] = useState([
     { type: "incoming", text: "Hi there! How can I help?" }, // Initial bot message
   ]);
+
+    // Scroll to latest message
+  useEffect(() => {
+    if (chatboxRef.current) {
+      chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   // Sets open/close of chatbot
   const toggleOverlay = (view) => {
     setchatbotOverlay(view);
   };
 
-  // Retrives user message and send to messages Array
-  const handleSend = () => {
-    
-    const trimmed = input.trim();
-    if (trimmed === "") return;
-  
-    const newMessage = { type: "outgoing", text: trimmed };
-    setMessages((prev) => [...prev, newMessage]); // Add message to array
-    setInput("");  //Clears textarea when used
-  
-    // Scrolls down after user sends message to see recent message
-    setTimeout(() => {
-      if (chatboxRef.current) {
-        chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
-      }
-    }, 100);
-  };
+  const handleSend = async () => {
+  const trimmed = input.trim();
+  if (trimmed === "") return;
+
+  const newMessage = { type: "outgoing", text: trimmed };
+  setMessages((prev) => [...prev, newMessage]);
+  setInput("");
+
+  try {
+    const res = await fetch("http://localhost:5000/api/chatbot", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: trimmed }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.reply) {
+      setMessages((prev) => [...prev, { type: "incoming", text: data.reply }]);
+    }
+  } catch (err) {
+    setMessages((prev) => [
+      ...prev,
+      { type: "incoming", text: "Sorry, something went wrong." },
+    ]);
+  }
+
+  setTimeout(() => {
+    if (chatboxRef.current) {
+      chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
+    }
+  }, 100);
+};
   
 
 
