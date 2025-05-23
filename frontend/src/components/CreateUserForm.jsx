@@ -11,11 +11,20 @@ const CreateUserForm = ({
   assignedClients, setAssignedClients,
   onClose,
   onSubmit,
-  isEditing
-  
+  isEditing,
+  setFacebookClients,
+  setInstagramClients,
+  setTwitterClients,
+  facebookClients,
+  instagramClients,
+  twitterClients,
 }) => {
-  const [selectedPlatform, setSelectedPlatform] = useState("");
+  const [selectedPlatform, setSelectedPlatform] = useState("facebook");
+  const [facebookOptions, setFacebookOptions] = useState([]);
+  const [instagramOptions, setInstagramOptions] = useState([]);
+  const [twitterOptions, setTwitterOptions] = useState([]);
   const [platformClients, setPlatformClients] = useState([]);
+
   const handlePlatformChange = async (platform) => {
     setSelectedPlatform(platform);
     setPlatformClients([]);
