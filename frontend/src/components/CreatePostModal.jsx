@@ -5,7 +5,7 @@ import "../styles.css";
 import { FaTimes, FaCalendarAlt, FaPaperclip } from "react-icons/fa";
 import Preview from "./Preview";
 
-const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform}) => {
+const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onSave, platform}) => {
   const [content, setContent] = useState(initialData?.content || "");
   const [title, setTitle] = useState(initialData?.title || "");
   const [client, setClient] = useState(initialData?.client || "No Client Selected");
@@ -129,6 +129,7 @@ const CreatePostModal = ({ isOpen, onClose, initialData = {}, onSave, platform})
       const result = await response.json();
       alert(`Post ${isEditing ? "updated" : "created"} successfully!`);
       onSave?.(result.post || result); // pass post back to parent
+      onPostCreated?.();               // ✅ triggers fetch in Posts.jsx
       onClose();
     } catch (error) {
       console.error("Error submitting post:", error);

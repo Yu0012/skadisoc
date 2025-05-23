@@ -35,16 +35,17 @@ const Posts = () => {
   };
 
   // Fetch posts from backend
+  const fetchPosts = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/posts");
+      const data = await response.json();
+      setPosts(data.reverse());
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/api/posts");
-        const data = await response.json();
-        setPosts(data.reverse());
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      }
-    };
     fetchPosts();
   }, []);
   
