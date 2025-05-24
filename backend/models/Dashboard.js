@@ -1,4 +1,4 @@
-const axios = require('axios'); // If using Node >=18, you can use native fetch
+const axios = require('axios'); 
 const postId = '537263709478406_122125283666782804';
 const accessToken = 'EAAQ66HZCjKZCsBO2D8V67xcGZAt0C0SanTLZBxF6qlM4UozSsFmncd8QrBFxPSOqbBqtZBasyBWZCDqdnG2g3ZADmAbnb9MNXuIGP9rQaPOAuoqHlYFQcEgVFhdkIPE8EVAtZAOZBRZBQwOZAB4rH3ixZCq6qrHhLKbKDEnZAyX4srShFplyH5TVnqclnJOIuZAvRKhgWa';
 

@@ -93,5 +93,21 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+router.get("/", async (req, res) => {
+  try {
+    const { clientId, platform } = req.query;
+    if (!clientId || !platform) {
+      return res.status(400).json({ error: "Missing clientId or platform" });
+    }
+
+    const posts = await Post.find({ clientId, platform }); // ✅ filter both
+    res.json(posts);
+  } catch (err) {
+    console.error("Error fetching posts:", err);
+    res.status(500).json({ error: "Failed to fetch posts" });
+  }
+});
+
+
 
 module.exports = router;
