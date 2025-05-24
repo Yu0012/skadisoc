@@ -26,6 +26,10 @@ const Accounts = () => {
   const [email, setEmail] = useState("");
   const [roleType, setRoleType] = useState("admin");
   const [password, setPassword] = useState("");
+  const [facebookClients, setFacebookClients] = useState([]);
+  const [instagramClients, setInstagramClients] = useState([]);
+  const [twitterClients, setTwitterClients] = useState([]);
+
   const [assignedClients, setAssignedClients] = useState([]);
 
 
@@ -126,7 +130,7 @@ const Accounts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    const accountData = {username,email , password, roleType, assignedClients,};
+    const accountData = {username,email , password, roleType, facebookClients, instagramClients, twitterClients, assignedClients};
     const isEditing = !!editAccount;
   
     try {
@@ -257,6 +261,12 @@ const Accounts = () => {
             setPassword={setPassword}
             role={roleType}
             setRole={setRoleType}
+            facebookClients={facebookClients}
+            setFacebookClients={setFacebookClients}
+            instagramClients={instagramClients}
+            setInstagramClients={setInstagramClients}
+            twitterClients={twitterClients}
+            setTwitterClients={setTwitterClients}
             assignedClients={assignedClients}
             setAssignedClients={setAssignedClients}
             onClose={toggleCreateUserDropdown}

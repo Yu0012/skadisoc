@@ -25,7 +25,10 @@ const userSchema = new mongoose.Schema({
     status: { type: String, enum: ['online', 'offline'], default: 'offline' },
     isActive: { type: Boolean, default: true },
     lastLogin: { type: Date },
-    assignedClients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Client' }]
+    // assignedClients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Client' }]
+    facebookClients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'FacebookClient' }],
+    instagramClients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'InstagramClient' }],
+    twitterClients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TwitterClient' }],
   }, { timestamps: true }); // Add createdAt and updatedAt automatically
 
 // Pre-save hook to handle Malaysia timezone
