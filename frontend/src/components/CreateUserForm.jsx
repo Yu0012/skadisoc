@@ -70,24 +70,48 @@ const CreateUserForm = ({
         {platformClients.length > 0 && (
           <div className="client-checkboxes">
             <label>Assign {selectedPlatform} Clients:</label>
-            {platformClients.map((client) => (
+            {platformClients.map((client) => {
+            const isChecked =
+              selectedPlatform === "facebook"
+                ? facebookClients.includes(client._id)
+                : selectedPlatform === "instagram"
+                ? instagramClients.includes(client._id)
+                : twitterClients.includes(client._id);
+
+            const toggleClient = () => {
+              const setList =
+                selectedPlatform === "facebook"
+                  ? setFacebookClients
+                  : selectedPlatform === "instagram"
+                  ? setInstagramClients
+                  : setTwitterClients;
+
+              const currentList =
+                selectedPlatform === "facebook"
+                  ? facebookClients
+                  : selectedPlatform === "instagram"
+                  ? instagramClients
+                  : twitterClients;
+
+              if (isChecked) {
+                setList(currentList.filter((id) => id !== client._id));
+              } else {
+                setList([...currentList, client._id]);
+              }
+            };
+
+            return (
               <label key={client._id} style={{ display: "block", marginTop: "4px" }}>
                 <input
                   type="checkbox"
                   value={client._id}
-                  checked={assignedClients.includes(client._id)}
-                  onChange={(e) => {
-                    const clientId = e.target.value;
-                    if (e.target.checked) {
-                      setAssignedClients([...assignedClients, clientId]);
-                    } else {
-                      setAssignedClients(assignedClients.filter((id) => id !== clientId));
-                    }
-                  }}
+                  checked={isChecked}
+                  onChange={toggleClient}
                 />
                 {client.companyName || client.username}
               </label>
-            ))}
+            );
+          })}
           </div>
         )}
         <input className="create-post-btn" type="submit" value="Save" />

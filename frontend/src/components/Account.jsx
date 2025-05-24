@@ -130,7 +130,7 @@ const Accounts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    const accountData = {username,email , password, roleType, facebookClients, instagramClients, twitterClients, assignedClients};
+    const accountData = {username,email , password, roleType, facebookClients, instagramClients, twitterClients,};
     const isEditing = !!editAccount;
   
     try {
@@ -171,6 +171,9 @@ const Accounts = () => {
       setCreateUserDropdown(false);
       setName("");
       setPassword("");
+      setFacebookClients([]);
+      setInstagramClients([]);
+      setTwitterClients([]);
     } catch (err) {
       console.error("Account save error:", err);
       alert("Failed to save account.");
@@ -294,10 +297,9 @@ const Accounts = () => {
               <td>{account.username}</td>
               <td>{account.email}</td>
               <td>{account.roleType}</td>
-              <td>{Array.isArray(account.assignedClients) ? account.assignedClients.join(', ') : account.assignedClients}</td>
+              <td>{Array.isArray(account.facebookClients) ? account.facebookClients.join(', ') : account.facebookClients}</td>
               <td>
               <FaEllipsisV className="popup-icon" onClick={(e) => menuDropdown(e, account._id)} />
-
                 {accountMenuDropdown === account._id &&
                   createPortal(
                     <div
