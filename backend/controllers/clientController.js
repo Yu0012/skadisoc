@@ -8,7 +8,7 @@ const User = require('../models/User');
 exports.createClient = async (req, res) => {
     try {
         console.log('🟢 Creating new client');
-        if (req.user.role !== 'admin') {
+        if (req.user.roleType !== 'admin') {
             console.log('⛔ Create client failed: not admin');
             return res.status(403).json({ message: 'Only admin can create clients' });
         }
@@ -66,7 +66,7 @@ exports.getClients = async (req, res) => {
 exports.updateClient = async (req, res) => {
     try {
         console.log('🟠 Updating client');
-        if (req.user.role !== 'admin') {
+        if (req.user.roleType !== 'admin') {
             console.log('⛔ Update client failed: not admin');
             return res.status(403).json({ message: 'Only admin can update clients' });
         }
@@ -90,7 +90,7 @@ exports.updateClient = async (req, res) => {
 exports.deleteClient = async (req, res) => {
     try {
         console.log('🔴 Deleting client');
-        if (req.user.role !== 'admin') {
+        if (req.user.roleType !== 'admin') {
             console.log('⛔ Delete client failed: not admin');
             return res.status(403).json({ message: 'Only admin can delete clients' });
         }
@@ -122,7 +122,7 @@ exports.deleteClient = async (req, res) => {
 exports.assignAdminToClient = async (req, res) => {
     try {
         console.log('🟡 Assigning admin to client');
-        if (req.user.role !== 'admin') {
+        if (req.user.roleType !== 'admin') {
             console.log('⛔ Assign failed: not admin');
             return res.status(403).json({ message: 'Only admin can assign users to clients' });
         }
@@ -136,7 +136,7 @@ exports.assignAdminToClient = async (req, res) => {
             return res.status(404).json({ message: 'Client or User not found' });
         }
 
-        if (user.role !== 'editor') {
+        if (user.roleType !== 'editor') {
             return res.status(400).json({ message: 'Only editors can be assigned to clients' });
         }
 
@@ -167,7 +167,7 @@ exports.unassignClientFromUser = async (req, res) => {
   
     try {
       // Only 'admin' can unassign
-      if (req.user.role !== 'admin') {
+      if (req.user.roleType !== 'admin') {
         console.log('⛔ Unassign failed: not admin');
         return res.status(403).json({ message: 'Only admin can unassign clients' });
       }
