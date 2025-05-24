@@ -236,7 +236,7 @@ const Client = () => {
           </div>
           <div className="posts-actions">
             <div className="icon-row">
-              <FaSyncAlt className="refresh-icon" title="Refresh Data" onclick={handleRefresh} id="client"/>
+              <FaSyncAlt className="refresh-icon" title="Refresh Data" onClick={handleRefresh} id="client"/>
               <div>
                 {["Facebook", "Instagram", "Twitter", "LinkedIn"].map((platform) => (
                   <button
