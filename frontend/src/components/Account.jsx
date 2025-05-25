@@ -262,8 +262,8 @@ const Accounts = () => {
             setEmail={setEmail}
             password={password}
             setPassword={setPassword}
-            role={roleType}
-            setRole={setRoleType}
+            roleType={roleType}
+            setRoleType={setRoleType}
             facebookClients={facebookClients}
             setFacebookClients={setFacebookClients}
             instagramClients={instagramClients}
