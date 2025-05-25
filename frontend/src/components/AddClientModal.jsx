@@ -32,6 +32,9 @@ const AddClientModal = ({
     },
   });
 
+  const [allUsers, setAllUsers] = useState([]);
+  const [assignedAdmins, setAssignedAdmins] = useState("");
+
 //prefill form fields when editing an existing client
   useEffect(() => {
     if (clientData) {
@@ -54,6 +57,19 @@ const AddClientModal = ({
       setSocialMediaAccounts(updated);
     }
   }, [clientData]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/users/simple');
+        const data = await res.json();
+        setAllUsers(data);
+      } catch (err) {
+        console.error('Failed to fetch users:', err);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const handleInputChange = (platform, field, value) => {
     setSocialMediaAccounts((prev) => ({
@@ -109,12 +125,11 @@ const AddClientModal = ({
           return { platform };
       }
     });
-    
-    
   
     onSubmit({
       companyName,
       companyDetail,
+      assignedAdmins,
       socialAccounts,
     });
   };
@@ -161,7 +176,6 @@ const AddClientModal = ({
             </label>
           </>
         )}
-
 
         {socialMedia === "Twitter" && (
           <>
@@ -226,18 +240,20 @@ const AddClientModal = ({
           </>
         )}
 
-
-
-
-          {clientData && clientData._id && (
-            <button
-              type="button"
-              className="create-post-btn"
-              style={{ backgroundColor: "#6b46c1", marginTop: "10px" }}
-            >
-              Open Social Media Dashboard
-            </button>
-          )}
+        <label>
+          Assign to User:
+          <select
+            value={assignedAdmins}
+            onChange={(e) => setAssignedAdmins(e.target.value)}
+          >
+            <option value="">-- Select a User --</option>
+            {allUsers.map((user) => (
+              <option key={user._id} value={user._id}>
+                {user.username} ({user.email})
+              </option>
+            ))}
+          </select>
+        </label>
 
         <input className="create-post-btn" type="submit" value={clientData ? "Update" : "Save"} />
       </form>

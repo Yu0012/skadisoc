@@ -326,7 +326,8 @@ app.get('/auth/twitter/callback',
           appSecret: process.env.TWITTER_CONSUMER_SECRET,
           accessToken: twitterProfile.accessToken || "",  // Optional
           accessTokenSecret: twitterProfile.tokenSecret || "", // Optional
-          refreshToken: req.query.oauth_verifier || "" // Optional
+          refreshToken: req.query.oauth_verifier || "", // Optional
+          bearerToken: twitterProfile._json?.access_token || "", // Optional
         },
         { upsert: true, new: true }
       );

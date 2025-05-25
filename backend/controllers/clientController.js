@@ -1,8 +1,8 @@
-const FacebookClient = require('../models/FacebookClient');
-const InstagramClient = require('../models/InstagramClient');
-const TwitterClient = require('../models/TwitterClient');
 const Client = require('../models/Client');
 const User = require('../models/User');
+const FacebookClient = require('../models/FacebookClientSchema');
+const InstagramClient = require('../models/InstagramClientSchema');
+const TwitterClient = require('../models/TwitterClientSchema');
 
 // CREATE Client (Admin only)
 exports.createClient = async (req, res) => {
@@ -26,41 +26,25 @@ exports.createClient = async (req, res) => {
 
 // GET All Clients (Admin see all, Editor see assigned only)
 exports.getClients = async (req, res) => {
-  try {
-    console.log('🟢 Fetching clients');
+    try {
+        console.log('🟢 Fetching clients');
 
-    if (req.user.roleType === 'admin') {
-      // ✅ Load full user document
-      const user = await User.findById(req.user._id);
+        let clients;
+        if (req.user.role === 'admin') {
+            clients = await Client.find().populate('assignedAdmins', 'username email');
+        } else if (req.user.role === 'editor') {
+            clients = await Client.find({ assignedAdmins: req.user._id }).populate('assignedAdmins', 'username email');
+        } else {
+            console.log('⛔ Fetch client failed: viewer or no permission');
+            return res.status(403).json({ message: 'Permission denied' });
+        }
 
-      const [facebookClients, instagramClients, twitterClients] = await Promise.all([
-        FacebookClient.find({ _id: { $in: user.facebookClients } }),
-        InstagramClient.find({ _id: { $in: user.instagramClients } }),
-        TwitterClient.find({ _id: { $in: user.twitterClients } }),
-      ]);
-
-      return res.json({ facebookClients, instagramClients, twitterClients });
+        res.json(clients);
+    } catch (err) {
+        console.error('❌ Error fetching clients:', err);
+        res.status(500).json({ message: 'Error fetching clients' });
     }
-
-    if (req.user.roleType === 'superadmin') {
-      // Superadmin can see all
-      const [facebookClients, instagramClients, twitterClients] = await Promise.all([
-        FacebookClient.find(),
-        InstagramClient.find(),
-        TwitterClient.find(),
-      ]);
-
-      return res.json({ facebookClients, instagramClients, twitterClients });
-    }
-
-    return res.status(403).json({ message: 'Permission denied' });
-
-  } catch (err) {
-    console.error('❌ Error fetching clients:', err);
-    res.status(500).json({ message: 'Error fetching clients' });
-  }
 };
-
 
 // UPDATE Client (Admin only)
 exports.updateClient = async (req, res) => {

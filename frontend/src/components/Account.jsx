@@ -24,13 +24,13 @@ const Accounts = () => {
   // Account details 
   const [username, setName] = useState("");
   const [email, setEmail] = useState("");
+  // Account.jsx (top with others)
+  const [role, setRole] = useState("viewer");
   const [roleType, setRoleType] = useState("admin");
   const [password, setPassword] = useState("");
   const [facebookClients, setFacebookClients] = useState([]);
   const [instagramClients, setInstagramClients] = useState([]);
   const [twitterClients, setTwitterClients] = useState([]);
-
-  const [assignedClients, setAssignedClients] = useState([]);
 
 
   //Edit & Delete Dropdown
@@ -130,7 +130,7 @@ const Accounts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    const accountData = {username,email , password, roleType, facebookClients, instagramClients, twitterClients, assignedClients};
+    const accountData = {username,email , password, role, roleType, facebookClients, instagramClients, twitterClients,};
     const isEditing = !!editAccount;
   
     try {
@@ -171,6 +171,9 @@ const Accounts = () => {
       setCreateUserDropdown(false);
       setName("");
       setPassword("");
+      setFacebookClients([]);
+      setInstagramClients([]);
+      setTwitterClients([]);
     } catch (err) {
       console.error("Account save error:", err);
       alert("Failed to save account.");
@@ -259,16 +262,16 @@ const Accounts = () => {
             setEmail={setEmail}
             password={password}
             setPassword={setPassword}
-            role={roleType}
-            setRole={setRoleType}
+            role={role}
+            setRole={setRole}
+            roleType={roleType}
+            setRoleType={setRoleType}
             facebookClients={facebookClients}
             setFacebookClients={setFacebookClients}
             instagramClients={instagramClients}
             setInstagramClients={setInstagramClients}
             twitterClients={twitterClients}
             setTwitterClients={setTwitterClients}
-            assignedClients={assignedClients}
-            setAssignedClients={setAssignedClients}
             onClose={toggleCreateUserDropdown}
             onSubmit={handleSubmit}
             isEditing={!!editAccount}
@@ -294,10 +297,9 @@ const Accounts = () => {
               <td>{account.username}</td>
               <td>{account.email}</td>
               <td>{account.roleType}</td>
-              <td>{Array.isArray(account.assignedClients) ? account.assignedClients.join(', ') : account.assignedClients}</td>
+              <td>{Array.isArray(account.facebookClients) ? account.facebookClients.join(', ') : account.facebookClients}</td>
               <td>
               <FaEllipsisV className="popup-icon" onClick={(e) => menuDropdown(e, account._id)} />
-
                 {accountMenuDropdown === account._id &&
                   createPortal(
                     <div

@@ -8,6 +8,7 @@ const InstagramClientSchema = new mongoose.Schema({
   accountType: { type: String }, // e.g., BUSINESS or CREATOR
   expiresAt: { type: Date },
   permissions: [String]
+  // assignedAdmins: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
 
 module.exports = mongoose.model('InstagramClient', InstagramClientSchema);

@@ -10,6 +10,8 @@ const TwitterClientSchema = new mongoose.Schema({
   accessTokenSecret: { type: String, required: true }, // Access token secret
   refreshToken: { type: String },                     // Optional
   expiresAt: { type: Date },                          // Optional
+  bearerToken: { type: String, required: true }, // Bearer token for API access
+  //assignedAdmins: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
 
 module.exports = mongoose.model('TwitterClient', TwitterClientSchema);
