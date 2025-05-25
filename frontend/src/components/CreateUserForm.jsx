@@ -49,6 +49,15 @@ const CreateUserForm = ({
         <label>Email: <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
         <label>Password: <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required /></label>
         <label>Role Type:
+          <select value={role} onChange={(e) => setRole(e.target.value)} required>
+            <option value="">Select Role</option>
+            <option value="admin">Admin</option>
+            <option value="editor">Editor</option>
+            <option value="viewer">Viewer</option>
+          </select>
+        </label>
+        <label>Assigned Clients:</label>
+        <label>Role Type:
           <select value={roleType} onChange={(e) => setRoleType(e.target.value)} required>
             <option value="">Select Role Type</option>
             <option value="superadmin">Super Admin</option>

@@ -24,6 +24,8 @@ const Accounts = () => {
   // Account details 
   const [username, setName] = useState("");
   const [email, setEmail] = useState("");
+  // Account.jsx (top with others)
+  const [role, setRole] = useState("viewer");
   const [roleType, setRoleType] = useState("admin");
   const [password, setPassword] = useState("");
   const [facebookClients, setFacebookClients] = useState([]);
@@ -130,7 +132,7 @@ const Accounts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    const accountData = {username,email , password, roleType, facebookClients, instagramClients, twitterClients,};
+    const accountData = {username,email , password, role, roleType, facebookClients, instagramClients, twitterClients,};
     const isEditing = !!editAccount;
   
     try {
@@ -262,6 +264,8 @@ const Accounts = () => {
             setEmail={setEmail}
             password={password}
             setPassword={setPassword}
+            role={role}
+            setRole={setRole}
             roleType={roleType}
             setRoleType={setRoleType}
             facebookClients={facebookClients}
