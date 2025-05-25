@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const tweetId = '1925523599651479862'; // e.g., 1645348701728940032
-const bearerToken = 'AAAAAAAAAAAAAAAAAAAAAEZS0AEAAAAAXP%2B5lmszjN0L4dQJ1Gs6PgP4Uhs%3Daxs6HBrTs0plh4QlVostOymp1jEHGDGcCDaTSLdK8MUrbWXHZ'; // Paste your real token here
+const bearerToken = 'AAAAAAAAAAAAAAAAAAAAAEZS0AEAAAAAxcxLrFdG%2BzY%2FAFpFw9WHULpwgDY%3DUc4Jt1xUsJWAlQ9NSTqHppERWxsyIjOcVY8tv7VBWQt9f1hK9A'; // Paste your real token here
 
 const tweetStatsUrl = `https://api.twitter.com/2/tweets/${tweetId}?tweet.fields=public_metrics`;
 const repliesUrl = `https://api.twitter.com/2/tweets/search/recent?query=conversation_id:${tweetId}&tweet.fields=author_id,text`;
@@ -50,10 +50,45 @@ async function fetchReplies() {
   }
 }
 
+// Wrap fetch functions with retry on 429 errors
+async function safeFetchTweetStats(tweetId) {
+  try {
+    await fetchTweetStats(tweetId);
+  } catch (error) {
+    if (error.response?.status === 429) {
+      const resetTime = error.response.headers['x-rate-limit-reset'];
+      const waitTime = resetTime * 1000 - Date.now();
+      console.warn(`⚠️ Rate limited. Retrying in ${Math.ceil(waitTime / 1000)} seconds...`);
+      await delay(waitTime);
+      return safeFetchTweetStats(tweetId);
+    } else {
+      console.error("❌ Error fetching tweet stats:", error.response?.data || error.message);
+    }
+  }
+}
+
+async function safeFetchReplies(tweetId) {
+  try {
+    await fetchReplies(tweetId);
+  } catch (error) {
+    if (error.response?.status === 429) {
+      const resetTime = error.response.headers['x-rate-limit-reset'];
+      const waitTime = resetTime * 1000 - Date.now();
+      console.warn(`⚠️ Rate limited. Retrying in ${Math.ceil(waitTime / 1000)} seconds...`);
+      await delay(waitTime);
+      return safeFetchReplies(tweetId);
+    } else {
+      console.error("❌ Error fetching replies:", error.response?.data || error.message);
+    }
+  }
+}
+
 async function main() {
   await fetchTweetStats();
   await delay(2000); // 🔁 Add delay between requests (2 seconds)
   await fetchReplies();
+  // await safeFetchTweetStats(tweetId);
+  // await safeFetchReplies(tweetId);
 }
 
 main();
