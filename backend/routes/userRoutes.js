@@ -51,5 +51,14 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+router.get('/simple', async (req, res) => {
+  try {
+    const users = await User.find({}, 'username email _id');
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+
 
 module.exports = router;

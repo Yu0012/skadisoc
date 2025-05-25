@@ -151,9 +151,22 @@ const Client = () => {
   // Save client data (both create and update)
   const handleSaveClient = async (clientData) => {
     try {
-      const url = editClient
-        ? `http://localhost:5000/api/clients/${editClient._id}`
-        : "http://localhost:5000/api/clients";
+      let baseUrl = "";
+      switch (activePlatform) {
+        case "Facebook":
+          baseUrl = "http://localhost:5000/api/facebook-clients";
+          break;
+        case "Instagram":
+          baseUrl = "http://localhost:5000/api/instagram-clients";
+          break;
+        case "Twitter":
+          baseUrl = "http://localhost:5000/api/twitter-clients";
+          break;
+        default:
+          throw new Error("Unsupported platform");
+      }
+
+      const url = editClient ? `${baseUrl}/${editClient._id}` : baseUrl;
       const method = editClient ? "PUT" : "POST";
 
       const res = await fetch(url, {
@@ -163,16 +176,16 @@ const Client = () => {
       });
 
       if (!res.ok) throw new Error("Save failed");
+
       const result = await res.json();
 
-      // Update clients list
-      if (editClient) {
-        setClients((prev) =>
-          prev.map((c) => (c._id === editClient._id ? result.client : c))
-        );
-      } else {
-        setClients((prev) => [...prev, result.client]);
-      }
+      // 🔄 Recommended: re-fetch full list instead of local patch
+      const fetchClients = async () => {
+        const res = await fetch(baseUrl);
+        const data = await res.json();
+        setClients(data);
+      };
+      await fetchClients();
 
       setShowClientModal(false);
       setEditClient(null);

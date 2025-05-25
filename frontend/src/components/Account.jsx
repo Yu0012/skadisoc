@@ -32,8 +32,6 @@ const Accounts = () => {
   const [instagramClients, setInstagramClients] = useState([]);
   const [twitterClients, setTwitterClients] = useState([]);
 
-  const [assignedClients, setAssignedClients] = useState([]);
-
 
   //Edit & Delete Dropdown
   const [accountMenuDropdown, setAccountMenuDropdown] = useState(null);
@@ -274,8 +272,6 @@ const Accounts = () => {
             setInstagramClients={setInstagramClients}
             twitterClients={twitterClients}
             setTwitterClients={setTwitterClients}
-            assignedClients={assignedClients}
-            setAssignedClients={setAssignedClients}
             onClose={toggleCreateUserDropdown}
             onSubmit={handleSubmit}
             isEditing={!!editAccount}

@@ -64,6 +64,7 @@ const CreateUserForm = ({
             <option value="admin">Admin</option>
           </select>
         </label>
+        <label>Permissions</label>
         <label>Assigned Clients:</label>
         <div className="platform-navbar">
           {["facebook", "instagram", "twitter"].map((platform) => (

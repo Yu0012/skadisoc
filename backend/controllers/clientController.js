@@ -1,5 +1,8 @@
 const Client = require('../models/Client');
 const User = require('../models/User');
+const FacebookClient = require('../models/FacebookClientSchema');
+const InstagramClient = require('../models/InstagramClientSchema');
+const TwitterClient = require('../models/TwitterClientSchema');
 
 // CREATE Client (Admin only)
 exports.createClient = async (req, res) => {
