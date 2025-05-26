@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require("mongoose");
 const FacebookClient = require('../models/FacebookClientSchema');
 
 router.get('/', async (req, res) => {
@@ -25,6 +26,7 @@ router.get("/with-posts", async (req, res) => {
   }
 });
 
+// Dashboard fetch
 router.get('/by-client/:clientId', async (req, res) => {
   try {
     const fbClient = await FacebookClient.findOne({ _id: req.params.clientId });
@@ -36,4 +38,43 @@ router.get('/by-client/:clientId', async (req, res) => {
   }
 });
 
+// Client editing fetch
+router.get('/client/:clientId', async (req, res) => {
+  try {
+    const fbClient = await FacebookClient.findOne({ _id: req.params.clientId });
+    if (!fbClient) return res.status(404).json({ error: "Client not found" });
+
+    res.json(fbClient);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Edit client
+router.put('/:id', async (req, res) => {
+  try {
+    const clientId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(clientId)) {
+      return res.status(400).json({ error: "Invalid client ID format" });
+    }
+
+    console.log("🔥 Incoming PUT payload:", req.body);
+
+    const updated = await FacebookClient.findByIdAndUpdate(
+      clientId,
+      req.body,
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ error: "Client not found" });
+    }
+
+    res.json({ message: "Client updated", client: updated });
+  } catch (err) {
+    console.error("🔥 PUT error:", err);
+    res.status(500).json({ error: err.message || "Update failed" });
+  }
+});
 module.exports = router;

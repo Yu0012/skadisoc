@@ -34,19 +34,6 @@ const Client = () => {
   const [clientMenuDropdown, setClientMenuDropdown] = useState(null);
   const [clientMenuPosition, setClientMenuPosition] = useState({ top: 0, left: 0 });
 
-  // State for social media account credentials
-  const [socialMediaAccounts, setSocialMediaAccounts] = useState({
-    Facebook: { companyToken: "", pageId: "" },
-    Twitter: {
-      apiKey: "",
-      apiKeySecret: "",
-      accessToken: "",
-      accessTokenSecret: ""
-    },
-    LinkedIn: { companyToken: "", pageId: "" },
-    Instagram: { companyToken: "", pageId: "" },
-  });
-
   useEffect(() => {
     const fetchClients = async () => {
       let url = "";
@@ -138,11 +125,35 @@ const Client = () => {
   };
 
   // Open modal to edit existing client
-  const handleEditClient = (client) => {
-    setEditClient(client);
-    setShowClientModal(true);
-    setPopupOpen(null);
-    setClientMenuDropdown(null);
+  const handleEditClient = async (client) => {
+    try {
+      let baseUrl = "";
+      switch (activePlatform) {
+        case "Facebook":
+          baseUrl = "http://localhost:5000/api/facebook-clients";
+          break;
+        case "Instagram":
+          baseUrl = "http://localhost:5000/api/instagram-clients";
+          break;
+        case "Twitter":
+          baseUrl = "http://localhost:5000/api/twitter-clients";
+          break;
+        default:
+          return;
+      }
+
+      const res = await fetch(`${baseUrl}/client/${client._id}`);
+      const fullClient = await res.json();
+
+      if (!res.ok || !fullClient._id) throw new Error("Invalid client data");
+
+      setEditClient(fullClient);
+      setShowClientModal(true);
+      setPopupOpen(null);
+      setClientMenuDropdown(null);
+    } catch (err) {
+      console.error("Error loading full client data:", err);
+    }
   };
 
    //handles for ui inputs
@@ -166,7 +177,10 @@ const Client = () => {
           throw new Error("Unsupported platform");
       }
 
-      const url = editClient ? `${baseUrl}/${editClient._id}` : baseUrl;
+      const url = editClient ? `${baseUrl}/${clientData._id}` : baseUrl;
+      console.log("🧠 Saving client to:", url);
+      console.log("🧠 Payload:", clientData);
+
       const method = editClient ? "PUT" : "POST";
 
       const res = await fetch(url, {
@@ -302,8 +316,6 @@ const Client = () => {
           }}
           onSubmit={handleSaveClient}
           clientData={editClient}
-          socialMediaAccounts={socialMediaAccounts}
-          setSocialMediaAccounts={setSocialMediaAccounts}
         />
       )}
     </div>

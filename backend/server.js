@@ -33,7 +33,7 @@ app.use(express.json()); // Use built-in JSON parsing
 app.use(express.static('uploads')); // Serve uploaded files
 app.use(passport.initialize()); // Initialize passport
 
-//Controllers 
+//route handlers 
 app.use('/api/facebook-clients', facebookClientsRoute);
 app.use('/api/instagram-clients', instagramClientsRoute);
 app.use('/api/twitter-clients', twitterClientsRoute);

@@ -10,54 +10,34 @@ const AddClientModal = ({
   const modalRef = useRef(null);
   const [companyName, setCompanyName] = useState("");
   const [companyDetail, setCompanyDetail] = useState("");
-  const [socialMedia, setSocialMedia] = useState("Facebook");
-  const [socialMediaAccounts, setSocialMediaAccounts] = useState({
-    Facebook: { 
-      companyToken: "", 
-      pageId: "" 
-    },
-    Twitter: {
-      apiKey: "",
-      apiKeySecret: "",
-      accessToken: "",
-      accessTokenSecret: "",
-    },
-    LinkedIn: {
-      accessToken: "",
-      urn: ""
-    },
-    Instagram: { 
-      companyToken: "", 
-      pageId: "" 
-    },
-  });
 
   const [allUsers, setAllUsers] = useState([]);
-  const [assignedAdmins, setAssignedAdmins] = useState("");
+  const [assignedAdmins, setAssignedAdmins] = useState([]);
 
 //prefill form fields when editing an existing client
   useEffect(() => {
     if (clientData) {
-      setCompanyName(clientData.companyName || "");
-      setCompanyDetail(clientData.companyDetail || "");
+      const name = clientData.pageName || clientData.username || "";
+      const detail = clientData.pageId
+        ? `Page ID: ${clientData.pageId}`
+        : clientData.instagramBusinessId
+          ? `Business ID: ${clientData.instagramBusinessId}`
+            : clientData.name
+            ? `Twitter user: ${clientData.name}`
+            : "";
 
-      //default to the first social account if available
-      const updated = { ...socialMediaAccounts };
-      clientData.socialAccounts?.forEach((acc) => {
-        updated[acc.platform] = {
-          companyToken: acc.companyToken || "",
-          pageId: acc.pageId || "",
-          apiKey: acc.apiKey || "",
-          apiKeySecret: acc.apiKeySecret || "",
-          accessToken: acc.accessToken || "",
-          accessTokenSecret: acc.accessTokenSecret || "",
-          urn: acc.urn || ""
-        };
-      });
-      setSocialMediaAccounts(updated);
+      setCompanyName(name);
+      setCompanyDetail(detail);
+      setAssignedAdmins(
+        Array.isArray(clientData.assignedAdmins)
+          ? clientData.assignedAdmins.map(a => (typeof a === 'object' ? a._id : a))
+          : []
+      );
     }
   }, [clientData]);
 
+  // Fetch all users for the dropdown
+  // This will be used to assign admins to the client
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -71,70 +51,17 @@ const AddClientModal = ({
     fetchUsers();
   }, []);
 
-  const handleInputChange = (platform, field, value) => {
-    setSocialMediaAccounts((prev) => ({
-      ...prev,
-      [platform]: {
-        ...prev[platform],
-        [field]: value
-      }
-    }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-  
-    const socialAccounts = Object.entries(socialMediaAccounts)
-    .filter(([platform, data]) => {
-      switch (platform) {
-        case "Twitter":
-          return data.apiKey || data.apiKeySecret || data.accessToken || data.accessTokenSecret;
-        case "Facebook":
-        case "Instagram":
-          return data.companyToken || data.pageId;
-        case "LinkedIn":
-          return data.accessToken || data.urn;
-        default:
-          return false;
-      }
-    })
-    .map(([platform, data]) => {
-      switch (platform) {
-        case "Twitter":
-          return {
-            platform,
-            apiKey: data.apiKey,
-            apiKeySecret: data.apiKeySecret,
-            accessToken: data.accessToken,
-            accessTokenSecret: data.accessTokenSecret,
-          };
-        case "Facebook":
-        case "Instagram":
-          return {
-            platform,
-            companyToken: data.companyToken,
-            pageId: data.pageId
-          };
-        case "LinkedIn":
-          return {
-            platform,
-            accessToken: data.accessToken,
-            urn: data.urn,
-          };
-        default:
-          return { platform };
-      }
-    });
-  
+
     onSubmit({
-      companyName,
-      companyDetail,
-      assignedAdmins,
-      socialAccounts,
+      _id: clientData?._id, // ensure this is passed!
+      pageName: companyName,
+      pageId: companyDetail.replace("Page ID: ", "").trim(),
+      assignedAdmins: assignedAdmins.length ? assignedAdmins : [],
     });
   };
   
-
   return createPortal(
     <div className="newUserMenu" ref={modalRef}>
       <ImCross className="exitButton" onClick={onClose} />
@@ -151,109 +78,27 @@ const AddClientModal = ({
           <input type="text" value={companyDetail} onChange={(e) => setCompanyDetail(e.target.value)} />
         </label>
 
-        <select className="dropdown" value={socialMedia} onChange={(e) => setSocialMedia(e.target.value)}>
-          <option value="Facebook">Facebook</option>
-          <option value="Twitter">Twitter</option>
-          <option value="LinkedIn">LinkedIn</option>
-          <option value="Instagram">Instagram</option>
-        </select>
-
-        {(socialMedia === "Facebook" || socialMedia === "Instagram") && (
-          <>
-            <label>Company Token
+        <label>Assign to Users:</label>
+        <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px', maxHeight: '150px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px', borderRadius: '4px' }}>
+          {allUsers.map((user) => (
+            <label key={user._id} style={{ width: '30%' }}>
               <input
-                type="text"
-                value={socialMediaAccounts[socialMedia]?.companyToken || ""}
-                onChange={(e) => handleInputChange(socialMedia, "companyToken", e.target.value)}
+                type="checkbox"
+                value={user._id}
+                checked={assignedAdmins.includes(user._id)}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setAssignedAdmins(prev =>
+                    checked
+                      ? [...prev, user._id]
+                      : prev.filter(id => id !== user._id)
+                  );
+                }}
               />
+              {user.username} ({user.email})
             </label>
-            <label>Page ID
-              <input
-                type="text"
-                value={socialMediaAccounts[socialMedia]?.pageId || ""}
-                onChange={(e) => handleInputChange(socialMedia, "pageId", e.target.value)}
-              />
-            </label>
-          </>
-        )}
-
-        {socialMedia === "Twitter" && (
-          <>
-            <label>
-              API Key
-              <input
-                type="text"
-                value={socialMediaAccounts.Twitter?.apiKey || ""}
-                onChange={(e) =>
-                  handleInputChange("Twitter", "apiKey", e.target.value)
-                }
-              />
-            </label>
-            <label>
-              API Key Secret
-              <input
-                type="text"
-                value={socialMediaAccounts.Twitter?.apiKeySecret || ""}
-                onChange={(e) =>
-                  handleInputChange("Twitter", "apiKeySecret", e.target.value)
-                }
-              />
-            </label>
-            <label>
-              Access Token
-              <input
-                type="text"
-                value={socialMediaAccounts.Twitter?.accessToken || ""}
-                onChange={(e) =>
-                  handleInputChange("Twitter", "accessToken", e.target.value)
-                }
-              />
-            </label>
-            <label>
-              Access Token Secret
-              <input
-                type="text"
-                value={socialMediaAccounts.Twitter?.accessTokenSecret || ""}
-                onChange={(e) =>
-                  handleInputChange("Twitter", "accessTokenSecret", e.target.value)
-                }
-              />
-            </label>
-          </>
-        )}
-        {socialMedia === "LinkedIn" && (
-          <>
-            <label>Access Token
-              <input
-                type="text"
-                value={socialMediaAccounts.LinkedIn?.accessToken || ""}
-                onChange={(e) => handleInputChange("LinkedIn", "accessToken", e.target.value)}
-              />
-            </label>
-            <label>URN
-              <input
-                type="text"
-                value={socialMediaAccounts.LinkedIn?.urn || ""}
-                onChange={(e) => handleInputChange("LinkedIn", "urn", e.target.value)}
-              />
-            </label>
-          </>
-        )}
-
-        <label>
-          Assign to User:
-          <select
-            value={assignedAdmins}
-            onChange={(e) => setAssignedAdmins(e.target.value)}
-          >
-            <option value="">-- Select a User --</option>
-            {allUsers.map((user) => (
-              <option key={user._id} value={user._id}>
-                {user.username} ({user.email})
-              </option>
-            ))}
-          </select>
-        </label>
+          ))}
+        </div>
 
         <input className="create-post-btn" type="submit" value={clientData ? "Update" : "Save"} />
       </form>
