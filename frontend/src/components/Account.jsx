@@ -125,7 +125,6 @@ const Accounts = () => {
     setCreateUserDropdown(!createUserDropdown);
   };
 
-
   // Save new account to MongoDB
   const handleSubmit = async (e) => {
     e.preventDefault();
