@@ -1513,39 +1513,6 @@ input::-webkit-inner-spin-button {
   color: var(--menu-color);
 }
 
-.form-two-column {
-  display: flex;
-  gap: 40px;
-}
-
-.form-left-column {
-  flex: 1;
-  min-width: 300px;
-}
-
-.form-right-column {
-  flex: 1;
-  min-width: 300px;
-}
-
-.assign-users-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  max-height: 150px;
-  overflow-y: auto;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 4px;
-}
-
-.assign-users-container label {
-  width: 30%;
-  display: flex;
-  align-items: center;
-  margin-bottom: 6px;
-}
-
 .form-group input{
   background-color: var(--textarea);
   color: var(--textarea-text);

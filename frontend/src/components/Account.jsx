@@ -31,6 +31,8 @@ const Accounts = () => {
   const [facebookClients, setFacebookClients] = useState([]);
   const [instagramClients, setInstagramClients] = useState([]);
   const [twitterClients, setTwitterClients] = useState([]);
+  const [menus, setMenus] = useState([]);
+  const [actions, setActions] = useState([]);
 
 
   //Edit & Delete Dropdown
@@ -90,6 +92,25 @@ const Accounts = () => {
     };
   }, [accountMenuDropdown]);
 
+  const handleEditAccount = (account) => {
+    setEditAccount(account);
+    setName(account.username || "");
+    setEmail(account.email || "");
+    setPassword(""); // leave empty, password reset optional
+
+    setRole(account.role || "viewer");
+    setRoleType(account.roleType || "admin");
+
+    setFacebookClients(account.facebookClients || []);
+    setInstagramClients(account.instagramClients || []);
+    setTwitterClients(account.twitterClients || []);
+    setMenus(account.permissions?.menus || []);
+    setActions(account.permissions?.actions || []);
+
+    setCreateUserDropdown(true); // Open the modal
+    setAccountMenuDropdown(null); // Close the dropdown
+  };
+
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this user?");
     if (!confirmDelete) return;
@@ -122,14 +143,25 @@ const Accounts = () => {
 
   // Toggle "Add User" popup
   const toggleCreateUserDropdown = () => {
-    setCreateUserDropdown(!createUserDropdown);
+    setEditAccount(null); // 🔥 Clear previous edit data
+    setName("");
+    setEmail("");
+    setPassword("");
+    setRole("viewer");
+    setRoleType("admin");
+
+    setFacebookClients([]);
+    setInstagramClients([]);
+    setTwitterClients([]);
+
+    setCreateUserDropdown(!createUserDropdown); //Close the popup
   };
 
   // Save new account to MongoDB
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    const accountData = {username,email , password, role, roleType, facebookClients, instagramClients, twitterClients,};
+    const accountData = {username,email , password, role, roleType, facebookClients, instagramClients, twitterClients, permissions: { menus, actions }};
     const isEditing = !!editAccount;
   
     try {
@@ -163,16 +195,16 @@ const Accounts = () => {
       }
     };
 
-      fetchAccounts();
+    fetchAccounts();
 
-      // Reset state
-      setEditAccount(null);
-      setCreateUserDropdown(false);
-      setName("");
-      setPassword("");
-      setFacebookClients([]);
-      setInstagramClients([]);
-      setTwitterClients([]);
+    // Reset state
+    setEditAccount(null);
+    setCreateUserDropdown(false);
+    setName("");
+    setPassword("");
+    setFacebookClients([]);
+    setInstagramClients([]);
+    setTwitterClients([]);
     } catch (err) {
       console.error("Account save error:", err);
       alert("Failed to save account.");
@@ -271,9 +303,14 @@ const Accounts = () => {
             setInstagramClients={setInstagramClients}
             twitterClients={twitterClients}
             setTwitterClients={setTwitterClients}
+            menus={menus}
+            setMenus={setMenus}
+            actions={actions}
+            setActions={setActions}
             onClose={toggleCreateUserDropdown}
             onSubmit={handleSubmit}
             isEditing={!!editAccount}
+            setEditAccount={setEditAccount}
           />,
           document.body
         )}

@@ -9,16 +9,18 @@ const CreateUserForm = ({
   password, setPassword,
   role, setRole,
   roleType, setRoleType,
-  assignedClients, setAssignedClients,
   onClose,
   onSubmit,
   isEditing,
+  setEditAccount,
   setFacebookClients,
   setInstagramClients,
   setTwitterClients,
   facebookClients,
   instagramClients,
   twitterClients,
+  menus, setMenus,
+  actions, setActions,
 }) => {
   const [selectedPlatform, setSelectedPlatform] = useState("facebook");
   const [facebookOptions, setFacebookOptions] = useState([]);
@@ -44,6 +46,9 @@ const CreateUserForm = ({
     handlePlatformChange("facebook");
   }, []);
   
+  const allMenus = ["dashboard", "posts", "calendar", "account", "client"];
+  const allActions = ["create_user", "read_user", "update_user", "delete_user", "create_post", "read_post", "update_post", "delete_post", "assign_client", "approve_actions"];
+
   return (
     <div className="newUserMenu">
       <ImCross className="exitButton" onClick={onClose} />
@@ -64,7 +69,6 @@ const CreateUserForm = ({
                 <option value="viewer">Viewer</option>
               </select>
             </label>
-            <label>Assigned Clients:</label>
             <label>Role Type:
               <select value={roleType} onChange={(e) => setRoleType(e.target.value)} required>
                 <option value="">Select Role Type</option>
@@ -72,11 +76,65 @@ const CreateUserForm = ({
                 <option value="admin">Admin</option>
               </select>
             </label>
-            <label>Permissions</label>
           </div>
 
           {/* Right Column */}
           <div className="form-right-column">
+            <label>Menus:</label>
+            <div className="assign-users-container">
+              {allMenus.map((menu) => (
+                <label
+                  key={menu}
+                  style={{
+                    width: "30%",
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "6px",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    value={menu}
+                    checked={menus.includes(menu)}
+                    onChange={() =>
+                      setMenus(menus.includes(menu)
+                        ? menus.filter((m) => m !== menu)
+                        : [...menus, menu])
+                    }
+                    style={{ marginRight: "6px" }}
+                  />
+                  {menu}
+                </label>
+              ))}
+            </div>
+
+            <label>Actions:</label>
+            <div className="assign-users-container">
+              {allActions.map((action) => (
+                <label
+                  key={action}
+                  style={{
+                    width: "30%",
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "6px",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    value={action}
+                    checked={actions.includes(action)}
+                    onChange={() =>
+                      setActions(actions.includes(action)
+                        ? actions.filter((a) => a !== action)
+                        : [...actions, action])
+                    }
+                    style={{ marginRight: "6px" }}
+                  />
+                  {action}
+                </label>
+              ))}
+            </div>
             <label>Assigned Clients:</label>
               <div className="platform-navbar">
                 {["facebook", "instagram", "twitter"].map((platform) => (
