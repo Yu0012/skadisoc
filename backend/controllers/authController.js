@@ -5,7 +5,6 @@ const rolePermissions = require('../utils/rolePermissions');
 const roleTypePermissions = require('../utils/roleTypePermissions');
 const resolvePermissions = require('../utils/resolvePermissions');
 const crypto = require('crypto');
-const sendEmail = require('../utils/sendEmail');
 
 //LOGIN
 exports.login = async (req, res) => {
