@@ -4,6 +4,8 @@ const User = require('../models/User');
 const rolePermissions = require('../utils/rolePermissions');
 const roleTypePermissions = require('../utils/roleTypePermissions');
 const resolvePermissions = require('../utils/resolvePermissions');
+const crypto = require('crypto');
+const sendEmail = require('../utils/sendEmail');
 
 //LOGIN
 exports.login = async (req, res) => {
@@ -131,12 +133,36 @@ exports.updateUser = async (req, res) => {
   const updateData = req.body;
 
   try {
-    const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
-    if (!updatedUser) {
+    const existingUser = await User.findById(id);
+    if (!existingUser) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    // Detect role or roleType changes
+    const roleChanged = updateData.role && updateData.role !== existingUser.role;
+    const roleTypeChanged = updateData.roleType && updateData.roleType !== existingUser.roleType;
+
+    if (roleChanged || roleTypeChanged) {
+      // Update permissions based on new role and/or roleType
+      const newRole = updateData.role || existingUser.role;
+      const newRoleType = updateData.roleType || existingUser.roleType;
+
+      const updatedActions = rolePermissions[newRole]?.actions || [];
+      const updatedMenus = roleTypePermissions[newRoleType]?.menus || [];
+
+      updateData.permissions = {
+        actions: updatedActions,
+        menus: updatedMenus,
+      };
+
+      console.log(`🔁 Permissions updated due to ${roleChanged ? 'role' : ''}${roleChanged && roleTypeChanged ? ' and ' : ''}${roleTypeChanged ? 'roleType' : ''} change`);
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
+
     console.log('✅ User updated:', updatedUser.username);
     res.json({ message: 'User updated successfully', user: updatedUser });
+
     if (updateData.hasOwnProperty('isActive')) {
       console.log(`🔄 User ${updatedUser.username} activation status changed to: ${updateData.isActive}`);
     }
