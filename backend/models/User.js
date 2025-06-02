@@ -26,9 +26,10 @@ const userSchema = new mongoose.Schema({
     isActive: { type: Boolean, default: true },
     lastLogin: { type: Date },
     // assignedClients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Client' }]
-    facebookClients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'FacebookClient' }],
-    instagramClients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'InstagramClient' }],
-    twitterClients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TwitterClient' }],
+    assignedFacebookClients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'FacebookClient' }],
+    assignedInstagramClients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'InstagramClient' }],
+    assignedTwitterClients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TwitterClient' }],
+    assignedLinkedInClients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'LinkedInClient' }],
   }, { timestamps: true }); // Add createdAt and updatedAt automatically
 
 // Pre-save hook to handle Malaysia timezone
@@ -37,9 +38,6 @@ userSchema.pre('save', function(next) {
   this.updatedAt = toMalaysiaTime(now);
   if (!this.createdAt) {
       this.createdAt = toMalaysiaTime(now);
-  }
-  if (this.birthday) {
-      this.birthday = toMalaysiaTime(this.birthday);
   }
   if (this.lastLogin) {
       this.lastLogin = toMalaysiaTime(this.lastLogin);

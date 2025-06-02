@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { ImCross } from "react-icons/im";
+import axios from 'axios';
 import "./CreateUserForm.css";
-
+import rolePermissions from '../utils/rolePermissions';
+import roleTypePermissions from '../utils/roleTypePermissions';
 
 const CreateUserForm = ({
   username, setName,
@@ -10,23 +12,31 @@ const CreateUserForm = ({
   role, setRole,
   roleType, setRoleType,
   onClose,
-  onSubmit,
   isEditing,
-  setEditAccount,
   setFacebookClients,
   setInstagramClients,
   setTwitterClients,
   facebookClients,
   instagramClients,
   twitterClients,
-  menus, setMenus,
-  actions, setActions,
 }) => {
   const [selectedPlatform, setSelectedPlatform] = useState("facebook");
-  const [facebookOptions, setFacebookOptions] = useState([]);
-  const [instagramOptions, setInstagramOptions] = useState([]);
-  const [twitterOptions, setTwitterOptions] = useState([]);
   const [platformClients, setPlatformClients] = useState([]);
+  const [availableMenus, setAvailableMenus] = useState([]);
+  const [availableActions, setAvailableActions] = useState([]);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
+  // Update available menus and actions when role or roleType changes
+  useEffect(() => {
+    if (roleType) {
+      setAvailableMenus(roleTypePermissions[roleType]?.menus || []);
+    }
+    if (role) {
+      setAvailableActions(rolePermissions[role]?.actions || []);
+    }
+  }, [role, roleType]);
 
   const handlePlatformChange = async (platform) => {
     setSelectedPlatform(platform);
@@ -42,100 +52,156 @@ const CreateUserForm = ({
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+
+    // Validate password match
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Authentication token missing');
+      }
+
+      const response = await axios.post(
+        'http://localhost:5000/api/auth/register',
+        {
+          username,
+          email,
+          password,
+          role,
+          roleType
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      setSuccess('User created successfully!');
+      onClose(); // Close the form on success
+    } catch (err) {
+      console.error('Error creating user:', err);
+      setError(err.response?.data?.message || 'Failed to create user');
+    }
+  };
+
   useEffect(() => {
     handlePlatformChange("facebook");
   }, []);
-  
-  const allMenus = ["dashboard", "posts", "calendar", "account", "client"];
-  const allActions = ["create_user", "read_user", "update_user", "delete_user", "create_post", "read_post", "update_post", "delete_post", "assign_client", "approve_actions"];
 
   return (
     <div className="newUserMenu">
       <ImCross className="exitButton" onClick={onClose} />
-      <form className="form-group" onSubmit={onSubmit}>
+      <form className="form-group" onSubmit={handleSubmit}>
         <a className="form-title">{isEditing ? "Edit User" : "Create New User"}</a>
 
+        {error && <div className="error-message">{error}</div>}
+        {success && <div className="success-message">{success}</div>}
+
         <div className="form-two-column">
-           {/* Left Column */}
+          {/* Left Column */}
           <div className="form-left-column">
-            <label>Name: <input type="text" className="newAccountForm" value={username} onChange={(e) => setName(e.target.value)} required /></label>
-            <label>Email: <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
-            <label>Password: <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required /></label>
+            <label>Username: 
+              <input 
+                type="text" 
+                className="newAccountForm" 
+                value={username} 
+                onChange={(e) => setName(e.target.value)} 
+                required 
+              />
+            </label>
+            <label>Email: 
+              <input 
+                type="email" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+                required 
+              />
+            </label>
+            <label>Password: 
+              <input 
+                type="password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                required 
+              />
+            </label>
+            <label>Confirm Password: 
+              <input 
+                type="password" 
+                value={confirmPassword} 
+                onChange={(e) => setConfirmPassword(e.target.value)} 
+                required 
+              />
+            </label>
             <label>Role Type:
-              <select value={role} onChange={(e) => setRole(e.target.value)} required>
+              <select 
+                value={roleType} 
+                onChange={(e) => setRoleType(e.target.value)} 
+                required
+              >
+                <option value="">Select Role Type</option>
+                <option value="superadmin">Superadmin</option>
+                <option value="admin">Admin</option>
+                <option value="user">User</option>
+              </select>
+            </label>
+            <label>Role:
+              <select 
+                value={role} 
+                onChange={(e) => setRole(e.target.value)} 
+                required
+              >
                 <option value="">Select Role</option>
                 <option value="admin">Admin</option>
                 <option value="editor">Editor</option>
                 <option value="viewer">Viewer</option>
               </select>
             </label>
-            <label>Role Type:
-              <select value={roleType} onChange={(e) => setRoleType(e.target.value)} required>
-                <option value="">Select Role Type</option>
-                <option value="superadmin">Super Admin</option>
-                <option value="admin">Admin</option>
-              </select>
-            </label>
           </div>
 
-          {/* Right Column */}
+          {/* Right Column - Display only (not editable) */}
           <div className="form-right-column">
-            <label>Menus:</label>
-            <div className="assign-users-container">
-              {allMenus.map((menu) => (
-                <label
-                  key={menu}
-                  style={{
-                    width: "30%",
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "6px",
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    value={menu}
-                    checked={menus.includes(menu)}
-                    onChange={() =>
-                      setMenus(menus.includes(menu)
-                        ? menus.filter((m) => m !== menu)
-                        : [...menus, menu])
-                    }
-                    style={{ marginRight: "6px" }}
-                  />
-                  {menu}
-                </label>
-              ))}
+            <div className="permissions-display">
+              <h4>Assigned Permissions</h4>
+              
+              <div className="permission-section">
+                <h5>Menus (based on Role Type):</h5>
+                {availableMenus.length > 0 ? (
+                  <ul>
+                    {availableMenus.map(menu => (
+                      <li key={menu}>{menu}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No menus assigned</p>
+                )}
+              </div>
+              
+              <div className="permission-section">
+                <h5>Actions (based on Role):</h5>
+                {availableActions.length > 0 ? (
+                  <ul>
+                    {availableActions.map(action => (
+                      <li key={action}>{action}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No actions assigned</p>
+                )}
+              </div>
             </div>
 
-            <label>Actions:</label>
-            <div className="assign-users-container">
-              {allActions.map((action) => (
-                <label
-                  key={action}
-                  style={{
-                    width: "30%",
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "6px",
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    value={action}
-                    checked={actions.includes(action)}
-                    onChange={() =>
-                      setActions(actions.includes(action)
-                        ? actions.filter((a) => a !== action)
-                        : [...actions, action])
-                    }
-                    style={{ marginRight: "6px" }}
-                  />
-                  {action}
-                </label>
-              ))}
-            </div>
-            <label>Assigned Clients:</label>
+            {/* <div className="client-assignment">
+              <h4>Assigned Clients (Optional)</h4>
               <div className="platform-navbar">
                 {["facebook", "instagram", "twitter"].map((platform) => (
                   <button
@@ -150,10 +216,10 @@ const CreateUserForm = ({
               </div>
 
               {platformClients.length > 0 && (
-              <div className="client-checkboxes">
-                <label>Assign {selectedPlatform} Clients:</label>
-                <div className="assign-users-container" style={{display: 'flex', flexWrap: 'wrap', gap: '8px', maxHeight: '150px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px', borderRadius: '4px' }}>
-                  {platformClients.map((client) => {
+                <div className="client-checkboxes">
+                  <label>Assign {selectedPlatform} Clients:</label>
+                  <div className="assign-users-container">
+                    {platformClients.map((client) => {
                       const isChecked =
                         selectedPlatform === "facebook"
                           ? facebookClients.includes(client._id)
@@ -184,32 +250,28 @@ const CreateUserForm = ({
                       };
 
                       return (
-                        <label
-                          key={client._id}
-                          style={{
-                            width: "30%",
-                            display: "flex",
-                            alignItems: "center",
-                            marginBottom: "6px",
-                          }}
-                        >
+                        <label key={client._id}>
                           <input
                             type="checkbox"
-                            value={client._id}
                             checked={isChecked}
                             onChange={toggleClient}
-                            style={{ marginRight: "6px" }}
                           />
                           {client.companyName || client.username}
                         </label>
                       );
                     })}
-              </div>
-            </div>
-          )}
+                  </div>
+                </div>
+              )}
+            </div> */}
           </div>
         </div>
-        <input className="create-post-btn" type="submit" value="Save" style={{color: "white"}}/>
+        <input 
+          className="create-post-btn" 
+          type="submit" 
+          value="Save" 
+          style={{color: "white"}}
+        />
       </form>
     </div>
   );

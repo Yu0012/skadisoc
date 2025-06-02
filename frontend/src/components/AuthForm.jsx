@@ -107,18 +107,15 @@ const AuthForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const perms = await login(email, password);
-      setPermissions(perms);
-      alert('Login successful!');
-      console.log('PERMISSIONS:', perms); // Check if this is set
-
-
-    } catch (err) {
-      alert('Login failed: ' + err.message);
-    }
-  };
+  e.preventDefault();
+  try {
+    const { permissions } = await login(email, password);
+    setPermissions(permissions);
+    alert("Login Successfully!");
+  } catch (err) {
+    alert(err.message); // Now shows specific error messages
+  }
+};
   
   // 🔁 useEffect to navigate only after permissions are set
   useEffect(() => {

@@ -1,15 +1,15 @@
 const rolePermissions = {
-    admin: {
-      actions: ['create_post', 'delete_post', 'manage_users'],
-    },
-    editor: {
-      actions: ['create_post', 'edit_post'],
-    },
-    viewer: {
-      actions: ['view_post'],
-    },
-  };
-  
-  module.exports = rolePermissions;
+  admin: {
+    actions: ['create_user', 'read_user', 'update_user', 'delete_user', 'create_post', 'read_post', 'update_post', 'delete_post', 'assign_clients'],
+  },
+  editor: {
+    actions: ['create_post', 'read_post', 'update_post', 'delete_post'],
+  },
+  viewer: {
+    actions: ['read_post'],
+  },
+};
+
+module.exports = rolePermissions;
 
 //actions still not completed

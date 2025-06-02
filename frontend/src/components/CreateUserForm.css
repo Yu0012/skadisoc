@@ -52,3 +52,19 @@
   align-items: center;
   margin-bottom: 6px;
 }
+
+.error-message {
+  color: #ff0000;
+  padding: 10px;
+  margin-bottom: 15px;
+  background-color: #ffeeee;
+  border-radius: 4px;
+}
+
+.success-message {
+  color: #008000;
+  padding: 10px;
+  margin-bottom: 15px;
+  background-color: #eeffee;
+  border-radius: 4px;
+}
