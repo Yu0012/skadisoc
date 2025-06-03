@@ -170,7 +170,7 @@ const CreateUserForm = ({
               </div>
             </div>
 
-            {/* <div className="client-assignment">
+            { <div className="client-assignment">
               <h4>Assigned Clients (Optional)</h4>
               <div className="platform-navbar">
                 {["facebook", "instagram", "twitter"].map((platform) => (
@@ -233,7 +233,7 @@ const CreateUserForm = ({
                   </div>
                 </div>
               )}
-            </div> */}
+            </div> }
           </div>
         </div>
         <input 

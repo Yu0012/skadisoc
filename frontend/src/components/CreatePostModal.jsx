@@ -54,28 +54,22 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
   useEffect(() => {
     const fetchClients = async () => {
       if (!platform) return;
-  
-      const platformApiMap = {
-        Facebook: "facebook-clients",
-        Instagram: "instagram-clients",
-        Twitter: "twitter-clients",
-        LinkedIn: "linkedin-clients",
-      };
-  
-      const route = platformApiMap[platform];
-      if (!route) return;
-  
+
       try {
-        const response = await fetch(`http://localhost:5000/api/${route}`);
-        if (!response.ok) throw new Error("Failed to fetch platform clients");
-  
+        const response = await fetch(`http://localhost:5000/api/clients/${platform.toLowerCase()}/all`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch assigned clients");
         const data = await response.json();
-        setClients(data);
+        setClients(data.clients); // make sure this matches res.json({ clients }) in backend
       } catch (err) {
-        console.error(`❌ Error fetching ${platform} clients:`, err);
+        console.error(`❌ Error fetching assigned ${platform} clients:`, err);
       }
     };
-  
+
     fetchClients();
   }, [platform]);
 
@@ -119,13 +113,23 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     try {
       const response = await fetch(url, {
         method,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
         body: formData,
       });
   
       if (!response.ok) {
         throw new Error("Failed to submit post");
       }
-  
+
+      console.log("🚀 SUBMITTING:", {
+        client,
+        title,
+        content,
+        selectedPlatforms,
+      });
+
       const result = await response.json();
       alert(`Post ${isEditing ? "updated" : "created"} successfully!`);
       onSave?.(result.post || result); // pass post back to parent
@@ -276,8 +280,8 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                   >
                     <option value="">Select a Client</option>
                     {clients.map((c) => (
-                      <option key={c._id} value={c.companyName}>
-                        {c.companyName}
+                      <option key={c._id} value={c._id}>
+                        {c.companyName || c.pageName || c.username || c.name}
                       </option>
                     ))}
                   </select>
