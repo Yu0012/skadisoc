@@ -1008,6 +1008,40 @@ app.get('/auth/twitter/callback',
   }
 );
 
+// Step 1: Redirect to LinkedIn OAuth
+app.get("/auth/linkedin", (req, res) => {
+  const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.LINKEDIN_CLIENT_ID}&redirect_uri=http://localhost:5000/auth/linkedin/callback&scope=w_member_social&state=random123`;
+  res.redirect(linkedInAuthUrl);
+});
+
+// LinkedIn OAuth callback
+app.get("/auth/linkedin/callback", async (req, res) => {
+  const code = req.query.code;
+  if (!code) return res.send("Missing code");
+
+  try {
+    const tokenRes = await axios.post(
+      "https://www.linkedin.com/oauth/v2/accessToken",
+      qs.stringify({
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: "http://localhost:5000/auth/linkedin/callback",
+        client_id: process.env.LINKEDIN_CLIENT_ID,
+        client_secret: process.env.LINKEDIN_CLIENT_SECRET
+      }),
+      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+    );
+
+    const accessToken = tokenRes.data.access_token;
+    console.log("LinkedIn Access Token:", accessToken);
+    res.send(`Access Token: ${accessToken} \n Now you can store this and schedule posts.`);
+
+  } catch (error) {
+    console.error("❌ Error:", error.response?.data || error.message);
+    res.status(500).send("OAuth failed");
+  }
+});
+
 const refreshFacebookToken = async (client) => {
   try {
     const response = await axios.get('https://graph.facebook.com/v18.0/oauth/access_token', {

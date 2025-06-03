@@ -11,6 +11,10 @@ const handleTWTLogin = () => {
   window.location.href = "http://localhost:5000/auth/twitter"; // Redirect to backend auth route
 };
 
+const handleLinkedInLogin = () => {
+  window.location.href = "http://localhost:5000/auth/linkedin"; // Redirect to backend auth route
+};
+
 const SocialMediaDashboard = () => {
 
     return (
@@ -31,7 +35,7 @@ const SocialMediaDashboard = () => {
                     <FaXTwitter className={styles.icon} size={25} color="white" />
                     Login with X
                   </button>
-                  <button className={styles['linkedIn-button']}>
+                  <button onClick={handleLinkedInLogin} className={styles['linkedIn-button']}>
                     <FaLinkedin className={styles.icon} size={25} color="white" />
                     Login with LinkedIn
                   </button>
