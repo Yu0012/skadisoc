@@ -1084,6 +1084,7 @@ const checkAndRefreshTokens = async () => {
 
 // Run the function every minute
  setInterval(checkAndPostScheduledPosts, 60 * 1000);
+ checkAndPostScheduledPosts(); // Run immediately on server start
 
 // 🔁 Check Facebook tokens once a day
 setInterval(checkAndRefreshTokens, 24 * 60 * 60 * 1000); // Every 24 hours
