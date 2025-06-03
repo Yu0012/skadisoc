@@ -241,6 +241,7 @@ exports.getAllClients = async (req, res) => {
       count: clients.length,
       clients
     });
+
   } catch (err) {
     console.error(`❌ Error fetching all ${platform} clients:`, err);
     res.status(500).json({ message: `Error fetching ${platform} clients` });

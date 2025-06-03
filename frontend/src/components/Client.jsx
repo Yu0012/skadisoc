@@ -205,10 +205,10 @@ const Client = () => {
   };
 
   // Filter clients based on search query
-  const filteredClients = clients.filter((c) =>
-    c.companyName &&
-    c.companyName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredClients = clients.filter((c) => {
+    const name = c.companyName || c.pageName || c.username || c.name;
+    return name?.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
     // Pagination
     const indexOfLastClient = currentPage * clientsPerPage;
@@ -280,8 +280,8 @@ const Client = () => {
                   </div>
                 )}
               </div>
-              <h3 className="client-name">{client.companyName}</h3>
-              <p className="client-description">{client.companyDetail}</p>
+              <h3 className="client-name">{client.pageName || client.username || client.name || "Unnamed Client"}</h3>
+              <p className="client-description">{client.pageId || client.instagramBusinessId || client.userId}</p>
             </div>
           ))}
         </div>
