@@ -35,24 +35,29 @@ const Client = () => {
   const [clientMenuPosition, setClientMenuPosition] = useState({ top: 0, left: 0 });
 
   const platformSlug = activePlatform.toLowerCase();
-  const baseUrl = `http://localhost:5000/api/${platformSlug}`;
+  const baseUrl = `http://localhost:5000/api/clients/${platformSlug}`;
 
   useEffect(() => {
     const fetchClients = async () => {
+    const token = localStorage.getItem("token");
+    const platform = activePlatform.toLowerCase(); // e.g., 'facebook', 'instagram'
+
+    try {
       const res = await fetch(`${baseUrl}/all`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`
         }
       });
 
-      try {
-        const data = await res.json();
-        setClients(data);
-      } catch (err) {
-        console.error(`Error fetching ${activePlatform} clients:`, err);
-        setClients([]);
-      }
-    };
+      if (!res.ok) throw new Error("Failed to fetch clients");
+
+      const data = await res.json();
+      setClients(data.clients || []); // ← response shape is { platform, count, clients }
+    } catch (err) {
+      console.error(`Error fetching ${platform} clients:`, err);
+      setClients([]);
+    }
+  };
   
     fetchClients();
   }, [activePlatform]);
@@ -116,21 +121,6 @@ const Client = () => {
   // Open modal to edit existing client
   const handleEditClient = async (client) => {
     try {
-      let baseUrl = "";
-      switch (activePlatform) {
-        case "Facebook":
-          baseUrl = "http://localhost:5000/api/facebook-clients";
-          break;
-        case "Instagram":
-          baseUrl = "http://localhost:5000/api/instagram-clients";
-          break;
-        case "Twitter":
-          baseUrl = "http://localhost:5000/api/twitter-clients";
-          break;
-        default:
-          return;
-      }
-
       const res = await fetch(`${baseUrl}/${client._id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -176,10 +166,15 @@ const Client = () => {
 
       // 🔄 Recommended: re-fetch full list instead of local patch
       const fetchClients = async () => {
-        const res = await fetch(baseUrl);
+        const res = await fetch(`${baseUrl}/all`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
         const data = await res.json();
-        setClients(data);
+        setClients(data.clients || []);
       };
+
       await fetchClients();
 
       setShowClientModal(false);
