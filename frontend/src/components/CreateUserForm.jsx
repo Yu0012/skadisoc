@@ -12,6 +12,7 @@ const CreateUserForm = ({
   role, setRole,
   roleType, setRoleType,
   onClose,
+  onSubmit, // ✅ add this
   isEditing,
   setFacebookClients,
   setInstagramClients,
@@ -60,46 +61,7 @@ const CreateUserForm = ({
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
-    setSuccess(null);
 
-    // Validate password match
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Authentication token missing');
-      }
-
-      const response = await axios.post(
-        'http://localhost:5000/api/auth/register',
-        {
-          username,
-          email,
-          password,
-          role,
-          roleType
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      setSuccess('User created successfully!');
-      onClose(); // Close the form on success
-    } catch (err) {
-      console.error('Error creating user:', err);
-      setError(err.response?.data?.message || 'Failed to create user');
-    }
-  };
 
   useEffect(() => {
     handlePlatformChange("facebook");
@@ -108,7 +70,7 @@ const CreateUserForm = ({
   return (
     <div className="newUserMenu">
       <ImCross className="exitButton" onClick={onClose} />
-      <form className="form-group" onSubmit={handleSubmit}>
+      <form className="form-group" onSubmit={onSubmit}>
         <a className="form-title">{isEditing ? "Edit User" : "Create New User"}</a>
 
         {error && <div className="error-message">{error}</div>}
