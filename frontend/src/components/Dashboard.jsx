@@ -9,35 +9,45 @@ const Dashboard = () => {
   const [filteredClients, setFilteredClients] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
   
-
-  // Fetch all posts and filter by platform
+    // Fetch all posts and filter by platform
   useEffect(() => {
-    const fetchPosts = async () => {
-      if (!selectedPlatform) return;
+  const fetchPosts = async () => {
+    if (!selectedPlatform) return;
 
-      try {
-        const response = await fetch("http://localhost:5000/api/posts");
-        const data = await response.json();
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:5000/api/posts", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        const platformFiltered = data.filter(post =>
-          post.selectedPlatforms.includes(selectedPlatform.toLowerCase())
-        );
-
-        const clientsWithPosts = [
-          ...new Set(platformFiltered.map(post => post.client)),
-        ];
-
-        setAllPosts(platformFiltered);
-        setFilteredClients(clientsWithPosts);
-        setSelectedClient("");
-        setFilteredPosts([]);
-      } catch (err) {
-        console.error("Failed to fetch posts:", err);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
       }
-    };
 
-    fetchPosts();
-  }, [selectedPlatform]);
+      const data = await response.json();
+
+      const platformFiltered = data.posts.filter(post =>
+        post.selectedPlatforms.includes(selectedPlatform.toLowerCase())
+      );
+
+      const clientsWithPosts = [
+        ...new Set(platformFiltered.map(post => post.client)),
+      ];
+
+      setAllPosts(platformFiltered);
+      setFilteredClients(clientsWithPosts);
+      setSelectedClient("");
+      setFilteredPosts([]);
+    } catch (err) {
+      console.error("Failed to fetch posts:", err.message);
+    }
+  };
+
+  fetchPosts();
+}, [selectedPlatform]);
 
   // Filter by client and enrich with Facebook stats
   useEffect(() => {

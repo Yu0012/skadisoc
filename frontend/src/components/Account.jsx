@@ -44,27 +44,27 @@ const Accounts = () => {
 
 
   // Fetch accounts from MongoDB
-  useEffect(() => {
-    const fetchAccounts = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:5000/api/auth/users", {
-          headers: {
-            Authorization: `Bearer ${token}`, // ← Add this
-          },
-        });
+  const fetchAccounts = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:5000/api/auth/users", {
+        headers: {
+          Authorization: `Bearer ${token}`, // ← Add this
+        },
+      });
 
-        if (response.ok) {
-          const data = await response.json();
-          setAccounts(data.users);
-        } else {
-          console.error("Failed to fetch accounts");
-        }
-      } catch (error) {
-        console.error("Error fetching accounts:", error);
+      if (response.ok) {
+        const data = await response.json();
+        setAccounts(data.users);
+      } else {
+        console.error("Failed to fetch accounts");
       }
-    };
+    } catch (error) {
+      console.error("Error fetching accounts:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchAccounts();
   }, []);
 
@@ -192,36 +192,17 @@ const Accounts = () => {
         }
       );
   
-      if (!response.ok) throw new Error("Save failed");
-  
-      const result = await response.json();
-      const saved = result.account || result;
-  
-    const fetchAccounts = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:5000/api/auth/users", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },  
-        });
+    if (!response.ok) throw new Error("Save failed");
 
-        if (response.ok) {
-          const data = await response.json();
-          setAccounts(data.reverse());
-        } else {
-          console.error("Failed to fetch accounts");
-        }
-      } catch (error) {
-        console.error("Error fetching accounts:", error);
-      }
-    };
+    const result = await response.json();
+    const saved = result.account || result;
 
-    fetchAccounts();
-
+    await fetchAccounts();   // ✅ refresh data from backend
+    setCurrentPage(1); // ✅ Re-trigger pagination render
+    setCreateUserDropdown(false); // ✅ Close modal
+    
     // Reset state
     setEditAccount(null);
-    setCreateUserDropdown(false);
     setName("");
     setPassword("");
     setFacebookClients([]);
