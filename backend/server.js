@@ -1075,8 +1075,8 @@ app.use(passport.initialize());         // ← Initialize passport
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 
-// const postRoutes = require('./routes/postRoutes');
-// app.use('/api/posts', postRoutes);
+const postRoutes = require('./routes/postRoutes');
+app.use('/api/posts', postRoutes);
 
 const clientRoutes = require('./routes/clientRoutes');
 app.use('/api/clients', clientRoutes);
