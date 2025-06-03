@@ -47,7 +47,7 @@ const Accounts = () => {
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/users");
+        const response = await fetch("http://localhost:5000/api/auth/users");
         if (response.ok) {
           const data = await response.json();
           setAccounts(data.reverse());

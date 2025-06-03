@@ -28,6 +28,14 @@ const CreateUserForm = ({
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
+  useEffect(() => {
+  const tokenPayload = JSON.parse(atob(localStorage.getItem('token').split('.')[1]));
+  if (!(tokenPayload.roleType === 'superadmin' && tokenPayload.role === 'admin')) {
+    setError("You are not authorized to create users");
+  }
+}, []);
+
+
   // Update available menus and actions when role or roleType changes
   useEffect(() => {
     if (roleType) {
