@@ -47,10 +47,16 @@ const Accounts = () => {
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/auth/users");
+        const token = localStorage.getItem("token");
+        const response = await fetch("http://localhost:5000/api/auth/users", {
+          headers: {
+            Authorization: `Bearer ${token}`, // ← Add this
+          },
+        });
+
         if (response.ok) {
           const data = await response.json();
-          setAccounts(data.reverse());
+          setAccounts(data.users);
         } else {
           console.error("Failed to fetch accounts");
         }
@@ -85,7 +91,7 @@ const Accounts = () => {
   
     // Add event listener on mount
     document.addEventListener("mousedown", handleClickOutside);
-  
+
     // Clean up the event listener on unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -111,16 +117,22 @@ const Accounts = () => {
     setAccountMenuDropdown(null); // Close the dropdown
   };
 
+  // Handle delete account
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this user?");
     if (!confirmDelete) return;
+
+    const token = localStorage.getItem("token");
+
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${id}`, {
+      const response = await fetch(`http://localhost:5000/api/auth/users/${id}`, {
         method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (response.ok) {
-        // Refresh the user list after deletion
         const updated = accounts.filter((acc) => acc._id !== id);
         setAccounts(updated);
       } else {
@@ -165,13 +177,17 @@ const Accounts = () => {
     const isEditing = !!editAccount;
   
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(
         isEditing
-          ? `http://localhost:5000/api/users/${editAccount._id}`
-          : "http://localhost:5000/api/users",
+          ? `http://localhost:5000/api/auth/users/${editAccount._id}`
+          : "http://localhost:5000/api/auth/register", // Register goes to this route
         {
           method: isEditing ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify(accountData),
         }
       );
@@ -183,7 +199,13 @@ const Accounts = () => {
   
     const fetchAccounts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/auth/users");
+        const token = localStorage.getItem("token");
+        const response = await fetch("http://localhost:5000/api/auth/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },  
+        });
+
         if (response.ok) {
           const data = await response.json();
           setAccounts(data.reverse());
@@ -211,26 +233,25 @@ const Accounts = () => {
     }
   };
   
-
   // Filter accounts based on search query and selected category
-  const filteredAccounts = accounts.filter((account) => {
-    if (!searchQuery) return true;
-
-    switch (category) {
-      case "ID":
-        return account._id.toString().includes(searchQuery);
-      case "Username":
-        return account.name.toLowerCase().includes(searchQuery.toLowerCase());
-      case "Email":
-        return account.email.toLowerCase().includes(searchQuery.toLowerCase());
-      case "Phone":
-        return account.phoneNum.toLowerCase().includes(searchQuery.toLowerCase());
-      case "Address":
-        return account.address.toLowerCase().includes(searchQuery.toLowerCase());
-      default:
-        return true;
-    }
-  });
+  const filteredAccounts = searchQuery
+  ? accounts.filter((account) => {
+      switch (category) {
+        case "ID":
+          return account._id.toString().includes(searchQuery);
+        case "Username":
+          return account.username?.toLowerCase().includes(searchQuery.toLowerCase());
+        case "Email":
+          return account.email?.toLowerCase().includes(searchQuery.toLowerCase());
+        case "Phone":
+          return (account.phoneNum || "").toLowerCase().includes(searchQuery.toLowerCase());
+        case "Address":
+          return (account.address || "").toLowerCase().includes(searchQuery.toLowerCase());
+        default:
+          return true;
+      }
+    })
+  : accounts;
 
   // Pagination Logic
   const indexOfLastAccount = currentPage * accountsPerPage;

@@ -1115,7 +1115,6 @@ app.use('/api/posts', postRoutes);
 const clientRoutes = require('./routes/clientRoutes');
 app.use('/api/clients', clientRoutes);
 
-
 app.get('/test', (req, res) => res.send('✅ Test route working'));
 
 
