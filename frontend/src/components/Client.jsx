@@ -34,29 +34,18 @@ const Client = () => {
   const [clientMenuDropdown, setClientMenuDropdown] = useState(null);
   const [clientMenuPosition, setClientMenuPosition] = useState({ top: 0, left: 0 });
 
+  const platformSlug = activePlatform.toLowerCase();
+  const baseUrl = `http://localhost:5000/api/${platformSlug}`;
+
   useEffect(() => {
     const fetchClients = async () => {
-      let url = "";
-  
-      switch (activePlatform) {
-        case "Facebook":
-          url = "http://localhost:5000/api/facebook-clients";
-          break;
-        case "Instagram":
-          url = "http://localhost:5000/api/instagram-clients";
-          break;
-        case "Twitter":
-          url = "http://localhost:5000/api/twitter-clients"; // progressing
-          break;
-        case "LinkedIn":
-          url = "http://localhost:5000/api/linkedin-clients"; // waiting for API
-          break;
-        default:
-          return;
-      }
-  
+      const res = await fetch(`${baseUrl}/all`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+      });
+
       try {
-        const res = await fetch(url);
         const data = await res.json();
         setClients(data);
       } catch (err) {
@@ -142,7 +131,11 @@ const Client = () => {
           return;
       }
 
-      const res = await fetch(`${baseUrl}/client/${client._id}`);
+      const res = await fetch(`${baseUrl}/${client._id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+      });
       const fullClient = await res.json();
 
       if (!res.ok || !fullClient._id) throw new Error("Invalid client data");
@@ -162,22 +155,10 @@ const Client = () => {
   // Save client data (both create and update)
   const handleSaveClient = async (clientData) => {
     try {
-      let baseUrl = "";
-      switch (activePlatform) {
-        case "Facebook":
-          baseUrl = "http://localhost:5000/api/facebook-clients";
-          break;
-        case "Instagram":
-          baseUrl = "http://localhost:5000/api/instagram-clients";
-          break;
-        case "Twitter":
-          baseUrl = "http://localhost:5000/api/twitter-clients";
-          break;
-        default:
-          throw new Error("Unsupported platform");
-      }
+      const url = editClient
+        ? `${baseUrl}/${clientData._id}`
+        : `${baseUrl}`; // POST /api/:platform
 
-      const url = editClient ? `${baseUrl}/${clientData._id}` : baseUrl;
       console.log("🧠 Saving client to:", url);
       console.log("🧠 Payload:", clientData);
 
@@ -214,8 +195,11 @@ const Client = () => {
     if (!window.confirm("Are you sure you want to delete this client?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/clients/${clientId}`, {
+      const res = await fetch(`${baseUrl}/${clientId}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
       });
 
       if (!res.ok) throw new Error("Delete failed");

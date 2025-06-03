@@ -103,7 +103,6 @@ router.get('/user/email/:email', authenticateJWT, authController.getUserByEmail)
 
 router.get('/users/export', authenticateJWT, authController.exportUsers);
 
-
 // Update User
 router.put('/users/:id', authenticateJWT, authController.updateUser);
 

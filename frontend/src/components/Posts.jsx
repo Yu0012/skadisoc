@@ -37,9 +37,15 @@ const Posts = () => {
   // Fetch posts from backend
   const fetchPosts = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/posts");
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:5000/api/posts", {headers: { Authorization: `Bearer ${token}` } });
+      if(!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      };
       const data = await response.json();
-      setPosts(data.reverse());
+      setPosts(data.posts);
+
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
