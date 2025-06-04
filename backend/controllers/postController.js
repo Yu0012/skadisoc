@@ -43,6 +43,14 @@ exports.getPostById = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
+  // const { 
+  //   content, 
+  //   title, 
+  //   client, 
+  //   scheduledDate, 
+  //   selectedPlatforms, 
+  //   filePath 
+  // } = req.body;
   const content = req.body.content;
   const title = req.body.title;
   const client = req.body.client?.trim();
@@ -110,5 +118,56 @@ exports.createPost = async (req, res) => {
       message: 'Failed to create post',
       error: err.message 
     });
+  }
+};
+
+// Add this new updatePost function
+exports.updatePost = async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  try {
+    const requestingUser = req.user;
+    const post = await Post.findById(id);
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Check permissions
+    if (requestingUser.role === 'viewer') {
+      return res.status(403).json({ message: 'Viewers cannot update posts' });
+    }
+
+    if (requestingUser.role === 'editor') {
+      // Editors can only update their own posts
+      if (!post.createdBy.equals(requestingUser._id)) {
+        return res.status(403).json({ message: 'You can only update your own posts' });
+      }
+    }
+
+    // Set updatedBy before saving
+    post._locals = { updatedBy: requestingUser._id };
+
+    // Update the post
+    const updatedPost = await Post.findByIdAndUpdate(
+      id, 
+      { 
+        ...updateData,
+        updatedBy: requestingUser._id,
+        status: updateData.scheduledDate ? 'scheduled' : 'draft'
+      }, 
+      { new: true }
+    )
+    .populate('createdBy', 'username email role')
+    .populate('updatedBy', 'username email role');
+
+    res.json({
+      message: 'Post updated successfully',
+      post: updatedPost
+    });
+  } catch (err) {
+    console.error('❌ Error updating post:', err);
+    res.status(500).json({ message: 'Failed to update post' });
   }
 };
