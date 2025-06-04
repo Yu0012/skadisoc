@@ -17,6 +17,7 @@ import FacebookPreview from "./components/FacebookPreview";
 import InstagramPreview from "./components/InstagramPreview";
 import TwitterPreview from "./components/TwitterPreview";
 import SocialMediaDashboard from './components/SocialMediaDashboard';
+import AssignClients from './components/AssignClients';
 import "./styles.css";
 
 // 🧠 Create a sub-component inside Router
@@ -43,6 +44,7 @@ const AppContent = () => {
         <Route path="/instagram-preview/:postId" element={<InstagramPreview />} />
         <Route path="/twitter-preview/:postId" element={<TwitterPreview />} />
         <Route path="/client-login" element={<SocialMediaDashboard />} />
+        <Route path="/assign-clients/${account._id}" element={<AssignClients />} />
       </Routes>
     </>
   );

@@ -9,7 +9,7 @@ const postSchema = new mongoose.Schema({
   content: { type: String, required: true },
   title: String,
   client: String,
-  scheduledDate: Date,
+  scheduledDate: { type: Date },
   selectedPlatforms: [String],
   filePath: String, // Store file path if uploaded
   posted: { type: Boolean, default: false },
@@ -30,6 +30,9 @@ postSchema.pre('save', function(next) {
   this.updatedAt = toMalaysiaTime(now);
   if (!this.createdAt) {
       this.createdAt = toMalaysiaTime(now);
+  }
+  if (this.scheduledDate) {
+      this.scheduledDate = toMalaysiaTime(this.scheduledDate);
   }
   // Set updatedBy to the current user if not set
   if (this.isModified() && !this.isNew && this.$locals.user) {

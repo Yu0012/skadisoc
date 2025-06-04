@@ -324,8 +324,9 @@ const Accounts = () => {
           <tr>
             <th>Username</th>
             <th>Email</th>
+            <th>RoleType</th>
             <th>Role</th>
-            <th>Access</th>
+            <th>Assigned Clients</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -335,6 +336,7 @@ const Accounts = () => {
               <td>{account.username}</td>
               <td>{account.email}</td>
               <td>{account.roleType}</td>
+              <td>{account.role}</td>
               <td>{Array.isArray(account.facebookClients) ? account.facebookClients.join(', ') : account.facebookClients}</td>
               <td>
               <FaEllipsisV className="popup-icon" onClick={(e) => menuDropdown(e, account._id)} />
@@ -345,6 +347,11 @@ const Accounts = () => {
                       style={{ top: accountMenuPosition.top, left: accountMenuPosition.left }}
                     >
                       <button onClick={() => handleEditAccount(account)}>Edit</button>
+                      {account.role === 'editor' && (
+  <button onClick={() => navigate(`/assign-clients/${account._id}`)}>
+    Assigned Clients
+  </button>
+)}
                       <button className="delete-btn" onClick={() => handleDelete(account._id)}>Delete</button>
                     </div>,
                     document.body
