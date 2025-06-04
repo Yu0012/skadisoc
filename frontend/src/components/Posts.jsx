@@ -121,8 +121,6 @@ const Posts = () => {
     }
   };
   
-
-
 //toggle dropdown menu for a post
   const menuDropdown = (event, postID) => {
     event.stopPropagation();

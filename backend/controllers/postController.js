@@ -1,5 +1,6 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
+const axios = require('axios');
 const FacebookClient = require('../models/FacebookClientSchema');
 const InstagramClient = require('../models/InstagramClientSchema');
 const TwitterClient = require('../models/TwitterClientSchema');
@@ -232,7 +233,6 @@ exports.updatePost = async (req, res) => {
 exports.deletePost = async (req, res) => {
   console.log('🔴 Deleting post');
 
-  // Enforce strict roleType and role check
   if (!(req.user.roleType === 'superadmin' && req.user.role === 'admin')) {
     console.log('⛔ Delete failed: insufficient permission');
     return res.status(403).json({ message: 'Only superadmin with admin role can delete posts' });
@@ -241,14 +241,82 @@ exports.deletePost = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const deletedPost = await Post.findByIdAndDelete(id);
-    if (!deletedPost) {
+    const post = await Post.findById(id);
+    if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }
-    console.log('✅ Post deleted:', deletedPost._id);
-    res.json({ message: 'Post deleted successfully' });
+
+    // 🌐 Delete Facebook post
+    if (post.platformPostIds?.facebook) {
+      const fbClient = await FacebookClient.findOne({ pageName: post.client });
+      if (fbClient && fbClient.pageAccessToken) {
+        try {
+          const url = `https://graph.facebook.com/${post.platformPostIds.facebook}`;
+          await axios.delete(url, {
+            params: { access_token: fbClient.pageAccessToken },
+          });
+          console.log(`✅ Deleted Facebook post: ${post.platformPostIds.facebook}`);
+        } catch (err) {
+          console.error("❌ Facebook deletion failed:", err.response?.data || err.message);
+        }
+      }
+    }
+
+    // 📸 Delete Instagram post
+    if (post.platformPostIds?.instagram) {
+      const igClient = await InstagramClient.findOne({ username: post.client });
+      if (igClient && igClient.accessToken) {
+        try {
+          const url = `https://graph.facebook.com/${post.platformPostIds.instagram}`;
+          await axios.delete(url, {
+            params: { access_token: igClient.accessToken },
+          });
+          console.log(`✅ Deleted Instagram post: ${post.platformPostIds.instagram}`);
+        } catch (err) {
+          console.error("❌ Instagram deletion failed:", err.response?.data || err.message);
+        }
+      }
+    }
+
+    // 🐦 Delete Twitter post
+    if (post.platformPostIds?.twitter) {
+      const twClient = await TwitterClient.findOne({ username: post.client });
+      if (twClient) {
+        const {
+          appKey,
+          appSecret,
+          accessToken,
+          accessTokenSecret,
+        } = twClient;
+
+        if (appKey && appSecret && accessToken && accessTokenSecret) {
+          const { TwitterApi } = require('twitter-api-v2');
+          const twitter = new TwitterApi({
+            appKey,
+            appSecret,
+            accessToken,
+            accessSecret: accessTokenSecret,
+          });
+
+          try {
+            await twitter.v2.deleteTweet(post.platformPostIds.twitter);
+            console.log(`✅ Deleted Twitter post: ${post.platformPostIds.twitter}`);
+          } catch (err) {
+            console.error("❌ Twitter deletion failed:", err.data || err.message);
+          }
+        }
+      }
+    }
+
+    // 🚮 Delete MongoDB post
+    await Post.findByIdAndDelete(id);
+    console.log('✅ Deleted post from DB:', post._id);
+
+    res.json({ message: 'Post deleted from all platforms & DB' });
+
   } catch (err) {
-    console.error('❌ Error deleting post:', err);
-    res.status(500).json({ message: 'Error deleting post' });
+    console.error('🔥 Error deleting post:', err);
+    res.status(500).json({ message: 'Failed to delete post' });
   }
 };
+
