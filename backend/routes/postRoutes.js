@@ -30,4 +30,10 @@ router.get('/:id', authenticateJWT, postController.getPostById);
 // Create a new post
 router.post('/', authenticateJWT, upload.single('file'), postController.createPost);
 
+// Update post
+router.put('/:id', authenticateJWT, postController.updatePost);
+
+// Delete User
+router.delete('/:id', authenticateJWT, postController.deletePost);
+
 module.exports = router;

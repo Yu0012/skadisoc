@@ -122,6 +122,56 @@ exports.createPost = async (req, res) => {
 };
 
 // Add this new updatePost function
+// exports.updatePost = async (req, res) => {
+//   const { id } = req.params;
+//   const updateData = req.body;
+
+//   try {
+//     const requestingUser = req.user;
+//     const post = await Post.findById(id);
+
+//     if (!post) {
+//       return res.status(404).json({ message: 'Post not found' });
+//     }
+
+//     // Check permissions
+//     if (requestingUser.role === 'viewer') {
+//       return res.status(403).json({ message: 'Viewers cannot update posts' });
+//     }
+
+//     if (requestingUser.role === 'editor') {
+//       // Editors can only update their own posts
+//       if (!post.createdBy.equals(requestingUser._id)) {
+//         return res.status(403).json({ message: 'You can only update your own posts' });
+//       }
+//     }
+
+//     // Set updatedBy before saving
+//     post._locals = { updatedBy: requestingUser._id };
+
+//     // Update the post
+//     const updatedPost = await Post.findByIdAndUpdate(
+//       id, 
+//       { 
+//         ...updateData,
+//         updatedBy: requestingUser._id,
+//         status: updateData.scheduledDate ? 'scheduled' : 'draft'
+//       }, 
+//       { new: true }
+//     )
+//     .populate('createdBy', 'username email role')
+//     .populate('updatedBy', 'username email role');
+
+//     res.json({
+//       message: 'Post updated successfully',
+//       post: updatedPost
+//     });
+//   } catch (err) {
+//     console.error('❌ Error updating post:', err);
+//     res.status(500).json({ message: 'Failed to update post' });
+//   }
+// };
+// UPDATE POST
 exports.updatePost = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
@@ -134,34 +184,39 @@ exports.updatePost = async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    // Check permissions
+    // Viewers cannot update anything
     if (requestingUser.role === 'viewer') {
       return res.status(403).json({ message: 'Viewers cannot update posts' });
     }
 
-    if (requestingUser.role === 'editor') {
-      // Editors can only update their own posts
-      if (!post.createdBy.equals(requestingUser._id)) {
-        return res.status(403).json({ message: 'You can only update your own posts' });
-      }
+    // Superadmin + admin role: can update anything
+    const isSuperAdminWithAdminRole = 
+      requestingUser.roleType === 'superadmin' && requestingUser.role === 'admin';
+
+    // Admins (not superadmin) or editors: can only update their own posts
+    const isLimitedAdminOrEditor = 
+      (requestingUser.role === 'admin' && requestingUser.roleType !== 'superadmin') ||
+      requestingUser.role === 'editor';
+
+    if (isLimitedAdminOrEditor && !post.createdBy.equals(requestingUser._id)) {
+      return res.status(403).json({ message: 'You can only update your own posts' });
     }
 
     // Set updatedBy before saving
-    post._locals = { updatedBy: requestingUser._id };
+    updateData.updatedBy = requestingUser._id;
+    if (updateData.scheduledDate) {
+      updateData.status = 'scheduled';
+    } else {
+      updateData.status = 'draft';
+    }
 
-    // Update the post
-    const updatedPost = await Post.findByIdAndUpdate(
-      id, 
-      { 
-        ...updateData,
-        updatedBy: requestingUser._id,
-        status: updateData.scheduledDate ? 'scheduled' : 'draft'
-      }, 
-      { new: true }
-    )
-    .populate('createdBy', 'username email role')
-    .populate('updatedBy', 'username email role');
+    const updatedPost = await Post.findByIdAndUpdate(id, updateData, {
+      new: true
+    })
+      .populate('createdBy', 'username email role')
+      .populate('updatedBy', 'username email role');
 
+    console.log('✅ Post updated:', updatedPost._id);
     res.json({
       message: 'Post updated successfully',
       post: updatedPost
@@ -169,5 +224,31 @@ exports.updatePost = async (req, res) => {
   } catch (err) {
     console.error('❌ Error updating post:', err);
     res.status(500).json({ message: 'Failed to update post' });
+  }
+};
+
+
+// DELETE POST (ONLY USER WITH ROLETYPE 'SUPERADMIN' & ROLE 'ADMIN' CAN)
+exports.deletePost = async (req, res) => {
+  console.log('🔴 Deleting post');
+
+  // Enforce strict roleType and role check
+  if (!(req.user.roleType === 'superadmin' && req.user.role === 'admin')) {
+    console.log('⛔ Delete failed: insufficient permission');
+    return res.status(403).json({ message: 'Only superadmin with admin role can delete posts' });
+  }
+
+  const { id } = req.params;
+
+  try {
+    const deletedPost = await Post.findByIdAndDelete(id);
+    if (!deletedPost) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+    console.log('✅ Post deleted:', deletedPost._id);
+    res.json({ message: 'Post deleted successfully' });
+  } catch (err) {
+    console.error('❌ Error deleting post:', err);
+    res.status(500).json({ message: 'Error deleting post' });
   }
 };
