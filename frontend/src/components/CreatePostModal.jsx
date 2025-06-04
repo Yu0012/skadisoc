@@ -285,7 +285,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                   >
                     <option value="">Select a Client</option>
                     {clients.map((c) => (
-                      <option key={c._id} value={c._id}>
+                      <option key={c._id} value={c.companyName || c.pageName || c.username || c.name}>
                         {c.companyName || c.pageName || c.username || c.name}
                       </option>
                     ))}
