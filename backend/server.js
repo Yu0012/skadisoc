@@ -18,6 +18,7 @@ const session = require('express-session');
 const facebookClientsRoute = require('./routes/facebookClients');
 const instagramClientsRoute = require('./routes/instagramClients');
 const twitterClientsRoute = require('./routes/twitterClients');
+const { checkAndPostScheduledPosts } = require('./utils/scheduledPostHandler');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -828,8 +829,6 @@ mongoose.connect(process.env.MONGO_URI, {
 // setInterval(checkAndRefreshTokens, 24 * 60 * 60 * 1000); // Every 24 hours
 // checkAndRefreshTokens(); // Run immediately on server start
 
-// // Run the function every minute
-// setInterval(checkAndPostScheduledPosts, 60 * 1000);
 // Step 1: OAuth Login Route
 app.get('/auth/facebook', (req, res) => {
   const authUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${process.env.FB_APP_ID}&redirect_uri=${process.env.REDIRECT_URI}&scope=pages_show_list,pages_manage_posts,instagram_basic,instagram_content_publish&response_type=code`;
@@ -1082,6 +1081,10 @@ const checkAndRefreshTokens = async () => {
     console.error("❌ Error while checking/refreshing tokens:", err.message);
   }
 };
+
+// Run the function every minute
+ setInterval(checkAndPostScheduledPosts, 60 * 1000);
+ checkAndPostScheduledPosts(); // Run immediately on server start
 
 // 🔁 Check Facebook tokens once a day
 setInterval(checkAndRefreshTokens, 24 * 60 * 60 * 1000); // Every 24 hours

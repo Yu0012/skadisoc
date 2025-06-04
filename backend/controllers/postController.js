@@ -43,14 +43,12 @@ exports.getPostById = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
-  const { 
-    content, 
-    title, 
-    client, 
-    scheduledDate, 
-    selectedPlatforms, 
-    filePath 
-  } = req.body;
+  const content = req.body.content;
+  const title = req.body.title;
+  const client = req.body.client?.trim();
+  const scheduledDate = req.body.scheduledDate;
+  const selectedPlatforms = JSON.parse(req.body.selectedPlatforms || "[]");
+  const filePath = req.file?.path || null;
 
   try {
     const requestingUser = req.user;

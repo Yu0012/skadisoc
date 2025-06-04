@@ -8,7 +8,7 @@ import Preview from "./Preview";
 const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onSave, platform}) => {
   const [content, setContent] = useState(initialData?.content || "");
   const [title, setTitle] = useState(initialData?.title || "");
-  const [client, setClient] = useState(initialData?.client || "No Client Selected");
+  const [client, setClient] = useState(initialData?.client || "");
   const [scheduledDate, setScheduledDate] = useState(initialData?.scheduledDate || null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState(initialData?.selectedPlatforms || []);
@@ -54,28 +54,22 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
   useEffect(() => {
     const fetchClients = async () => {
       if (!platform) return;
-  
-      const platformApiMap = {
-        Facebook: "facebook-clients",
-        Instagram: "instagram-clients",
-        Twitter: "twitter-clients",
-        LinkedIn: "linkedin-clients",
-      };
-  
-      const route = platformApiMap[platform];
-      if (!route) return;
-  
+
       try {
-        const response = await fetch(`http://localhost:5000/api/${route}`);
-        if (!response.ok) throw new Error("Failed to fetch platform clients");
-  
+        const response = await fetch(`http://localhost:5000/api/clients/${platform.toLowerCase()}/all`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch assigned clients");
         const data = await response.json();
-        setClients(data);
+        setClients(data.clients); // make sure this matches res.json({ clients }) in backend
       } catch (err) {
-        console.error(`❌ Error fetching ${platform} clients:`, err);
+        console.error(`❌ Error fetching assigned ${platform} clients:`, err);
       }
     };
-  
+
     fetchClients();
   }, [platform]);
 
@@ -98,45 +92,60 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
       alert("Post content cannot be empty!");
       return;
     }
-  
+
+    if (!client || client === "" || client === "No Client Selected") {
+      alert("Please select a client before creating a post.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", content);
     formData.append("client", client);
     formData.append("scheduledDate", scheduledDate ? scheduledDate.toISOString() : "");
-    // Convert array to JSON string
     formData.append("selectedPlatforms", JSON.stringify(selectedPlatforms));
     if (attachedFile) {
       formData.append("file", attachedFile);
     }
-  
+    
+    console.log("📦 Submitting FormData:", {
+      client,
+      title,
+      content,
+      selectedPlatforms,
+      scheduledDate,
+      attachedFile,
+    });
     const isEditing = initialData && initialData._id;
     const url = isEditing
       ? `http://localhost:5000/api/posts/${initialData._id}`
       : "http://localhost:5000/api/posts";
     const method = isEditing ? "PUT" : "POST";
-  
+
     try {
       const response = await fetch(url, {
         method,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
         body: formData,
       });
-  
+
       if (!response.ok) {
-        throw new Error("Failed to submit post");
+        const errorText = await response.text();
+        throw new Error(errorText);
       }
-  
+
       const result = await response.json();
       alert(`Post ${isEditing ? "updated" : "created"} successfully!`);
-      onSave?.(result.post || result); // pass post back to parent
-      onPostCreated?.();               // ✅ triggers fetch in Posts.jsx
+      onSave?.(result.post || result);
+      onPostCreated?.();
       onClose();
     } catch (error) {
       console.error("Error submitting post:", error);
       alert("An error occurred. Please try again.");
     }
   };
-  
 
   const handlePlatformChange = (platformId) => {
     setSelectedPlatforms((prev) => {
@@ -276,8 +285,8 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                   >
                     <option value="">Select a Client</option>
                     {clients.map((c) => (
-                      <option key={c._id} value={c.companyName}>
-                        {c.companyName}
+                      <option key={c._id} value={c._id}>
+                        {c.companyName || c.pageName || c.username || c.name}
                       </option>
                     ))}
                   </select>
