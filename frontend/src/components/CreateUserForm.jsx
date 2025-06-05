@@ -28,6 +28,11 @@ const CreateUserForm = ({
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [selectedClients, setSelectedClients] = useState({
+    facebook: [],
+    instagram: [],
+    twitter: []
+  });
 
   useEffect(() => {
   try {
@@ -164,27 +169,17 @@ const CreateUserForm = ({
                           ? instagramClients.includes(client._id)
                           : twitterClients.includes(client._id);
 
-                      const toggleClient = () => {
-                        const setList =
-                          selectedPlatform === "facebook"
-                            ? setFacebookClients
-                            : selectedPlatform === "instagram"
-                            ? setInstagramClients
-                            : setTwitterClients;
-
-                        const currentList =
-                          selectedPlatform === "facebook"
-                            ? facebookClients
-                            : selectedPlatform === "instagram"
-                            ? instagramClients
-                            : twitterClients;
-
-                        if (isChecked) {
-                          setList(currentList.filter((id) => id !== client._id));
-                        } else {
-                          setList([...currentList, client._id]);
-                        }
-                      };
+                          const toggleClient = (platform, clientId) => {
+                            setSelectedClients((prev) => {
+                              const current = prev[platform] || [];
+                              return {
+                                ...prev,
+                                [platform]: current.includes(clientId)
+                                  ? current.filter(id => id !== clientId)
+                                  : [...current, clientId]
+                              };
+                            });
+                          };
 
                       return (
                         <label key={client._id}>
