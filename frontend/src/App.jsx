@@ -44,7 +44,7 @@ const AppContent = () => {
         <Route path="/instagram-preview/:postId" element={<InstagramPreview />} />
         <Route path="/twitter-preview/:postId" element={<TwitterPreview />} />
         <Route path="/client-login" element={<SocialMediaDashboard />} />
-        <Route path="/assign-clients/${account._id}" element={<AssignClients />} />
+        <Route path="/assign-clients/:userId" element={<AssignClients />} />
       </Routes>
     </>
   );

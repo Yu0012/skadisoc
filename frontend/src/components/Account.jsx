@@ -5,6 +5,7 @@ import { ImCross } from "react-icons/im";
 import { createPortal } from "react-dom";
 import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
 import CreateUserForm from "../components/CreateUserForm";
+import { useNavigate } from "react-router-dom";
 
 
 const Accounts = () => {
@@ -15,6 +16,7 @@ const Accounts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [accountsPerPage] = useState(10);
   const [createUserDropdown, setCreateUserDropdown] = useState(false);
+  const navigate = useNavigate();
 
   //refs for modal and outside click detection
   const modalRef = useRef(null);

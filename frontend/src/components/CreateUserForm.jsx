@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"; 
 import { ImCross } from "react-icons/im";
 import axios from 'axios';
 import "./CreateUserForm.css";
@@ -12,7 +12,7 @@ const CreateUserForm = ({
   role, setRole,
   roleType, setRoleType,
   onClose,
-  onSubmit, // ✅ add this
+  onSubmit,
   isEditing,
   setFacebookClients,
   setInstagramClients,
@@ -30,14 +30,21 @@ const CreateUserForm = ({
   const [success, setSuccess] = useState(null);
 
   useEffect(() => {
-  const tokenPayload = JSON.parse(atob(localStorage.getItem('token').split('.')[1]));
-  if (!(tokenPayload.roleType === 'superadmin' && tokenPayload.role === 'admin')) {
-    setError("You are not authorized to create users");
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return setError("No token found");
+
+    const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+    if (!(tokenPayload.roleType === 'superadmin' && tokenPayload.role === 'admin')) {
+      setError("You are not authorized to create users");
+    }
+  } catch (err) {
+    console.error("Invalid token or parsing error", err);
+    setError("Authorization failed");
   }
 }, []);
 
 
-  // Update available menus and actions when role or roleType changes
   useEffect(() => {
     if (roleType) {
       setAvailableMenus(roleTypePermissions[roleType]?.menus || []);
@@ -52,16 +59,17 @@ const CreateUserForm = ({
     setPlatformClients([]);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/${platform}-clients`);
-      if (!res.ok) throw new Error("Failed to fetch platform clients");
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:5000/api/clients/${platform}/unassigned`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Failed to fetch unassigned platform clients");
       const data = await res.json();
-      setPlatformClients(data);
+      setPlatformClients(data.clients);
     } catch (err) {
-      console.error(`Error loading ${platform} clients:`, err);
+      console.error(`Error loading ${platform} unassigned clients:`, err);
     }
   };
-
-
 
   useEffect(() => {
     handlePlatformChange("facebook");
@@ -77,47 +85,21 @@ const CreateUserForm = ({
         {success && <div className="success-message">{success}</div>}
 
         <div className="form-two-column">
-          {/* Left Column */}
           <div className="form-left-column">
             <label>Username: 
-              <input 
-                type="text" 
-                className="newAccountForm" 
-                value={username} 
-                onChange={(e) => setName(e.target.value)} 
-                required 
-              />
+              <input type="text" className="newAccountForm" value={username} onChange={(e) => setName(e.target.value)} required />
             </label>
             <label>Email: 
-              <input 
-                type="email" 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-                required 
-              />
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </label>
             <label>Password: 
-              <input 
-                type="password" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                required 
-              />
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </label>
             <label>Confirm Password: 
-              <input 
-                type="password" 
-                value={confirmPassword} 
-                onChange={(e) => setConfirmPassword(e.target.value)} 
-                required 
-              />
+              <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
             </label>
             <label>Role Type:
-              <select 
-                value={roleType} 
-                onChange={(e) => setRoleType(e.target.value)} 
-                required
-              >
+              <select value={roleType} onChange={(e) => setRoleType(e.target.value)} required>
                 <option value="">Select Role Type</option>
                 <option value="superadmin">Superadmin</option>
                 <option value="admin">Admin</option>
@@ -125,11 +107,7 @@ const CreateUserForm = ({
               </select>
             </label>
             <label>Role:
-              <select 
-                value={role} 
-                onChange={(e) => setRole(e.target.value)} 
-                required
-              >
+              <select value={role} onChange={(e) => setRole(e.target.value)} required>
                 <option value="">Select Role</option>
                 <option value="admin">Admin</option>
                 <option value="editor">Editor</option>
@@ -138,39 +116,28 @@ const CreateUserForm = ({
             </label>
           </div>
 
-          {/* Right Column - Display only (not editable) */}
           <div className="form-right-column">
             <div className="permissions-display">
               <h4>Assigned Permissions</h4>
-              
               <div className="permission-section">
                 <h5>Menus (based on Role Type):</h5>
                 {availableMenus.length > 0 ? (
-                  <ul>
-                    {availableMenus.map(menu => (
-                      <li key={menu}>{menu}</li>
-                    ))}
-                  </ul>
+                  <ul>{availableMenus.map(menu => <li key={menu}>{menu}</li>)}</ul>
                 ) : (
                   <p>No menus assigned</p>
                 )}
               </div>
-              
               <div className="permission-section">
                 <h5>Actions (based on Role):</h5>
                 {availableActions.length > 0 ? (
-                  <ul>
-                    {availableActions.map(action => (
-                      <li key={action}>{action}</li>
-                    ))}
-                  </ul>
+                  <ul>{availableActions.map(action => <li key={action}>{action}</li>)}</ul>
                 ) : (
                   <p>No actions assigned</p>
                 )}
               </div>
             </div>
 
-            { <div className="client-assignment">
+            <div className="client-assignment">
               <h4>Assigned Clients (Optional)</h4>
               <div className="platform-navbar">
                 {["facebook", "instagram", "twitter"].map((platform) => (
@@ -221,27 +188,18 @@ const CreateUserForm = ({
 
                       return (
                         <label key={client._id}>
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={toggleClient}
-                          />
-                          {client.companyName || client.username}
+                          <input type="checkbox" checked={isChecked} onChange={toggleClient} />
+                          {client.companyName || client.username || client.pageName || client._id}
                         </label>
                       );
                     })}
                   </div>
                 </div>
               )}
-            </div> }
+            </div>
           </div>
         </div>
-        <input 
-          className="create-post-btn" 
-          type="submit" 
-          value="Save" 
-          style={{color: "white"}}
-        />
+        <input className="create-post-btn" type="submit" value="Save" style={{color: "white"}} />
       </form>
     </div>
   );
