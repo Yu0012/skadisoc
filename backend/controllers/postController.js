@@ -57,7 +57,7 @@ exports.createPost = async (req, res) => {
   const client = req.body.client?.trim();
   const scheduledDate = req.body.scheduledDate;
   const selectedPlatforms = JSON.parse(req.body.selectedPlatforms || "[]");
-  const filePath = req.file?.path || null;
+  const filePath = req.file ? req.file.path.replace(/\\/g, '/') : null;
 
   try {
     const requestingUser = req.user;

@@ -52,7 +52,7 @@ exports.login = async (req, res) => {
       permissions: resolvedPermissions,
     };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '8h' });
 
     // Update status and lastLogin
     user.status = 'online';

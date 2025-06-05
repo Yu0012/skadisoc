@@ -14,33 +14,53 @@ const postToFacebook = async (post, client) => {
     const pageId = client.pageId;
     const pageAccessToken = client.pageAccessToken;
 
-    const url = `https://graph.facebook.com/${pageId}/photos`;
+    const hasFile = !!post.filePath;
+    let imagePath = null;
 
-    const formData = new FormData();
-    formData.append("access_token", pageAccessToken);
-    formData.append("source", fs.createReadStream(path.join(__dirname, '..', post.filePath)
-));
-    formData.append("published", "false"); // 
-    const response = await axios.post(url, formData, {
-      headers: formData.getHeaders(),
-    });
+    if (hasFile) {
+      imagePath = path.join(__dirname, '..', post.filePath);
+    }
 
-    const mediaId = response.data.id;
+    if (hasFile && ['.jpg', '.jpeg', '.png'].includes(path.extname(imagePath).toLowerCase())) {
+      const url = `https://graph.facebook.com/${pageId}/photos`;
+      const formData = new FormData();
+      formData.append("access_token", pageAccessToken);
+      formData.append("source", fs.createReadStream(path.join(__dirname, '..', post.filePath)));
+      formData.append("published", "false");
 
-    // Publish the post via feed
+      const response = await axios.post(url, formData, {
+        headers: formData.getHeaders(),
+      });
+
+      const mediaId = response.data.id;
+
+      // Publish the post via feed
+      const publishUrl = `https://graph.facebook.com/${pageId}/feed`;
+      const publishResponse = await axios.post(publishUrl, {
+        message: post.content,
+        attached_media: JSON.stringify([{ media_fbid: mediaId }]),
+        access_token: pageAccessToken,
+      });
+
+      if (publishResponse.data.id) {
+        console.log('✅ Facebook Post ID:', publishResponse.data.id);
+        return publishResponse.data.id; // ⬅️ Return post ID
+      }
+    }
+
+    // 📝 If no valid image, just post text
     const publishUrl = `https://graph.facebook.com/${pageId}/feed`;
     const publishResponse = await axios.post(publishUrl, {
       message: post.content,
-      attached_media: JSON.stringify([{ media_fbid: mediaId }]),
       access_token: pageAccessToken,
     });
 
     if (publishResponse.data.id) {
-      console.log('✅ Facebook Post ID:', publishResponse.data.id);
-      return publishResponse.data.id; // ⬅️ Return post ID
+      console.log('✅ Facebook post without image:', publishResponse.data.id);
+      return publishResponse.data.id;
     }
-
-  } catch (error) {
+  } 
+  catch (error) {
     console.error("Error posting to Facebook:", error.response?.data || error.message);
     return false;
   }
@@ -50,8 +70,9 @@ async function postToInstagram(post, client) {
   try {
     const igUserId = client.instagramBusinessId;
     const accessToken = client.accessToken;
-    
-    const mediaUrl = `${"https://e1f9-2001-e68-5456-53c8-719e-647b-e0b3-be07.ngrok-free.app"}${post.filePath}`;
+
+    const mediaUrl = `https://your-backend-domain.com/${post.filePath.replace(/\\/g, '/')}`;
+    console.log("📷 Media URL for Instagram:", mediaUrl);
 
     if (!mediaUrl) {
       console.error("❌ No valid image URL for Instagram post.");
@@ -82,13 +103,14 @@ async function postToInstagram(post, client) {
     );
 
     console.log('✅ Instagram Post ID:', publishResponse.data.id);
-    return publishResponse.data.id; // ⬅️ Return post ID
+    return publishResponse.data.id;
 
   } catch (error) {
     console.error('Error posting to Instagram:', error.response?.data || error.message);
     return false;
   }
 }
+
 
 const postToTwitter = async (post, client) => { 
   try {
@@ -111,16 +133,21 @@ const postToTwitter = async (post, client) => {
       accessToken: accessToken,
       accessSecret: accessTokenSecret,
     });
+    
+    const hasFile = !!post.filePath;
+    let imagePath = null;
 
-    const imagePath = path.join(__dirname, '..', post.filePath);
+    if (hasFile) {
+      imagePath = path.join(__dirname, '..', post.filePath);
+    }
 
-    if (['.jpg', '.jpeg', '.png'].includes(path.extname(imagePath).toLowerCase())) {
+    if (hasFile && ['.jpg', '.jpeg', '.png'].includes(path.extname(imagePath).toLowerCase())) {
       const mediaData = await twitterClient.v1.uploadMedia(imagePath); // Upload image
       tweetResponse = await twitterClient.v2.tweet(post.content, { media: { media_ids: [mediaData] }}); // Post tweet with image
       console.log(`Post successful on Twitter`);
     }
 
-    else if (['.mp4', '.avi', '.mkv', '.mov', '.gif'].includes(path.extname(imagePath).toLowerCase())) {
+    else if (hasFile && ['.mp4', '.avi', '.mkv', '.mov', '.gif'].includes(path.extname(imagePath).toLowerCase())) {
       const mediaData = await twitterClient.v1.uploadMedia(imagePath, { type: 'video' }); // Upload video
       tweetResponse = await twitterClient.v2.tweet(post.content, { media: { media_ids: [mediaData] }}); // Post tweet with video
       console.log(`Post successful on Twitter`);

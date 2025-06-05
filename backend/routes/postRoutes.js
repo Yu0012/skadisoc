@@ -9,7 +9,7 @@ const { authenticateJWT } = require('../middleware/authMiddleware');
 //Multer setup for file uploads
 const storage = multer.diskStorage({
 destination: (req, file, cb) => {
-    const uploadPath = "uploads/";
+    const uploadPath = "/uploads/";
     if (!fs.existsSync(uploadPath)) {
     fs.mkdirSync(uploadPath, { recursive: true }); // Ensure upload directory exists
     }
