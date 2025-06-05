@@ -109,7 +109,10 @@ router.put('/users/:id', authenticateJWT, authController.updateUser);
 // Delete User
 router.delete('/users/:id', authenticateJWT, authController.deleteUser);
 
+router.put('/reset-password', authenticateJWT, authController.resetPassword);
+
 // Logout
 router.post('/logout', authenticateJWT, authController.logout); // 🔥 New logout route
+
 
 module.exports = router;
