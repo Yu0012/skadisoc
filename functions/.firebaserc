@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "skadisocmed"
-  }
+    "default": "skadisocmed",
+    "skadi": "skadisocmed"
+  },
+  "targets": {},
+  "etags": {}
 }

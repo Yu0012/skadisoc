@@ -1,3 +1,7 @@
+if (process.env.FUNCTIONS_EMULATOR) {
+  require('dotenv').config();
+}
+
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -421,6 +425,19 @@ app.use('/api/auth', authRoutes);
 app.get('/test', (req, res) => res.send('✅ Test route working'));
 
 
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
-});
+if (process.env.FUNCTIONS_EMULATOR || process.env.USE_INTERVALS) {
+  // Run scheduled tasks only in local environment
+  setInterval(checkAndRefreshTokens, 24 * 60 * 60 * 1000);
+  setInterval(checkAndPostScheduledPosts, 60 * 1000);
+  checkAndRefreshTokens();
+  checkAndPostScheduledPosts();
+}
+
+// ===============================
+// 📦 Export for Firebase Functions
+// ===============================
+module.exports = {
+  app,
+  checkAndRefreshTokens,
+  checkAndPostScheduledPosts
+};
