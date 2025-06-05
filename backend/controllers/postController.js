@@ -55,6 +55,7 @@ exports.createPost = async (req, res) => {
   const content = req.body.content;
   const title = req.body.title;
   const client = req.body.client?.trim();
+  const clientName = req.body.clientName;
   const scheduledDate = req.body.scheduledDate;
   const selectedPlatforms = JSON.parse(req.body.selectedPlatforms || "[]");
   const filePath = req.file ? req.file.path.replace(/\\/g, '/') : null;
@@ -98,6 +99,7 @@ exports.createPost = async (req, res) => {
       content,
       title,
       client,
+      clientName, // ✅ Add this
       scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
       selectedPlatforms,
       filePath,

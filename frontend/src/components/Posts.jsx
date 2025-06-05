@@ -258,7 +258,7 @@ const Posts = () => {
         <tbody>
           {currentPosts.map((post) => (
             <tr key={post._id}>
-              <td>{post.client || "-"}</td>
+              <td>{post.clientName}</td>
               <td>{post.title || "-"}</td>
               <td>{post.content}</td>
 

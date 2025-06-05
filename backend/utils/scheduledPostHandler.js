@@ -181,7 +181,7 @@ const checkAndPostScheduledPosts = async () => {
 
       if (platforms.includes("facebook")) 
       {
-        const client = await FacebookClient.findOne({ pageName: post.client });
+        const client = await FacebookClient.findOne({ pageName: post.clientName });
 
         if (!client) 
           {
@@ -198,7 +198,7 @@ const checkAndPostScheduledPosts = async () => {
 
       else if (platforms.includes("instagram"))
       {
-        const client = await InstagramClient.findOne ({ username: post.client });
+        const client = await InstagramClient.findOne ({ username: post.clientName });
         if (!client) 
         {
           console.error(`Instagram client not found for post: ${post._id}`);
@@ -214,7 +214,7 @@ const checkAndPostScheduledPosts = async () => {
 
       else if (platforms.includes("twitter"))
       {
-        const client = await TwitterClient.findOne({ username: post.client });
+        const client = await TwitterClient.findOne({ username: post.clientName });
         if (!client) 
         {
           console.error(`Twitter client not found for post: ${post._id}`);

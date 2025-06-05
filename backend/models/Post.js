@@ -9,6 +9,7 @@ const postSchema = new mongoose.Schema({
   content: { type: String, required: true },
   title: String,
   client: String,
+  clientName: String,
   scheduledDate: Date,
   selectedPlatforms: [String],
   filePath: String, // Store file path if uploaded

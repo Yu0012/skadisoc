@@ -14,6 +14,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
   const [selectedPlatforms, setSelectedPlatforms] = useState(initialData?.selectedPlatforms || []);
   const [attachedFile, setAttachedFile] = useState(null);
   const [clients, setClients] = useState([]);
+  const [clientName, setClientName] = useState("");
   const [platformToggles, setPlatformToggles] = useState({
     Facebook: false,
     Instagram: false,
@@ -33,6 +34,15 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
       setSelectedPlatforms(initialData.selectedPlatforms || []);
     }
   }, [initialData]);
+
+  useEffect(() => {
+    const selected = clients.find((c) => c._id === client);
+    if (selected) {
+      setClientName(
+        selected.companyName || selected.pageName || selected.username || selected.name || ""
+      );
+    }
+  }, [client, clients]);
 
   // useEffect(() => {
   //   const fetchClients = async () => {
@@ -102,6 +112,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     formData.append("title", title);
     formData.append("content", content);
     formData.append("client", client);
+    formData.append("clientName", clientName);
     formData.append("scheduledDate", scheduledDate ? scheduledDate.toISOString() : "");
     formData.append("selectedPlatforms", JSON.stringify(selectedPlatforms));
     if (attachedFile) {
@@ -285,7 +296,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                   >
                     <option value="">Select a Client</option>
                     {clients.map((c) => (
-                      <option key={c._id} value={c.companyName || c.pageName || c.username || c.name}>
+                      <option key={c._id} value={c._id}>
                         {c.companyName || c.pageName || c.username || c.name}
                       </option>
                     ))}
