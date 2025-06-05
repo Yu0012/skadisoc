@@ -250,7 +250,7 @@ exports.deletePost = async (req, res) => {
 
     // 🌐 Delete Facebook post
     if (post.platformPostIds?.facebook) {
-      const fbClient = await FacebookClient.findOne({ pageName: post.client });
+      const fbClient = await FacebookClient.findOne({ pageName: post.clientName });
       if (fbClient && fbClient.pageAccessToken) {
         try {
           const url = `https://graph.facebook.com/${post.platformPostIds.facebook}`;
@@ -266,7 +266,7 @@ exports.deletePost = async (req, res) => {
 
     // 📸 Delete Instagram post
     if (post.platformPostIds?.instagram) {
-      const igClient = await InstagramClient.findOne({ username: post.client });
+      const igClient = await InstagramClient.findOne({ username: post.clientName });
       if (igClient && igClient.accessToken) {
         try {
           const url = `https://graph.facebook.com/${post.platformPostIds.instagram}`;
@@ -282,7 +282,7 @@ exports.deletePost = async (req, res) => {
 
     // 🐦 Delete Twitter post
     if (post.platformPostIds?.twitter) {
-      const twClient = await TwitterClient.findOne({ username: post.client });
+      const twClient = await TwitterClient.findOne({ username: post.clientName });
       if (twClient) {
         const {
           appKey,
