@@ -56,7 +56,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
       if (!platform) return;
 
       try {
-        const response = await fetch(`http://localhost:5000/api/clients/${platform.toLowerCase()}/all`, {
+        const response = await fetch(`http://localhost:5000/api/clients/${platform.toLowerCase()}/assigned`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },

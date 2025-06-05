@@ -425,3 +425,40 @@ exports.logout = async (req, res) => {
       res.status(500).json({ message: 'Logout failed' });
   }
 };
+
+// RESET PASSWORD - USED IN ResetPassword.jsx
+exports.resetPassword = async (req, res) => {
+  try {
+    const userId = req.user.id; // from JWT
+    const { currentPassword, newPassword } = req.body;
+
+    // Validation
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current and new password are required.' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Check if current password is correct
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    // Check if new password is same as current password
+    const isSame = await bcrypt.compare(newPassword, user.password);
+    if (isSame) {
+      return res.status(400).json({ message: 'New password must be different from current password' });
+    }
+
+    // Set and save new password (will be hashed by pre-save hook)
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (err) {
+    console.error('❌ Error resetting password:', err);
+    res.status(500).json({ message: 'Failed to reset password' });
+  }
+};
