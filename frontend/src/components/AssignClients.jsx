@@ -1,15 +1,14 @@
 // AssignClients.jsx
 import React, { useEffect, useState } from 'react';
+import { ImCross } from "react-icons/im";
 import { useParams, useNavigate } from 'react-router-dom';
 
-const AssignClients = () => {
-  const { userId } = useParams();
+const AssignClients = ({userId, onClose}) => {
   const [platform, setPlatform] = useState('facebook');
   const [assignedClients, setAssignedClients] = useState([]);
   const [unassignedClients, setUnassignedClients] = useState([]);
   const [selectedAssignIds, setSelectedAssignIds] = useState([]);
   const [selectedUnassignIds, setSelectedUnassignIds] = useState([]);
-  const navigate = useNavigate();
 
   const token = localStorage.getItem('token');
 
@@ -85,64 +84,65 @@ const AssignClients = () => {
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Manage Client Assignments</h2>
+    <div className="newUserMenu">
+      <ImCross className="exitButton" onClick={onClose} />
+      <div style={{ padding: 20 }}>
+        <h2>Manage Client Assignments</h2>
 
-      <label>Platform: </label>
-      <select value={platform} onChange={(e) => setPlatform(e.target.value)}>
-        <option value="facebook">Facebook</option>
-        <option value="instagram">Instagram</option>
-        <option value="twitter">Twitter</option>
-        <option value="linkedin">LinkedIn</option>
-      </select>
+        <label>Platform: </label>
+        <select value={platform} onChange={(e) => setPlatform(e.target.value)}>
+          <option value="facebook">Facebook</option>
+          <option value="instagram">Instagram</option>
+          <option value="twitter">Twitter</option>
+          <option value="linkedin">LinkedIn</option>
+        </select>
 
-      <h3>Unassigned Clients</h3>
-      <ul>
-        {unassignedClients.map(client => (
-          <li key={client._id}>
-            <label>
-              <input
-                type="checkbox"
-                checked={selectedAssignIds.includes(client._id)}
-                onChange={() => {
-                  setSelectedAssignIds(prev =>
-                    prev.includes(client._id)
-                      ? prev.filter(id => id !== client._id)
-                      : [...prev, client._id]
-                  );
-                }}
-              />
-              {client.pageName || client.name || client.username || client._id}
-            </label>
-          </li>
-        ))}
-      </ul>
-      <button onClick={handleAssign}>Assign Selected Clients</button>
+        <h3>Unassigned Clients</h3>
+        <ul>
+          {unassignedClients.map(client => (
+            <li key={client._id}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={selectedAssignIds.includes(client._id)}
+                  onChange={() => {
+                    setSelectedAssignIds(prev =>
+                      prev.includes(client._id)
+                        ? prev.filter(id => id !== client._id)
+                        : [...prev, client._id]
+                    );
+                  }}
+                />
+                {client.pageName || client.name || client.username || client._id}
+              </label>
+            </li>
+          ))}
+        </ul>
+        <button onClick={handleAssign}>Assign Selected Clients</button>
 
-      <h3>Assigned Clients</h3>
-      <ul>
-        {assignedClients.map(client => (
-          <li key={client._id}>
-            <label>
-              <input
-                type="checkbox"
-                checked={selectedUnassignIds.includes(client._id)}
-                onChange={() => {
-                  setSelectedUnassignIds(prev =>
-                    prev.includes(client._id)
-                      ? prev.filter(id => id !== client._id)
-                      : [...prev, client._id]
-                  );
-                }}
-              />
-              {client.pageName || client.name || client.username || client._id}
-            </label>
-          </li>
-        ))}
-      </ul>
-      <button onClick={handleUnassign}>Unassign Selected Clients</button>
-      <br />
-      <button onClick={() => navigate(-1)} style={{ marginTop: '20px' }}>Go Back</button>
+        <h3>Assigned Clients</h3>
+        <ul>
+          {assignedClients.map(client => (
+            <li key={client._id}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={selectedUnassignIds.includes(client._id)}
+                  onChange={() => {
+                    setSelectedUnassignIds(prev =>
+                      prev.includes(client._id)
+                        ? prev.filter(id => id !== client._id)
+                        : [...prev, client._id]
+                    );
+                  }}
+                />
+                {client.pageName || client.name || client.username || client._id}
+              </label>
+            </li>
+          ))}
+        </ul>
+        <button onClick={handleUnassign}>Unassign Selected Clients</button>
+      </div>
     </div>
   );
 };

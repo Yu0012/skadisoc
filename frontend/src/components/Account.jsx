@@ -5,6 +5,7 @@ import { ImCross } from "react-icons/im";
 import { createPortal } from "react-dom";
 import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
 import CreateUserForm from "../components/CreateUserForm";
+import AssignClients from "../components/AssignClients";
 import { useNavigate } from "react-router-dom";
 
 
@@ -16,6 +17,8 @@ const Accounts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [accountsPerPage] = useState(10);
   const [createUserDropdown, setCreateUserDropdown] = useState(false);
+  const [assignClientPopup, setAssignClientPopup] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
   const navigate = useNavigate();
 
   //refs for modal and outside click detection
@@ -319,6 +322,15 @@ const Accounts = () => {
           document.body
         )}
 
+        {assignClientPopup && selectedUserId &&
+          createPortal(
+            <AssignClients
+              userId={selectedUserId}
+              onClose={() => setAssignClientPopup(false)}
+            />,
+            document.body
+          )
+        }
 
       {/* Accounts Table */}
       <table className="posts-table">
@@ -350,10 +362,14 @@ const Accounts = () => {
                     >
                       <button onClick={() => handleEditAccount(account)}>Edit</button>
                       {account.role === 'editor' && (
-  <button onClick={() => navigate(`/assign-clients/${account._id}`)}>
-    Assigned Clients
-  </button>
-)}
+                        <button onClick={() => {
+                          setSelectedUserId(account._id);
+                          setAssignClientPopup(true);
+                          setAccountMenuDropdown(null); // Close dropdown after opening assign clients
+                        }}>
+                          Assign Clients
+                        </button>
+                      )}
                       <button className="delete-btn" onClick={() => handleDelete(account._id)}>Delete</button>
                     </div>,
                     document.body
