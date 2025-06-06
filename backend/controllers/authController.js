@@ -462,3 +462,85 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ message: 'Failed to reset password' });
   }
 };
+
+const Post = require("../models/Post"); // Make sure you import your Post model
+
+exports.getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id)
+      .select("-password")
+      .lean();
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Fetch post stats for this user
+    const posts = await Post.find({ createdBy: req.user._id }).lean(); // or use user._id if you're using user ID instead
+
+    const postStats = {
+      total: posts.length,
+      draft: posts.filter(p => p.status === "draft").length,
+      posted: posts.filter(p => p.status === "posted").length,
+      scheduled: posts.filter(p => p.status === "scheduled").length,
+    };
+
+    res.json({ ...user, postStats });
+  } catch (err) {
+    console.error("❌ Failed to fetch user profile:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// GET posts by createdBy user
+exports.getPostsByUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const posts = await Post.find({ createdBy: userId }).select('title _id createdAt status');
+
+    if (!posts || posts.length === 0) {
+      return res.status(404).json({ message: 'No posts found for this user' });
+    }
+
+    res.json(posts);
+  } catch (err) {
+    console.error('❌ Error fetching posts by user:', err);
+    res.status(500).json({ message: 'Error fetching posts' });
+  }
+};
+
+// ACTIVATE / DEACTIVATE USER ACCOUNT (ONLY SUPERADMIN WITH ADMIN ROLE CAN)
+exports.isActiveUpdate = async (req, res) => {
+  const { userId, isActive } = req.body;
+
+  // Check if the requester is a superadmin with admin role
+  if (!(req.user.roleType === 'superadmin' && req.user.role === 'admin')) {
+    console.log(`⛔ Unauthorized attempt by ${req.user.username} to change account status`);
+    return res.status(403).json({ message: 'Only superadmin with admin role can update user activation status' });
+  }
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      console.log('❌ User not found for isActive update');
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Prevent self-deactivation
+    if (user._id.toString() === req.user.id) {
+      console.log('⛔ Superadmin attempted to deactivate own account');
+      return res.status(400).json({ message: 'You cannot change activation status of your own account' });
+    }
+
+    user.isActive = isActive;
+    await user.save();
+
+    console.log(`✅ User ${user.username} activation status updated to ${isActive}`);
+    res.json({ message: `User ${user.username} has been ${isActive ? 'activated' : 'deactivated'} successfully.` });
+  } catch (error) {
+    console.error('❌ Error updating user activation status:', error);
+    res.status(500).json({ message: 'Failed to update activation status' });
+  }
+};
