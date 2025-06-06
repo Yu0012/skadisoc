@@ -2906,14 +2906,19 @@ body {
 
 .status-highlight.posted {
   color: var(--status-posted);
+  font-weight: bold;
 }
 
 .status-highlight.draft {
-  color: var(--status-draft);
+  color: #ff9800; /* Clear, legible orange */
+  font-weight: 600;
+  font-weight: bold;
 }
 
 .status-highlight.scheduled {
-  color: var(--status-scheduled);
+  color: #007bff; /* Bootstrap blue */
+  font-weight: 600;
+  font-weight: bold;
 }
 
 /* Post Modal */
