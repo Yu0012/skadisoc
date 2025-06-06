@@ -23,6 +23,7 @@ const twitterClientsRoute = require('./routes/twitterClients');
 const postRoutes = require('./routes/postRoutes');
 const userRoutes = require('./routes/userRoutes');
 const { checkAndPostScheduledPosts } = require('./utils/scheduledPostHandler');
+const functions = require('firebase-functions');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -406,6 +407,16 @@ app.get('/', (req, res) => {
   res.send('🚀 Welcome to the API root');
 });
 
+app.get('/api/test-all-posts', async (req, res) => {
+  try {
+    const posts = await Post.find();
+    res.json(posts);
+  } catch (err) {
+    console.error("Error fetching all posts:", err);
+    res.status(500).json({ error: "Failed to fetch posts" });
+  }
+});
+
 // ===============================
 // 📌 **Start Server**
 // ===============================
@@ -421,6 +432,8 @@ app.use('/api/auth', authRoutes);
 app.get('/test', (req, res) => res.send('✅ Test route working'));
 
 
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`✅ Server running on http://localhost:${PORT}`);
+// });
+
+exports.api = functions.https.onRequest(app);
