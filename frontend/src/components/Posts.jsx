@@ -8,6 +8,7 @@ import facebookIcon from '../assets/facebook.png';
 import twitterIcon from '../assets/twitter.png';
 import instagramIcon from '../assets/instagram.png';
 import linkedinIcon from '../assets/linkedin.png';
+import Swal from 'sweetalert2';
 
 const Posts = () => {
   // State declarations
@@ -29,23 +30,24 @@ const Posts = () => {
   //Replaces text to icons for social media
   const platformIcons = {
     facebook: <img src={facebookIcon} className="inline-icon" alt="Facebook" />,
-     twitter: <img src={twitterIcon} className="inline-icon" alt="Twitter"/>,
-     instagram: <img src={instagramIcon} className="inline-icon" alt="Instagram"/>,
-     linkedin: <img src={linkedinIcon} className="inline-icon" alt="LinkedIn"/>
+    twitter: <img src={twitterIcon} className="inline-icon" alt="Twitter"/>,
+    instagram: <img src={instagramIcon} className="inline-icon" alt="Instagram"/>,
+    linkedin: <img src={linkedinIcon} className="inline-icon" alt="LinkedIn"/>
   };
 
   // Fetch posts from backend
   const fetchPosts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/api/posts", {headers: { Authorization: `Bearer ${token}` } });
+      const response = await fetch("http://localhost:5000/api/posts", {
+        headers: { Authorization: `Bearer ${token}` } 
+      });
       if(!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText);
       };
       const data = await response.json();
       setPosts(data.posts);
-
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -75,7 +77,7 @@ const Posts = () => {
 
   // Edit Post
   const handleEditPost = async (postId) => {
-  setPostMenuDropdown(null); // 👈 Close dropdown
+    setPostMenuDropdown(null); // 👈 Close dropdown
     const fullPost = await fetchPostById(postId);
     if (!fullPost) {
       alert("Failed to load post");
@@ -91,10 +93,31 @@ const Posts = () => {
     setIsModalOpen(true);
   };
 
-  // Delete Post
+  // Delete Post with enhanced SweetAlert2 confirmation
   const handleDeletePost = async (postId) => {
-    if (!window.confirm("You sure you want to delete this post?")) return;
-  
+    setPostMenuDropdown(null); // 🔄 Close dropdown immediately
+
+    const result = await Swal.fire({
+      title: 'Delete this post?',
+      text: 'This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#0D286E',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel',
+      background: 'white',
+      color: '#0a0f5c',
+      backdrop: true,                        // ✅ Darkens and locks background
+      allowOutsideClick: false,             // ✅ Clicking outside doesn't dismiss
+      allowEscapeKey: false,                // ✅ Esc doesn't close modal
+      customClass: {
+        popup: 'swal2-border-radius',
+      }
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
       const res = await fetch(`http://localhost:5000/api/posts/${postId}`, {
         method: "DELETE",
@@ -102,16 +125,31 @@ const Posts = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-  
+
       if (!res.ok) throw new Error("Failed to delete post");
-  
+
       setPosts((prev) => prev.filter((p) => p._id !== postId));
+
+      await Swal.fire({
+        title: 'Deleted!',
+        text: 'Your post has been successfully deleted.',
+        icon: 'success',
+        confirmButtonColor: '#0D286E',
+        background: 'white',
+        color: '#0a0f5c',
+      });
     } catch (err) {
       console.error("Delete error:", err);
-      alert("Failed to delete the post. Please try again.");
+      await Swal.fire({
+        title: 'Error',
+        text: 'Failed to delete the post. Please try again.',
+        icon: 'error',
+        confirmButtonColor: '#0D286E',
+        background: 'white',
+        color: '#0a0f5c',
+      });
     }
   };
-  
 
   // For edit post get data by ID
   const fetchPostById = async (id) => {
@@ -130,7 +168,7 @@ const Posts = () => {
     }
   };
   
-//toggle dropdown menu for a post
+  //toggle dropdown menu for a post
   const menuDropdown = (event, postID) => {
     event.stopPropagation();
     if (postMenuDropdown === postID) {
@@ -153,7 +191,6 @@ const Posts = () => {
     return valueToSearch.includes(searchQuery.toLowerCase());
   });
 
-
   // 📌 Sort posts based on selected criteria
   const sortedPosts = [...filteredPosts].sort((a, b) => {
     if (!sortConfig.key) return 0;
@@ -166,8 +203,7 @@ const Posts = () => {
     return 0;
   });
   
-  
-//close dropdown menu in outside click
+  //close dropdown menu in outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!event.target.closest(".post-actions-dropdown")) {
@@ -178,12 +214,11 @@ const Posts = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-//pagination logic
+  //pagination logic
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-
 
   //handle single checkbox change
   const handleCheckboxChange = (postID) => {
@@ -231,7 +266,6 @@ const Posts = () => {
           <option value="selectedPlatforms">Platform</option>
           <option value="status">Status</option>
           </select>
-
 
           <div className="search-box">
             <input
@@ -322,45 +356,49 @@ const Posts = () => {
         </div>
       )}
 
-      {/* Pagination */}
-      <div className="pagination-container">
-        <p>
+      {/* Updated Pagination with disabled state */}
+      <div className={`pagination-container ${isModalOpen || postMenuDropdown ? 'disabled' : ''}`}>
+        <p className={`${isModalOpen || postMenuDropdown ? 'pagination-disabled-text' : ''}`}>
           Showing {indexOfFirstPost + 1} to{" "}
           {Math.min(indexOfLastPost, filteredPosts.length)} of{" "}
           {filteredPosts.length} entries
         </p>
-        <div className="pagination">
-        <FaAnglesLeft 
-             className="pagination-navigation" 
-             onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
-        />
-        <FaAngleLeft 
-          className="pagination-navigation" 
-        onClick={() => setCurrentPage(currentPage - 1)}
-        disabled={currentPage === 1} 
-       />
+
+        <div className={`pagination ${isModalOpen || postMenuDropdown ? 'disabled' : ''}`}>
+          <FaAnglesLeft
+            className="pagination-navigation"
+            onClick={() => !(isModalOpen || postMenuDropdown) && setCurrentPage(1)}
+            disabled={currentPage === 1 || isModalOpen || postMenuDropdown}
+          />
+          <FaAngleLeft
+            className="pagination-navigation"
+            onClick={() => !(isModalOpen || postMenuDropdown) && setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1 || isModalOpen || postMenuDropdown}
+          />
 
           {[...Array(totalPages).keys()]
             .slice(Math.max(0, currentPage - 2), currentPage + 1)
             .map((number) => (
               <button
                 key={number + 1}
-                onClick={() => setCurrentPage(number + 1)}
+                onClick={() => !(isModalOpen || postMenuDropdown) && setCurrentPage(number + 1)}
                 className={currentPage === number + 1 ? "active" : ""}
+                disabled={isModalOpen || postMenuDropdown}
               >
                 {number + 1}
               </button>
             ))}
-          <FaAngleRight 
-              className="pagination-navigation"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
+          
+          <FaAngleRight
+            className="pagination-navigation"
+            onClick={() => !(isModalOpen || postMenuDropdown) && setCurrentPage(currentPage + 1)}
+            disabled={currentPage === totalPages || isModalOpen || postMenuDropdown}
           />
-            <FaAnglesRight
-              className="pagination-navigation"
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages}
-            />
+          <FaAnglesRight
+            className="pagination-navigation"
+            onClick={() => !(isModalOpen || postMenuDropdown) && setCurrentPage(totalPages)}
+            disabled={currentPage === totalPages || isModalOpen || postMenuDropdown}
+          />
         </div>
       </div>
       </div>
@@ -413,7 +451,6 @@ const Posts = () => {
             platform={editingPost?.selectedPlatforms?.[0] || selectedPlatforms}
           />
       )}
-
     </div>
   );
 };
