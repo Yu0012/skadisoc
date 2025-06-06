@@ -109,6 +109,14 @@ router.put('/users/:id', authenticateJWT, authController.updateUser);
 // Delete User
 router.delete('/users/:id', authenticateJWT, authController.deleteUser);
 
+router.get("/me", authenticateJWT, authController.getMe);
+
+router.get('/user/:userId', authenticateJWT, authController.getPostsByUser);
+
+// Activate / Deactivate User (only superadmin with admin role)
+router.put('/user/activation', authenticateJWT, authController.isActiveUpdate);
+
+
 router.put('/reset-password', authenticateJWT, authController.resetPassword);
 
 // Logout

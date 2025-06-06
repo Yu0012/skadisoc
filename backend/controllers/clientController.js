@@ -22,7 +22,7 @@ exports.assignUserToClient = async (req, res) => {
   const { platform, clientId, userId } = req.params;
 
   // Check permissions
-  if (!(req.user.roleType === 'superadmin' || req.user.role === 'admin')) {
+  if (!(req.user.roleType === 'superadmin' && req.user.role === 'admin')) {
     return res.status(403).json({ message: 'Only superadmin with admin role can assign users' });
   }
 
@@ -73,7 +73,7 @@ exports.unassignUserFromClient = async (req, res) => {
   const { platform, clientId, userId } = req.params;
 
   // Check permissions
-  if (!(req.user.roleType === 'superadmin' || req.user.role === 'admin')) {
+  if (!(req.user.roleType === 'superadmin' && req.user.role === 'admin')) {
     return res.status(403).json({ message: 'Only superadmin with admin role can unassign users' });
   }
 
@@ -107,7 +107,7 @@ exports.assignMultipleClientsToUser = async (req, res) => {
   const { clientIds } = req.body;
 
   // Check permissions
-  if (!(req.user.roleType === 'superadmin' || req.user.role === 'admin')) {
+  if (!(req.user.roleType === 'superadmin' && req.user.role === 'admin')) {
     return res.status(403).json({ message: 'Only superadmin with admin role can assign clients' });
   }
 
@@ -176,7 +176,7 @@ exports.unassignMultipleClientsFromUser = async (req, res) => {
   const { clientIds } = req.body;
 
   // Check permissions
-  if (!(req.user.roleType === 'superadmin' || req.user.role === 'admin')) {
+  if (!(req.user.roleType === 'superadmin' && req.user.role === 'admin')) {
     return res.status(403).json({ message: 'Only superadmin or admin can unassign clients' });
   }
 
@@ -323,8 +323,8 @@ exports.getAllAssignedClients = async (req, res) => {
 exports.deleteOneClient = async (req, res) => {
   const { platform, clientId } = req.params;
 
-  // Check permissions - only superadmin or admin can delete clients
-  if (!(req.user.roleType === 'superadmin' || req.user.role === 'admin')) {
+  // Check permissions - only superadmin with admin role can delete clients
+  if (!(req.user.roleType === 'superadmin' && req.user.role === 'admin')) {
     return res.status(403).json({ message: 'Only superadmin with admin role can delete clients' });
   }
 
