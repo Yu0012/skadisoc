@@ -148,7 +148,8 @@ const UserProfile = () => {
 
   const [stats, setStats] = useState({
     totalPosts: 0,
-    published: 0,
+    draft: 0,
+    posted: 0,
     scheduled: 0,
     lastLogin: "", // You can set this on backend if needed
   });
@@ -179,7 +180,8 @@ const UserProfile = () => {
 
         setStats({
           totalPosts: data.postStats?.total || 0,
-          published: data.postStats?.posted || 0,
+          draft: data.postStats?.draft || 0,
+          posted: data.postStats?.posted || 0,
           scheduled: data.postStats?.scheduled || 0,
           lastLogin: data.lastLogin || "Unavailable",
         });
@@ -272,7 +274,8 @@ const UserProfile = () => {
               <h3>📊 Activity Summary</h3>
               <ul>
                 <li>Total Posts: <strong>{stats.totalPosts}</strong></li>
-                <li>Published Posts: <strong>{stats.published}</strong></li>
+                <li>Draft Posts: <strong>{stats.draft}</strong></li>
+                <li>Posted Posts: <strong>{stats.posted}</strong></li>
                 <li>Scheduled Posts: <strong>{stats.scheduled}</strong></li>
                 <li>Last Login: <strong>{stats.lastLogin}</strong></li>
               </ul>
