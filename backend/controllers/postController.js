@@ -58,7 +58,7 @@ exports.createPost = async (req, res) => {
   const clientName = req.body.clientName;
   const scheduledDate = req.body.scheduledDate;
   const selectedPlatforms = JSON.parse(req.body.selectedPlatforms || "[]");
-  const filePath = req.file ? req.file.path.replace(/\\/g, '/') : null;
+  const filePath = req.file ? `/uploads/${req.file.filename}` : null;
 
   try {
     const requestingUser = req.user;
@@ -177,7 +177,12 @@ exports.createPost = async (req, res) => {
 // UPDATE POST
 exports.updatePost = async (req, res) => {
   const { id } = req.params;
-  const updateData = req.body;
+  const updateData = {
+    ...req.body,
+    selectedPlatforms: JSON.parse(req.body.selectedPlatforms || "[]"),
+    scheduledDate: req.body.scheduledDate || null,
+    filePath: req.file ? `/uploads/${req.file.filename}` : undefined,
+  };
 
   try {
     const requestingUser = req.user;

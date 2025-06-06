@@ -109,7 +109,7 @@ const Navbar = () => {
         )}
         {hasMenuAccess("calendar") && (
           <Link to="/calendar" className={location.pathname === "/calendar" ? "active" : ""}>
-            Logs
+            Calendar
           </Link>
         )}
         {hasMenuAccess("account") && (

@@ -121,6 +121,8 @@ const AssignClients = ({userId, onClose}) => {
             </label>
           ))}
         </div>
+        <br></br>
+        <button onClick={handleAssign}>Assign Selected Clients</button>
 
         <h3>Assigned Clients</h3>
         <div className="assign-users-container">
