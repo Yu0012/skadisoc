@@ -33,17 +33,45 @@ const EventCalendar = () => {
   const [activeClients, setActiveClients] = useState(new Set()); // Clients currently selected
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar toggle state
 
+  const token = localStorage.getItem("token"); //JWT token for authentication
+
   // Initial fetch of all posts
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/posts");
-        const posts = res.data;
-        const clientsSet = new Set(posts.map(p => p.client).filter(Boolean));
-        const uniqueClients = Array.from(clientsSet);
-        setAvailableClients(uniqueClients);
-        setActiveClients(new Set(uniqueClients));
-        setEvents(formatEvents(posts));
+        const res = await axios.get("http://localhost:5000/api/posts", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const posts = Array.isArray(res.data.posts) ? res.data.posts : [];
+        const platforms = ["facebook", "instagram", "twitter", "linkedin"];
+        let allClients = [];
+
+        for (let platform of platforms) {
+          try {
+            const response = await axios.get(`http://localhost:5000/api/clients/${platform}/assigned`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const platformClients = response.data.clients.map(client => ({
+              id: client._id,
+              name: client.pageName || client.username || client.name,
+            }));
+            allClients.push(...platformClients);
+          } catch (err) {
+            console.error(`❌ Failed to fetch ${platform} clients`, err);
+          }
+        }
+
+        const uniqueNames = [...new Set(allClients.map(c => c.name))];
+        setAvailableClients(uniqueNames);
+        setActiveClients(new Set(uniqueNames));
+
+        if (Array.isArray(posts)) {
+          setEvents(formatEvents(posts));
+        } else {
+          console.warn("🛑 Unexpected post data format:", posts);
+          setEvents([]);
+        }
+
       } catch (err) {
         console.error("Failed to fetch posts:", err);
       }
@@ -55,10 +83,17 @@ const EventCalendar = () => {
   useEffect(() => {
     const fetchFilteredPosts = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/posts");
-        const posts = res.data;
+        const res = await axios.get("http://localhost:5000/api/posts", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const posts = Array.isArray(res.data.posts) ? res.data.posts : [];
         const filtered = posts.filter(post => activeClients.has(post.client));
-        setEvents(formatEvents(filtered));
+        if (Array.isArray(posts)) {
+          setEvents(formatEvents(posts));
+        } else {
+          console.warn("🛑 Unexpected post data format:", posts);
+          setEvents([]);
+        }
       } catch (err) {
         console.error("Failed to filter posts:", err);
       }
@@ -70,7 +105,7 @@ const EventCalendar = () => {
   const formatEvents = (posts) => {
     return posts.map(post => ({
       id: post._id,
-      title: post.client || "Untitled Post",
+      title: post.clientName || "Untitled Post",
       start: post.scheduledDate,
       extendedProps: {
         client: post.client,

@@ -27,7 +27,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json()); // Use built-in JSON parsing
-app.use(express.static('uploads')); // Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(passport.initialize()); // Initialize passport
 
 app.use('/api/facebook-clients', facebookClientsRoute);

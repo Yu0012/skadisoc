@@ -2,6 +2,7 @@
 const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
+const path = require('path');
 const router = express.Router();
 const postController = require('../controllers/postController');
 const { authenticateJWT } = require('../middleware/authMiddleware');
@@ -9,7 +10,7 @@ const { authenticateJWT } = require('../middleware/authMiddleware');
 //Multer setup for file uploads
 const storage = multer.diskStorage({
 destination: (req, file, cb) => {
-    const uploadPath = "/uploads/";
+    const uploadPath = path.join(__dirname, '..', 'uploads');
     if (!fs.existsSync(uploadPath)) {
     fs.mkdirSync(uploadPath, { recursive: true }); // Ensure upload directory exists
     }
@@ -31,7 +32,8 @@ router.get('/:id', authenticateJWT, postController.getPostById);
 router.post('/', authenticateJWT, upload.single('file'), postController.createPost);
 
 // Update post
-router.put('/:id', authenticateJWT, postController.updatePost);
+router.put('/:id', authenticateJWT, upload.single('file'), postController.updatePost);
+
 
 // Delete User
 router.delete('/:id', authenticateJWT, postController.deletePost);

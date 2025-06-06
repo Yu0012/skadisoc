@@ -141,57 +141,6 @@ const CreateUserForm = ({
                 )}
               </div>
             </div>
-
-            <div className="client-assignment">
-              <h4>Assigned Clients (Optional)</h4>
-              <div className="platform-navbar">
-                {["facebook", "instagram", "twitter"].map((platform) => (
-                  <button
-                    key={platform}
-                    className={selectedPlatform === platform ? "active" : ""}
-                    onClick={() => handlePlatformChange(platform)}
-                    type="button"
-                  >
-                    {platform.charAt(0).toUpperCase() + platform.slice(1)}
-                  </button>
-                ))}
-              </div>
-
-              {platformClients.length > 0 && (
-                <div className="client-checkboxes">
-                  <label>Assign {selectedPlatform} Clients:</label>
-                  <div className="assign-users-container">
-                    {platformClients.map((client) => {
-                      const isChecked =
-                        selectedPlatform === "facebook"
-                          ? facebookClients.includes(client._id)
-                          : selectedPlatform === "instagram"
-                          ? instagramClients.includes(client._id)
-                          : twitterClients.includes(client._id);
-
-                          const toggleClient = (platform, clientId) => {
-                            setSelectedClients((prev) => {
-                              const current = prev[platform] || [];
-                              return {
-                                ...prev,
-                                [platform]: current.includes(clientId)
-                                  ? current.filter(id => id !== clientId)
-                                  : [...current, clientId]
-                              };
-                            });
-                          };
-
-                      return (
-                        <label key={client._id}>
-                          <input type="checkbox" checked={isChecked} onChange={toggleClient} />
-                          {client.companyName || client.username || client.pageName || client._id}
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
         </div>
         <input className="create-post-btn" type="submit" value="Save" style={{color: "white"}} />

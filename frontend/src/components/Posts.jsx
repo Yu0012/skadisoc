@@ -75,15 +75,20 @@ const Posts = () => {
 
   // Edit Post
   const handleEditPost = async (postId) => {
-    setPostMenuDropdown(null); // 👈 Close dropdown when Edit is clicked
+  setPostMenuDropdown(null); // 👈 Close dropdown
     const fullPost = await fetchPostById(postId);
-    if (fullPost) {
-      setEditingPost(fullPost);
-      setIsModalOpen(true);
-      setPostMenuDropdown(null); 
-    } else {
+    if (!fullPost) {
       alert("Failed to load post");
+      return;
     }
+
+    if (fullPost.status === "posted") {
+      alert("Posted content cannot be edited.");
+      return;
+    }
+
+    setEditingPost(fullPost);
+    setIsModalOpen(true);
   };
 
   // Delete Post
@@ -111,7 +116,11 @@ const Posts = () => {
   // For edit post get data by ID
   const fetchPostById = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/posts/${id}`);
+      const response = await fetch(`http://localhost:5000/api/posts/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       if (!response.ok) throw new Error("Failed to fetch post");
       const data = await response.json();
       return data;
@@ -282,16 +291,15 @@ const Posts = () => {
               <td>
                 {/* Ellipsis icon and dropdown */}
                 <FaEllipsisV className="popup-icon" onClick={(e) => menuDropdown(e, post._id)} />
-                {postMenuDropdown === post._id &&
-                  createPortal(
-                    <div
-                      className="post-actions-dropdown"
-                      style={{ top: menuPosition.top, left: menuPosition.left }}
-                    >
-                      <button onClick={() => handleEditPost(post._id)}>Edit</button>
-                      <button className="delete-btn" onClick={() => handleDeletePost(post._id)}>Delete</button>
-                    </div>,
-                    document.body
+                  {postMenuDropdown === post._id &&
+                    createPortal(
+                      <div className="post-actions-dropdown" style={{ top: menuPosition.top, left: menuPosition.left }}>
+                        {post.status !== "posted" && (
+                          <button onClick={() => handleEditPost(post._id)}>Edit</button>
+                        )}
+                        <button className="delete-btn" onClick={() => handleDeletePost(post._id)}>Delete</button>
+                      </div>,
+                      document.body
                   )}
               </td>
             </tr>
