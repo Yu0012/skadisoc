@@ -8,7 +8,6 @@ import facebookIcon from '../assets/facebook.png';
 import twitterIcon from '../assets/twitter.png';
 import instagramIcon from '../assets/instagram.png';
 import linkedinIcon from '../assets/linkedin.png';
-import Swal from 'sweetalert2'; // Import SweetAlert2 for beautiful alerts
 
 const Posts = () => {
   // State declarations
@@ -79,12 +78,12 @@ const Posts = () => {
   setPostMenuDropdown(null); // 👈 Close dropdown
     const fullPost = await fetchPostById(postId);
     if (!fullPost) {
-      Swal.fire('Error', 'Failed to load post', 'error');
+      alert("Failed to load post");
       return;
     }
 
     if (fullPost.status === "posted") {
-      Swal.fire('Info', 'Posted content cannot be edited.', 'info');
+      alert("Posted content cannot be edited.");
       return;
     }
 
@@ -92,38 +91,27 @@ const Posts = () => {
     setIsModalOpen(true);
   };
 
-  // Delete Post - UPDATED with SweetAlert2 confirmation
+  // Delete Post
   const handleDeletePost = async (postId) => {
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: "This action cannot be undone.",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#CF6679',
-      cancelButtonColor: '#d3d3d3',
-      confirmButtonText: 'Yes, delete it',
-      cancelButtonText: 'Cancel'
-    });
-
-    if (result.isConfirmed) {
-      try {
-        const res = await fetch(`http://localhost:5000/api/posts/${postId}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-
-        if (!res.ok) throw new Error("Failed to delete post");
-
-        setPosts((prev) => prev.filter((p) => p._id !== postId));
-        Swal.fire('Deleted!', 'Your post has been deleted.', 'success');
-      } catch (err) {
-        console.error("Delete error:", err);
-        Swal.fire('Error', 'Failed to delete the post. Please try again.', 'error');
-      }
+    if (!window.confirm("You sure you want to delete this post?")) return;
+  
+    try {
+      const res = await fetch(`http://localhost:5000/api/posts/${postId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+  
+      if (!res.ok) throw new Error("Failed to delete post");
+  
+      setPosts((prev) => prev.filter((p) => p._id !== postId));
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Failed to delete the post. Please try again.");
     }
   };
+  
 
   // For edit post get data by ID
   const fetchPostById = async (id) => {
