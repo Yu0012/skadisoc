@@ -4026,3 +4026,20 @@ label {
   --dropdown-bg: #2f3038;
   --dropdown-hover: #3c3c47;
 }
+
+/* ✅ 模糊背景用在 SweetAlert2 弹窗显示时 */
+.swal-blur .client-list,
+.swal-blur .search-container,
+.swal-blur .posts-header,
+.swal-blur .navbar,
+.swal-blur .page-wrapper {
+  filter: blur(4px);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ✅ SweetAlert2 样式优化（可选） */
+.swal2-popup.swal-popup {
+  border-radius: 12px;
+  padding: 25px;
+}

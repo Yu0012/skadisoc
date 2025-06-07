@@ -132,10 +132,15 @@ const Accounts = () => {
     setAccountMenuDropdown(null);
   };
 
-  // Handle account deletion with confirmation
+  /**
+   * Handles the deletion of a user account with confirmation
+   * @param {string} id - The ID of the user account to delete
+   */
   const handleDelete = async (id) => {
-    setIsDeleteConfirmOpen(true); // Activate blur effect
+    setAccountMenuDropdown(null); // Close any open account menu dropdown
+    setIsDeleteConfirmOpen(true); // Activate blur effect for background
     
+    // Show confirmation dialog using SweetAlert
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: "This user will be permanently deleted.",
@@ -144,14 +149,16 @@ const Accounts = () => {
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Yes, delete it!',
-      backdrop: true
+      backdrop: true, // Show backdrop for modal focus
     });
 
-    setIsDeleteConfirmOpen(false); // Deactivate blur effect
+    setIsDeleteConfirmOpen(false); // Deactivate blur effect after dialog closes
 
+    // Proceed with deletion if user confirmed
     if (result.isConfirmed) {
       const token = localStorage.getItem("token");
       try {
+        // Send DELETE request to API endpoint
         const response = await fetch(`http://localhost:5000/api/auth/users/${id}`, {
           method: 'DELETE',
           headers: {
@@ -160,12 +167,16 @@ const Accounts = () => {
         });
 
         if (response.ok) {
+          // Show success notification
           Swal.fire('Deleted!', 'The user has been deleted.', 'success');
-          fetchAccounts(); // Refresh account list
+          // Refresh the account list
+          fetchAccounts();
         } else {
+          // Show error if deletion failed
           Swal.fire('Error', 'Failed to delete user', 'error');
         }
       } catch (err) {
+        // Show error if network request failed
         Swal.fire('Error', 'An error occurred while deleting the user', 'error');
       }
     }
