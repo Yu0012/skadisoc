@@ -108,9 +108,19 @@ const Posts = () => {
       cancelButtonText: 'Cancel',
       background: 'white',
       color: '#0a0f5c',
-      backdrop: true,                        // ✅ Darkens and locks background
-      allowOutsideClick: false,             // ✅ Clicking outside doesn't dismiss
-      allowEscapeKey: false,                // ✅ Esc doesn't close modal
+      backdrop: `
+        rgba(0, 0, 0, 0.4)
+        left top
+        no-repeat
+        fixed
+        !important
+      `,
+      didOpen: () => {
+        document.body.classList.add("swal-blur");
+      },
+      willClose: () => {
+        document.body.classList.remove("swal-blur");
+      },
       customClass: {
         popup: 'swal2-border-radius',
       }
@@ -241,90 +251,96 @@ const Posts = () => {
     });
   };
 
+  const handleDeselectAll = () => {
+    setSelectedPosts([]);
+    setIsAllSelected(false);
+  };
+
   return (
-    <div>
-     <div className={`posts-container ${isModalOpen ? "blurred" : ""}`}>
-      {/*Header and actions*/}
-      <div className="posts-header">
-      <div className="welcome-message">
-           <p>Welcome,</p>
-           <h2 className="user-name">Amber Broos</h2>
-       </div>
-      </div>
-
-      {/*search and catogories filter*/}
-      <div className="search-container">
-        <div className="search-container-left">
-          <select
-            className="dropdown"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-          <option value="All Categories">All Categories</option>
-          <option value="client">Client</option>
-          <option value="content">Content</option>
-          <option value="selectedPlatforms">Platform</option>
-          <option value="status">Status</option>
-          </select>
-
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder={`Search by ${category === "All Categories" ? "any field" : category}`}
-              value={searchQuery}
-              onChange={handleSearch}
-            />
-            <FaSearch className="search-icon" />
+    <div className="posts-page-wrapper">
+      {/* Main content container */}
+      <div className={`posts-container ${isModalOpen ? "blurred" : ""}`}>
+        {/*Header and actions*/}
+        <div className="posts-header">
+          <div className="welcome-message">
+            <p>Welcome,</p>
+            <h2 className="user-name">Amber Broos</h2>
           </div>
         </div>
-     
-        <div className="posts-actions">
-          <FaSyncAlt className="refresh-icon" onClick={handleRefresh} />
-          <button className="create-post-btn" onClick={handleCreatePostClick}>
-            <FaPlus /> Create Post
-          </button>
+
+        {/*search and catogories filter*/}
+        <div className="search-container">
+          <div className="search-container-left">
+            <select
+              className="dropdown"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="All Categories">All Categories</option>
+              <option value="client">Client</option>
+              <option value="content">Content</option>
+              <option value="selectedPlatforms">Platform</option>
+              <option value="status">Status</option>
+            </select>
+
+            <div className="search-box">
+              <input
+                type="text"
+                placeholder={`Search by ${category === "All Categories" ? "any field" : category}`}
+                value={searchQuery}
+                onChange={handleSearch}
+              />
+              <FaSearch className="search-icon" />
+            </div>
+          </div>
+        
+          <div className="posts-actions">
+            <FaSyncAlt className="refresh-icon" onClick={handleRefresh} />
+            <button className="create-post-btn" onClick={handleCreatePostClick}>
+              <FaPlus /> Create Post
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Posts Table */}
-      <table className="posts-table">
-        <thead>
-          <tr>
-            <th onClick={() => handleSort("client")}>Client</th>
-            <th onClick={() => handleSort("title")}>Title</th>
-            <th>Content</th>
-            <th onClick={() => handleSort("selectedPlatforms")}>Platforms</th>
-            <th  onClick={() => handleSort("status")}>Status</th>            
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentPosts.map((post) => (
-            <tr key={post._id}>
-              <td>{post.clientName}</td>
-              <td>{post.title || "-"}</td>
-              <td>{post.content}</td>
+        {/* Posts Table */}
+        <table className="posts-table">
+          <thead>
+            <tr>
+              <th onClick={() => handleSort("client")}>Client</th>
+              <th onClick={() => handleSort("title")}>Title</th>
+              <th>Content</th>
+              <th onClick={() => handleSort("selectedPlatforms")}>Platforms</th>
+              <th onClick={() => handleSort("status")}>Status</th>            
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentPosts.map((post) => (
+              <tr key={post._id}>
+                <td>{post.clientName}</td>
+                <td>{post.title || "-"}</td>
+                <td>{post.content}</td>
 
-              <td> 
-                   {/* For each post, render the icon that corresponds to the social media that's associated with the post. 
-                       Unavailable icons would render the text instead, and posts without platforms would have a dash instead */}
-                   {post.selectedPlatforms.length > 0
-                     ? post.selectedPlatforms.map((platform, index) => (
-                         <span key={index}>
-                           {platformIcons[platform.toLowerCase()] || platform}
-                         </span>
-                       ))
-                     : "-"}
-              </td>
-              <td>
-                {/* Highlights colours based on text */}
-                <span className={`status-highlight ${post.status?.toLowerCase()}`}>
-                  {post.status || "-"}
-                </span>
-              </td>
-              <td>
-                {/* Ellipsis icon and dropdown */}
-                <FaEllipsisV className="popup-icon" onClick={(e) => menuDropdown(e, post._id)} />
+                <td> 
+                  {/* For each post, render the icon that corresponds to the social media that's associated with the post. 
+                      Unavailable icons would render the text instead, and posts without platforms would have a dash instead */}
+                  {post.selectedPlatforms.length > 0
+                    ? post.selectedPlatforms.map((platform, index) => (
+                        <span key={index}>
+                          {platformIcons[platform.toLowerCase()] || platform}
+                        </span>
+                      ))
+                    : "-"}
+                </td>
+                <td>
+                  {/* Highlights colours based on text */}
+                  <span className={`status-highlight ${post.status?.toLowerCase()}`}>
+                    {post.status || "-"}
+                  </span>
+                </td>
+                <td>
+                  {/* Ellipsis icon and dropdown */}
+                  <FaEllipsisV className="popup-icon" onClick={(e) => menuDropdown(e, post._id)} />
                   {postMenuDropdown === post._id &&
                     createPortal(
                       <div className="post-actions-dropdown" style={{ top: menuPosition.top, left: menuPosition.left }}>
@@ -334,29 +350,30 @@ const Posts = () => {
                         <button className="delete-btn" onClick={() => handleDeletePost(post._id)}>Delete</button>
                       </div>,
                       document.body
-                  )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                    )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      {/* Bulk actions for selected posts */}
-      {selectedPosts.length > 0 && (
-        <div className="checkbox-selection">
-          <button className="unselect-selected-btn" onClick={handleDeselectAll}>
-            Deselect All
-          </button>
-          <button
-            className="delete-selected-btn"
-            onClick={() => console.log("Delete posts:", selectedPosts)}
-          >
-            Delete Selected Posts
-          </button>
-        </div>
-      )}
+        {/* Bulk actions for selected posts */}
+        {selectedPosts.length > 0 && (
+          <div className="checkbox-selection">
+            <button className="unselect-selected-btn" onClick={handleDeselectAll}>
+              Deselect All
+            </button>
+            <button
+              className="delete-selected-btn"
+              onClick={() => console.log("Delete posts:", selectedPosts)}
+            >
+              Delete Selected Posts
+            </button>
+          </div>
+        )}
+      </div>
 
-      {/* Updated Pagination with disabled state */}
+      {/* Pagination container - now outside the main content */}
       <div className={`pagination-container ${isModalOpen || postMenuDropdown ? 'disabled' : ''}`}>
         <p className={`${isModalOpen || postMenuDropdown ? 'pagination-disabled-text' : ''}`}>
           Showing {indexOfFirstPost + 1} to{" "}
@@ -401,55 +418,55 @@ const Posts = () => {
           />
         </div>
       </div>
-      </div>
 
+      {/* Platform selection modal */}
       {isPlatformSelectOpen && createPortal(
-         <div className="platform-dropdown-wrapper">
-          <div className="platform-dropdown-horizontal  animate-slide-down">
-           {["Facebook", "Instagram", "Twitter", "LinkedIn"].map((platform) => (
-             <button
-               key={platform}
-               onClick={() => {
-                 setSelectedPlatforms(platform);
-                 setIsModalOpen(true);
-                 setIsPlatformSelectOpen(false);
-               }}
-             >
-               {platform}
-             </button>
-           ))}
-           <button className="cancel-btn" onClick={() => setIsPlatformSelectOpen(false)}>Cancel</button>
-         </div>
+        <div className="platform-dropdown-wrapper">
+          <div className="platform-dropdown-horizontal animate-slide-down">
+            {["Facebook", "Instagram", "Twitter", "LinkedIn"].map((platform) => (
+              <button
+                key={platform}
+                onClick={() => {
+                  setSelectedPlatforms(platform);
+                  setIsModalOpen(true);
+                  setIsPlatformSelectOpen(false);
+                }}
+              >
+                {platform}
+              </button>
+            ))}
+            <button className="cancel-btn" onClick={() => setIsPlatformSelectOpen(false)}>Cancel</button>
+          </div>
         </div>,
-       document.body
+        document.body
       )}
       
       {/* Create/Edit Post Modal */}
       {isModalOpen && (
-          <CreatePostModal
-            isOpen={isModalOpen}
-            onClose={() => {
-              setIsModalOpen(false);
-              setEditingPost(null);
-            }}
-            onPostCreated={handlePostCreated}
-            initialData={editingPost}
-            onSave={async (savedPost) => {
-              setPosts((prevPosts) => {
-                const existingIndex = prevPosts.findIndex(p => p._id === savedPost._id);
-                if (existingIndex !== -1) {
-                  // Update existing
-                  const updatedPosts = [...prevPosts];
-                  updatedPosts[existingIndex] = savedPost;
-                  return updatedPosts;
-                } else {
-                  // Add new
-                  return [...prevPosts, savedPost];
-                }
-              });
-            }}
-            platform={editingPost?.selectedPlatforms?.[0] || selectedPlatforms}
-          />
+        <CreatePostModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditingPost(null);
+          }}
+          onPostCreated={handlePostCreated}
+          initialData={editingPost}
+          onSave={async (savedPost) => {
+            setPosts((prevPosts) => {
+              const existingIndex = prevPosts.findIndex(p => p._id === savedPost._id);
+              if (existingIndex !== -1) {
+                // Update existing
+                const updatedPosts = [...prevPosts];
+                updatedPosts[existingIndex] = savedPost;
+                return updatedPosts;
+              } else {
+                // Add new
+                return [...prevPosts, savedPost];
+              }
+            });
+          }}
+          platform={editingPost?.selectedPlatforms?.[0] || selectedPlatforms}
+        />
       )}
     </div>
   );

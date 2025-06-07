@@ -1424,17 +1424,35 @@ input:checked + .slider:before {
 
 .pagination-container {
   position: fixed;
-  bottom: 20px;
+  bottom: 0;
   left: 0;
   right: 0;
-  z-index: 2000;
+  z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 80px;
-
-  background: transparent; /* ✅ 与背景融为一体 */
+  background-color: var(--bg-color-secondary); 
+  border-top: none;
 }
+
+.posts-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;   /* ✅ 使用父容器的 100% 高度 */
+  overflow: hidden; /* ✅ 禁止滚动 */
+  padding-bottom: 80px; /* ⬅ 给底部分页器预留空间 */
+}
+
+.posts-table-container {
+  flex: 1;
+  overflow: hidden; /* ✅ 禁止滚动 */
+}
+
+[data-selected-theme="dark"] .pagination-container p {
+  color: white;
+}
+
 
 .pagination.disabled {
   pointer-events: none;
@@ -1448,15 +1466,14 @@ input:checked + .slider:before {
   pointer-events: none;
 }
 
-
-
 .pagination {
   display: flex;
   gap: 5px;
 }
 
 .posts-table-container {
-  padding-bottom: 100px; 
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 .pagination button.active {
@@ -1567,10 +1584,10 @@ input::-webkit-inner-spin-button {
   float: right;
 }
 
+
 .blurred {
-  filter: blur(5px);
-  pointer-events: none; /* Prevent interactions while blurred */
-  transition: filter 0.3s ease-in-out;
+  filter: blur(4px);
+  pointer-events: none;
 }
 
 #client-API-Token{
@@ -2534,21 +2551,34 @@ body {
 
 /* Month cell style override */
 .custom-event-box {
-  background-color: #ffffff;         
-  border: 1px solid #000000;         
+  background-color: #ffffff;
+  border: 1px solid #000000;
   border-radius: 6px;
   padding: 4px 8px;
-  margin-bottom: 4px;
   font-size: 12px;
   display: flex;
   align-items: center;
-  color: #27548A;                    
+  color: #27548A;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   transition: background-color 0.2s;
+
+  /* ✅ 强制宽度一致 */
+  width: 100%;             /* 占据整格宽度 */
+  justify-content: center; /* 居中内容 */
+  text-align: center;
+  box-sizing: border-box;
 }
+
+.custom-event-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100px; /* 你也可以设为 100% */
+}
+
 
 .custom-event-box:hover {
   background-color: #d6ecff;         
@@ -3489,13 +3519,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  position: relative;
-}
-
-
-.posts-table-container {
-  flex: 1;
-  padding-bottom: 80px; 
+  overflow: hidden;
 }
 
 .swal2-border-radius {
@@ -3659,4 +3683,128 @@ body {
   max-height: 300px;
   object-fit: cover;
   border-radius: 8px;
+}
+
+/* When SweetAlert2 opens, blur this container */
+.swal-blur .posts-container {
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+
+body.swal-blur .posts-container {
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.platform-popup-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+  text-align: center;
+}
+
+.platform-popup-box select {
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  margin-top: 10px;
+  width: 100%;
+}
+
+/* Modern Platform Selection Box Styles */
+.modern-platform-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  z-index: 1000;
+  width: 400px;
+  max-width: 90%;
+  text-align: center;
+}
+
+.platform-box-title {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.platform-button-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.platform-select-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f5f5f5;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.platform-select-btn:hover {
+  background: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+.platform-select-btn.cancel {
+  background: #ffebee;
+  color: #c62828;
+  grid-column: span 2;
+}
+
+.platform-select-btn.cancel:hover {
+  background: #ffcdd2;
+}
+
+.platform-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+[data-selected-theme="dark"] .modern-platform-box {
+  background-color: #2f3038; /* Dark background */
+  color: white;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+}
+
+[data-selected-theme="dark"] .platform-box-title {
+  color: white;
+}
+
+[data-selected-theme="dark"] .platform-select-btn {
+  background-color: #454555; /* slightly lighter than box */
+  color: white;
+  border: 1px solid #6c7789;
+}
+
+[data-selected-theme="dark"] .platform-select-btn:hover {
+  background-color: #5d5d6c;
+}
+
+[data-selected-theme="dark"] .platform-select-btn.cancel {
+  background-color: #6c333a;
+  color: #fff;
+}
+
+[data-selected-theme="dark"] .platform-select-btn.cancel:hover {
+  background-color: #b71c1c;
 }
