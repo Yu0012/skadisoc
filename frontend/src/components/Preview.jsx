@@ -1,7 +1,5 @@
 import React from "react";
 import "../styles.css";
-import "../CreatePostModal.css";
-
 const Preview = ({ platform, content, client, attachedFile }) => {
   const renderPreview = () => {
     const renderImagePreview = () => {
