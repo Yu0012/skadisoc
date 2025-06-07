@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PostTable from "./PostTable";
 import "../styles.css";
+import SummaryCards from "./SummaryCards";
 
 const Dashboard = () => {
   const [selectedPlatform, setSelectedPlatform] = useState("");
@@ -8,6 +9,8 @@ const Dashboard = () => {
   const [allPosts, setAllPosts] = useState([]);
   const [filteredClients, setFilteredClients] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
+  const [platformCounts, setPlatformCounts] = useState({});
+
   
     // Fetch all posts and filter by platform
   useEffect(() => {
@@ -49,6 +52,34 @@ const Dashboard = () => {
   fetchPosts();
 }, [selectedPlatform]);
 
+useEffect(() => {
+  const fetchAllPostCounts = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:5000/api/posts", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const data = await res.json();
+      const posts = data.posts;
+
+      const counts = {
+        facebook: posts.filter(p => p.selectedPlatforms.includes("facebook")).length,
+        instagram: posts.filter(p => p.selectedPlatforms.includes("instagram")).length,
+        twitter: posts.filter(p => p.selectedPlatforms.includes("twitter")).length,
+        linkedin: posts.filter(p => p.selectedPlatforms.includes("linkedin")).length,
+      };
+
+      setPlatformCounts(counts);
+    } catch (err) {
+      console.error("❌ Error fetching all post counts:", err.message);
+    }
+  };
+
+  fetchAllPostCounts();
+}, []);
+
+
   // Filter by client and enrich with Facebook stats
   useEffect(() => {
   const enrichPostsWithStats = async () => {
@@ -59,6 +90,7 @@ const Dashboard = () => {
         post.client === selectedClient &&
         post.selectedPlatforms.includes(selectedPlatform.toLowerCase())
     );
+
 
     let accessToken = null;
 
@@ -152,6 +184,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container" style={{ padding: "2rem" }}>
       <h2>📊 Dashboard</h2>
+      <SummaryCards stats={platformCounts} />
 
       <select
         onChange={(e) => setSelectedPlatform(e.target.value)}

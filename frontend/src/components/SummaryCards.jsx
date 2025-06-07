@@ -13,16 +13,20 @@ const SummaryCards = ({ stats }) => {
   return (
     <div style={{ display: "flex", gap: "1rem", marginTop: "1rem", marginBottom: "1rem" }}>
       <div style={cardStyle}>
-        <h4>👍 Likes</h4>
-        <p>{stats.likes}</p>
+        <h4>Facebook</h4>
+        <p>{stats.facebook || 0}</p>
       </div>
       <div style={cardStyle}>
-        <h4>💬 Comments</h4>
-        <p>{stats.comments}</p>
+        <h4>Instagram</h4>
+        <p>{stats.instagram || 0}</p>
       </div>
       <div style={cardStyle}>
-        <h4>🔁 Shares</h4>
-        <p>{stats.shares}</p>
+        <h4>Twitter</h4>
+        <p>{stats.twitter || 0}</p>
+      </div>
+      <div style={cardStyle}>
+        <h4>LinkedIn</h4>
+        <p>{stats.linkedin || 0}</p>
       </div>
     </div>
   );
