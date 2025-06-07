@@ -4,8 +4,9 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../styles.css";
 import { FaTimes, FaCalendarAlt, FaPaperclip } from "react-icons/fa";
 import Preview from "./Preview";
+import Swal from "sweetalert2";
 
-const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onSave, platform}) => {
+const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onSave, platform }) => {
   const [content, setContent] = useState(initialData?.content || "");
   const [title, setTitle] = useState(initialData?.title || "");
   const [client, setClient] = useState(initialData?.client || "");
@@ -58,22 +59,6 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     }
   }, [client, clients]);
 
-  // useEffect(() => {
-  //   const fetchClients = async () => {
-  //     try {
-  //       const response = await fetch("http://localhost:5000/api/clients");
-  //       if (!response.ok) {
-  //         throw new Error("Failed to fetch clients");
-  //       }
-  //       const data = await response.json();
-  //       setClients(data);
-  //     } catch (error) {
-  //       console.error("Error fetching clients:", error);
-  //     }
-  //   };
-  //   fetchClients();
-  // }, []);
-
   // Fetch clients based on selected platform NEW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   useEffect(() => {
     const fetchClients = async () => {
@@ -97,8 +82,8 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     fetchClients();
   }, [platform]);
 
-   // Automatically enable the selected platform
-   useEffect(() => {
+  // Automatically enable the selected platform
+  useEffect(() => {
     setPlatformToggles((prev) => ({
       ...prev,
       [platform]: true,
@@ -132,7 +117,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     if (attachedFile) {
       formData.append("file", attachedFile);
     }
-    
+
     const isEditing = initialData && initialData._id;
     const url = isEditing
       ? `http://localhost:5000/api/posts/${initialData._id}`
@@ -154,7 +139,25 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
       }
 
       const result = await response.json();
-      alert(`Post ${isEditing ? "updated" : "created"} successfully!`);
+
+      // 🎉 SweetAlert2 animation replaces alert!
+      await Swal.fire({
+        icon: 'success',
+        title: `Post ${isEditing ? "updated" : "created"} successfully!`,
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 1800,
+        timerProgressBar: true,
+        background: 'white',
+        color: '#0a0f5c',
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer);
+          toast.addEventListener('mouseleave', Swal.resumeTimer);
+        }
+      });
+
+      // ✅ Close modal after animation and update UI
       onSave?.(result.post || result);
       onPostCreated?.();
       onClose();
@@ -202,7 +205,6 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     if (file) setAttachedFile(file);
   };
 
-  
   if (!isOpen) return null;
 
   return (
@@ -211,26 +213,24 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
         <FaTimes className="close-icon" onClick={onClose} />
         <div className="modal-header">
           <h2>{initialData?._id ? "Edit Post" : "Create Post"}</h2>
-          
         </div>
 
         <div className="modal-box">
           <div className="content-section">
             <div className="modal-body">
-
-                <div className="left-column">
-                  <label>Title</label>
-                  <input
-                    type="text"
-                    className="input-field"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Skadi SocMed #business #socialmedia #marketing"
-                  />
-                </div>
+              <div className="left-column">
+                <label>Title</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Skadi SocMed #business #socialmedia #marketing"
+                />
+              </div>
 
               <div className="content-container">
-              <label>Content</label>
+                <label>Content</label>
                 <textarea
                   className="content-input"
                   value={content}
@@ -241,7 +241,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
 
               <div className="file-schedule-row">
                 <button className="attach-file-btn" onClick={triggerFileInput}>
-                  <FaPaperclip id="paperclip"/>
+                  <FaPaperclip id="paperclip" />
                 </button>
                 <input
                   type="file"
@@ -251,37 +251,36 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                   accept="image/*, .pdf, .docx"
                   style={{ display: "none" }}
                 />
-              
-                  <div className="schedule-row">
-                    <button className="modal-schedule-btn" onClick={toggleDatePicker}>
-                      <FaCalendarAlt /> Schedule Post
-                    </button>
-                    {scheduledDate && (
-                      <span className="selected-date">
-                        {scheduledDate.toLocaleString()}
-                      </span>
-                    )}
-                    {showDatePicker && (
-                      <div
-                        className="modal-calendar"
-                      >
-                        <DatePicker
-                          selected={scheduledDate}
-                          onChange={(date) => {
-                            setScheduledDate(date);
-                            setShowDatePicker(false);
-                          }}
-                          showTimeSelect
-                          timeIntervals={30}
-                          dateFormat="MMMM d, yyyy h:mm aa"
-                          inline
-                        />
-                      </div>
-                    )}
-                  </div>
+
+                <div className="schedule-row">
+                  <button className="modal-schedule-btn" onClick={toggleDatePicker}>
+                    <FaCalendarAlt /> Schedule Post
+                  </button>
+                  {scheduledDate && (
+                    <span className="selected-date">
+                      {scheduledDate.toLocaleString()}
+                    </span>
+                  )}
+                  {showDatePicker && (
+                    <div className="modal-calendar">
+                      <DatePicker
+                        selected={scheduledDate}
+                        onChange={(date) => {
+                          setScheduledDate(date);
+                          setShowDatePicker(false);
+                        }}
+                        showTimeSelect
+                        timeIntervals={30}
+                        dateFormat="MMMM d, yyyy h:mm aa"
+                        inline
+                      />
+                    </div>
+                  )}
                 </div>
-{/* 
-                {attachedFile && (
+              </div>
+
+              {/* File preview (optional) */}
+              {attachedFile && (
                 <div className="attached-file-preview">
                   {attachedFile.type.startsWith("image/") ? (
                     <img src={URL.createObjectURL(attachedFile)} alt="Attachment Preview" />
@@ -289,7 +288,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                     <p>{attachedFile.name}</p>
                   )}
                 </div>
-              )} */}
+              )}
 
               <div className="">
                 {/* Right */}
