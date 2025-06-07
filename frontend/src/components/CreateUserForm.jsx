@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; 
+import React, { useState, useEffect } from "react";
 import { ImCross } from "react-icons/im";
 import axios from 'axios';
 import "./CreateUserForm.css";
@@ -21,6 +21,7 @@ const CreateUserForm = ({
   instagramClients,
   twitterClients,
 }) => {
+  // 🔐 Local states for handling form fields and platform clients
   const [selectedPlatform, setSelectedPlatform] = useState("facebook");
   const [platformClients, setPlatformClients] = useState([]);
   const [availableMenus, setAvailableMenus] = useState([]);
@@ -34,22 +35,23 @@ const CreateUserForm = ({
     twitter: []
   });
 
+  // 🔒 Check if the user is a superadmin + admin before allowing creation
   useEffect(() => {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return setError("No token found");
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return setError("No token found");
 
-    const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-    if (!(tokenPayload.roleType === 'superadmin' && tokenPayload.role === 'admin')) {
-      setError("You are not authorized to create users");
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      if (!(tokenPayload.roleType === 'superadmin' && tokenPayload.role === 'admin')) {
+        setError("You are not authorized to create users");
+      }
+    } catch (err) {
+      console.error("Invalid token or parsing error", err);
+      setError("Authorization failed");
     }
-  } catch (err) {
-    console.error("Invalid token or parsing error", err);
-    setError("Authorization failed");
-  }
-}, []);
+  }, []);
 
-
+  // 🧠 Load available menus and actions based on role/roleType
   useEffect(() => {
     if (roleType) {
       setAvailableMenus(roleTypePermissions[roleType]?.menus || []);
@@ -59,6 +61,7 @@ const CreateUserForm = ({
     }
   }, [role, roleType]);
 
+  // 🌐 Load unassigned clients for the selected platform
   const handlePlatformChange = async (platform) => {
     setSelectedPlatform(platform);
     setPlatformClients([]);
@@ -76,54 +79,72 @@ const CreateUserForm = ({
     }
   };
 
+  // 📦 Load Facebook clients by default
   useEffect(() => {
     handlePlatformChange("facebook");
   }, []);
 
   return (
     <div className="newUserMenu">
+      {/* ❌ Close button */}
       <ImCross className="exitButton" onClick={onClose} />
+
+      {/* 📋 Form start */}
       <form className="form-group" onSubmit={onSubmit}>
         <a className="form-title">{isEditing ? "Edit User" : "Create New User"}</a>
 
+        {/* 🛑 Error or ✅ success messages */}
         {error && <div className="error-message">{error}</div>}
         {success && <div className="success-message">{success}</div>}
 
         <div className="form-two-column">
+          {/* ⬅️ Left column: User details */}
           <div className="form-left-column">
-            <label>Username: 
+            <label>Username:
               <input type="text" className="newAccountForm" value={username} onChange={(e) => setName(e.target.value)} required />
             </label>
-            <label>Email: 
+
+            <label>Email:
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </label>
-            <label>Password: 
+
+            <label>Password:
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </label>
-            <label>Confirm Password: 
+
+            <label>Confirm Password:
               <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
             </label>
-            <label>Role Type:
+
+            {/* 🔽 Styled Role Type dropdown */}
+            <div className="role-select-wrapper">
+              <label>Role Type:</label>
               <select value={roleType} onChange={(e) => setRoleType(e.target.value)} required>
                 <option value="">Select Role Type</option>
                 <option value="superadmin">Superadmin</option>
                 <option value="admin">Admin</option>
                 <option value="user">User</option>
               </select>
-            </label>
-            <label>Role:
+            </div>
+
+            {/* 🔽 Styled Role dropdown */}
+            <div className="role-select-wrapper">
+              <label>Role:</label>
               <select value={role} onChange={(e) => setRole(e.target.value)} required>
                 <option value="">Select Role</option>
                 <option value="admin">Admin</option>
                 <option value="editor">Editor</option>
                 <option value="viewer">Viewer</option>
               </select>
-            </label>
+            </div>
           </div>
 
+          {/* ➡️ Right column: Permission summary */}
           <div className="form-right-column">
             <div className="permissions-display">
               <h4>Assigned Permissions</h4>
+
+              {/* Menus shown based on Role Type */}
               <div className="permission-section">
                 <h5>Menus (based on Role Type):</h5>
                 {availableMenus.length > 0 ? (
@@ -132,6 +153,8 @@ const CreateUserForm = ({
                   <p>No menus assigned</p>
                 )}
               </div>
+
+              {/* Actions shown based on Role */}
               <div className="permission-section">
                 <h5>Actions (based on Role):</h5>
                 {availableActions.length > 0 ? (
@@ -143,7 +166,9 @@ const CreateUserForm = ({
             </div>
           </div>
         </div>
-        <input className="create-post-btn" type="submit" value="Save" style={{color: "white"}} />
+
+        {/* 💾 Save button */}
+        <input className="create-post-btn" type="submit" value="Save" style={{ color: "white" }} />
       </form>
     </div>
   );

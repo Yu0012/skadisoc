@@ -180,14 +180,15 @@ body {
 .user-dropdown {
   position: absolute;
   top: 55px;
-  right: 10px;
-  width: 260px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  right: 0;
+  width: 220px;
+  background: var(--dropdown-bg); /* light/dark mode */
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
   overflow: hidden;
-  z-index: 100;
+  z-index: 1000;
   font-family: 'Segoe UI', sans-serif;
+  animation: fadeIn 0.25s ease;
 }
 
 .user-dropdown button {
@@ -204,16 +205,23 @@ body {
   transition: background 0.25s ease;
 }
 
-.user-dropdown button:hover {
-  background-color: #f5f5f5;
-}
-
-.user-dropdown hr {
-  margin: 0;
+.user-dropdown div {
+  padding: 12px 20px;
+  font-size: 14px;
+  background: none;
   border: none;
-  border-top: 1px solid #eee;
+  text-align: left;
+  color: var(--text-color);
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.25s ease;
 }
 
+.user-dropdown div:hover {
+  background-color: var(--dropdown-hover);
+}
+
+/* Special Sign Out styling */
 .user-dropdown .logout {
   color: #d32f2f;
   font-weight: 600;
@@ -221,9 +229,8 @@ body {
 
 .user-dropdown .logout:hover {
   background-color: #d32f2f;
-  color: #fff;
+  color: white;
 }
-
 
 /* 📂 Dropdown Menu */
 .dropdown-menu {
@@ -3298,6 +3305,11 @@ body {
   --modal-calendar-datepicker: #e0e0e0;
   --modal-calendar-datepicker-header: #f4f4f5;
   --modal-calendar-currentday: #3b82f6;
+
+  --label-color: #002266; /* dark blue for light mode */
+
+   --dropdown-bg: white;
+   --dropdown-hover: #f5f5f5;
 }
 
 /* Dark Theme */
@@ -3825,4 +3837,192 @@ body.swal-blur .posts-container {
   left: 50% !important;
   transform: translateX(-50%) !important;
   margin: 0 auto;
+}
+
+/* 🔐 Assign Clients Modal */
+.assign-clients-container {
+  padding: 24px;
+  font-family: 'Segoe UI', sans-serif;
+  color: var(--menu-color);
+}
+
+.platform-navbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.platform-navbar button {
+  padding: 8px 14px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  color: #333;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.platform-navbar button.active {
+  background-color: var(--button-bg);
+  color: white;
+  border: 1px solid var(--button-border);
+}
+
+.assign-users-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: var(--table-bg);
+  border: 1px solid var(--table-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.assign-users-container label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  padding: 6px 10px;
+  background: var(--client-block);
+  border: 1px solid var(--client-border);
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.assign-users-container input[type="checkbox"] {
+  accent-color: var(--button-bg);
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+.assign-clients-container h2 {
+  font-size: 20px;
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+
+.assign-clients-container h3 {
+  font-size: 16px;
+  color: var(--username-text);
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.assign-clients-container button {
+  padding: 10px 16px;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.assign-clients-container button:hover {
+  background-color: var(--button-hover);
+}
+
+/* 🔲 Full-page layout wrapper */
+.account-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* 📦 Main content container without scroll */
+.posts-container {
+  flex: 1;
+  overflow: hidden; /* 💥 Disable content scroll */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* 🌫️ Blur when modal is open */
+.posts-container.blurred,
+.pagination-fixed.blurred {
+  filter: blur(5px);
+  transition: filter 0.2s ease;
+}
+
+/* 📌 Fixed pagination bar */
+.pagination-fixed {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--bg-color-secondary);
+  z-index: 100;
+  padding: 10px 20px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 📏 Pagination content */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* 💥 Disable page scroll */
+}
+
+[data-selected-theme="dark"] {
+  --label-color: #ffffff; /* white or light gray for dark mode */
+}
+
+.role-select-wrapper label,
+.assign-users-container label,
+h3,
+h4,
+h5,
+label {
+  color: var(--label-color);
+}
+
+/* 📌 Dark mode: Posts Table Styling */
+[data-selected-theme="dark"] .posts-table thead {
+  background-color: #3a3b44 !important;  /* Unified lighter header */
+}
+
+[data-selected-theme="dark"] .posts-table tbody tr {
+  background-color: #2b2c34 !important;  /* Unified data row background */
+}
+
+[data-selected-theme="dark"] .posts-table tbody tr:hover {
+  background-color: #3c3c47 !important;  /* Slight hover effect */
+}
+
+/* 🌙 FullCalendar: Day Headers (Sunday–Saturday) */
+[data-selected-theme="dark"] .fc .fc-col-header-cell {
+  background-color: #3a3b44 !important;  /* Match with table header */
+  color: white;
+  border-color: #4a4a4a;
+}
+
+/* 📅 FullCalendar: Day Cell Background */
+[data-selected-theme="dark"] .fc .fc-daygrid-day {
+  background-color: #2b2c34 !important;  /* Match with table body */
+  border-color: #444;
+}
+
+/* 📅 Optional: FullCalendar Day Hover */
+[data-selected-theme="dark"] .fc .fc-daygrid-day:hover {
+  background-color: #3c3c47 !important;
+  cursor: pointer;
+}
+
+[data-selected-theme="dark"] {
+  --dropdown-bg: #2f3038;
+  --dropdown-hover: #3c3c47;
 }

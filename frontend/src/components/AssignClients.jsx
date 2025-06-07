@@ -1,10 +1,15 @@
-// AssignClients.jsx
 import React, { useEffect, useState } from 'react';
 import { ImCross } from "react-icons/im";
-import { useParams, useNavigate } from 'react-router-dom';
+import "../styles.css"; // Assuming you have a styles.css file for basic styles
+import "./CreateUserForm.css";
 
-const AssignClients = ({userId, onClose}) => {
+
+// Component to assign/unassign clients to a user
+const AssignClients = ({ userId, onClose }) => {
+  // Platform selector (facebook, instagram, twitter)
   const [platform, setPlatform] = useState('facebook');
+
+  // Lists of clients and selection states
   const [assignedClients, setAssignedClients] = useState([]);
   const [unassignedClients, setUnassignedClients] = useState([]);
   const [selectedAssignIds, setSelectedAssignIds] = useState([]);
@@ -12,6 +17,7 @@ const AssignClients = ({userId, onClose}) => {
 
   const token = localStorage.getItem('token');
 
+  // Fetch assigned and unassigned clients for current platform
   const fetchClients = async () => {
     try {
       const assignedRes = await fetch(`http://localhost:5000/api/clients/${platform}/assigned`, {
@@ -24,19 +30,24 @@ const AssignClients = ({userId, onClose}) => {
       const assignedData = await assignedRes.json();
       const unassignedData = await unassignedRes.json();
 
-      setAssignedClients(assignedData.clients.filter(client =>
-        client.assignedAdmins.some(admin => admin._id === userId)
-      ));
+      // Only include clients assigned to this specific user
+      setAssignedClients(
+        assignedData.clients.filter(client =>
+          client.assignedAdmins.some(admin => admin._id === userId)
+        )
+      );
       setUnassignedClients(unassignedData.clients);
     } catch (err) {
       console.error('Error fetching clients:', err);
     }
   };
 
+  // Fetch clients on mount and whenever platform changes
   useEffect(() => {
     fetchClients();
   }, [platform]);
 
+  // Assign selected clients to the user
   const handleAssign = async () => {
     if (selectedAssignIds.length === 0) return alert('Select clients to assign');
 
@@ -49,6 +60,7 @@ const AssignClients = ({userId, onClose}) => {
         },
         body: JSON.stringify({ clientIds: selectedAssignIds })
       });
+
       const result = await res.json();
       if (!res.ok) throw new Error(result.message);
       alert('Clients assigned successfully');
@@ -60,6 +72,7 @@ const AssignClients = ({userId, onClose}) => {
     }
   };
 
+  // Unassign selected clients from the user
   const handleUnassign = async () => {
     if (selectedUnassignIds.length === 0) return alert('Select clients to unassign');
 
@@ -72,6 +85,7 @@ const AssignClients = ({userId, onClose}) => {
         },
         body: JSON.stringify({ clientIds: selectedUnassignIds })
       });
+
       const result = await res.json();
       if (!res.ok) throw new Error(result.message);
       alert('Clients unassigned successfully');
@@ -84,11 +98,14 @@ const AssignClients = ({userId, onClose}) => {
   };
 
   return (
-    <div className="newUserMenu">
+    <div className="newUserMenu assign-clients-container">
+      {/* Close Button */}
       <ImCross className="exitButton" onClick={onClose} />
+
       <div style={{ padding: 20 }}>
         <h2>Manage Client Assignments</h2>
 
+        {/* Platform selector */}
         <div className="platform-navbar">
           {['facebook', 'instagram', 'twitter'].map(p => (
             <button
@@ -102,6 +119,7 @@ const AssignClients = ({userId, onClose}) => {
           ))}
         </div>
 
+        {/* Unassigned Clients Section */}
         <h3>Unassigned Clients</h3>
         <div className="assign-users-container">
           {unassignedClients.map(client => (
@@ -121,9 +139,11 @@ const AssignClients = ({userId, onClose}) => {
             </label>
           ))}
         </div>
-        <br></br>
+
+        <br />
         <button onClick={handleAssign}>Assign Selected Clients</button>
 
+        {/* Assigned Clients Section */}
         <h3>Assigned Clients</h3>
         <div className="assign-users-container">
           {assignedClients.map(client => (
@@ -143,7 +163,8 @@ const AssignClients = ({userId, onClose}) => {
             </label>
           ))}
         </div>
-        <br></br>
+
+        <br />
         <button onClick={handleUnassign}>Unassign Selected Clients</button>
       </div>
     </div>

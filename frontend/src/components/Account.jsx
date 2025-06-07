@@ -7,60 +7,68 @@ import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-ic
 import CreateUserForm from "../components/CreateUserForm";
 import AssignClients from "../components/AssignClients";
 import { useNavigate } from "react-router-dom";
-
+import Swal from 'sweetalert2';
 
 const Accounts = () => {
-  //ui and data states
-  const [accounts, setAccounts] = useState([]);
-  const [category, setCategory] = useState("Username");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [accountsPerPage] = useState(10);
-  const [createUserDropdown, setCreateUserDropdown] = useState(false);
-  const [assignClientPopup, setAssignClientPopup] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState(null);
-  const navigate = useNavigate();
-
-  //refs for modal and outside click detection
-  const modalRef = useRef(null);
-  const mainContentRef = useRef(null);
-  const [selectedAccounts, setSelectedAccounts] = useState([]);
-
-  // Account details 
+  // ========== STATE MANAGEMENT ==========
+  // Data states
+  const [accounts, setAccounts] = useState([]); // Stores all user accounts
+  const [filteredAccounts, setFilteredAccounts] = useState([]); // Stores filtered accounts
+  
+  // Search states
+  const [category, setCategory] = useState("Username"); // Current search category
+  const [searchQuery, setSearchQuery] = useState(""); // Search input value
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1); // Current pagination page
+  const [accountsPerPage] = useState(10); // Number of accounts per page
+  
+  // Modal states
+  const [createUserDropdown, setCreateUserDropdown] = useState(false); // Create user modal
+  const [assignClientPopup, setAssignClientPopup] = useState(false); // Assign clients modal
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false); // Delete confirmation
+  
+  // Account selection states
+  const [selectedUserId, setSelectedUserId] = useState(null); // ID of user being assigned clients
+  const [selectedAccounts, setSelectedAccounts] = useState([]); // Selected accounts for batch operations
+  const [accountMenuDropdown, setAccountMenuDropdown] = useState(null); // Tracks which account's menu is open
+  const [accountMenuPosition, setAccountMenuPosition] = useState({ top: 0, left: 0 }); // Dropdown position
+  
+  // Form states
   const [username, setName] = useState("");
   const [email, setEmail] = useState("");
-  // Account.jsx (top with others)
-  const [role, setRole] = useState("viewer");
-  const [roleType, setRoleType] = useState("admin");
+  const [role, setRole] = useState("viewer"); // User role (viewer/editor/admin)
+  const [roleType, setRoleType] = useState("admin"); // Role type (admin/manager/etc)
   const [password, setPassword] = useState("");
-  const [facebookClients, setFacebookClients] = useState([]);
-  const [instagramClients, setInstagramClients] = useState([]);
-  const [twitterClients, setTwitterClients] = useState([]);
-  const [menus, setMenus] = useState([]);
-  const [actions, setActions] = useState([]);
+  const [facebookClients, setFacebookClients] = useState([]); // Assigned FB clients
+  const [instagramClients, setInstagramClients] = useState([]); // Assigned IG clients
+  const [twitterClients, setTwitterClients] = useState([]); // Assigned Twitter clients
+  const [menus, setMenus] = useState([]); // Menu permissions
+  const [actions, setActions] = useState([]); // Action permissions
+  
+  // Edit state
+  const [editAccount, setEditAccount] = useState(null); // Stores account being edited
 
+  // ========== REFS & HOOKS ==========
+  const modalRef = useRef(null);
+  const mainContentRef = useRef(null);
+  const navigate = useNavigate();
 
-  //Edit & Delete Dropdown
-  const [accountMenuDropdown, setAccountMenuDropdown] = useState(null);
-  const [accountMenuPosition, setAccountMenuPosition] = useState({ top: 0, left: 0 });
-
-  // Edit Account
-  const [editAccount, setEditAccount] = useState(null);
-
-
-  // Fetch accounts from MongoDB
+  // ========== DATA FETCHING ==========
+  // Fetch accounts from backend API
   const fetchAccounts = async () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:5000/api/auth/users", {
         headers: {
-          Authorization: `Bearer ${token}`, // ← Add this
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (response.ok) {
         const data = await response.json();
         setAccounts(data.users);
+        setFilteredAccounts(data.users); // Initialize filtered accounts
       } else {
         console.error("Failed to fetch accounts");
       }
@@ -69,360 +77,388 @@ const Accounts = () => {
     }
   };
 
+  // Fetch accounts on component mount
   useEffect(() => {
     fetchAccounts();
   }, []);
 
-  //menu dropdown handler
+  // ========== UI HANDLERS ==========
+  // Handle click on account menu dropdown
   const menuDropdown = (event, accountId) => {
     event.stopPropagation();
     if (accountMenuDropdown === accountId) {
       setAccountMenuDropdown(null);
     } else {
       const rect = event.currentTarget.getBoundingClientRect();
-      setAccountMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left });
+      setAccountMenuPosition({ 
+        top: rect.bottom + window.scrollY, 
+        left: rect.left 
+      });
       setAccountMenuDropdown(accountId);
     }
   };
 
-  // Close popup when clicking outside (may not be good as user may accidentally leave data in form)
+  // Close popups when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Close the account dropdown if clicked outside of it
-      if (accountMenuDropdown && !event.target.closest(`.post-actions-dropdown`) && !event.target.closest('.popup-icon')) {
-        setAccountMenuDropdown(null); // Close the dropdown
+      if (accountMenuDropdown && 
+          !event.target.closest(`.post-actions-dropdown`) && 
+          !event.target.closest('.popup-icon')) {
+        setAccountMenuDropdown(null);
       }
     };
-  
-    // Add event listener on mount
-    document.addEventListener("mousedown", handleClickOutside);
 
-    // Clean up the event listener on unmount
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [accountMenuDropdown]);
 
+  // ========== ACCOUNT OPERATIONS ==========
+  // Prepare account data for editing
   const handleEditAccount = (account) => {
     setEditAccount(account);
     setName(account.username || "");
     setEmail(account.email || "");
-    setPassword(""); // leave empty, password reset optional
-
+    setPassword(""); // Leave empty for optional password reset
     setRole(account.role || "viewer");
     setRoleType(account.roleType || "admin");
-
     setFacebookClients(account.facebookClients || []);
     setInstagramClients(account.instagramClients || []);
     setTwitterClients(account.twitterClients || []);
     setMenus(account.permissions?.menus || []);
     setActions(account.permissions?.actions || []);
-
-    setCreateUserDropdown(true); // Open the modal
-    setAccountMenuDropdown(null); // Close the dropdown
+    setCreateUserDropdown(true);
+    setAccountMenuDropdown(null);
   };
 
-  // Handle delete account
+  // Handle account deletion with confirmation
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this user?");
-    if (!confirmDelete) return;
+    setIsDeleteConfirmOpen(true); // Activate blur effect
+    
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "This user will be permanently deleted.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      backdrop: true
+    });
 
-    const token = localStorage.getItem("token");
+    setIsDeleteConfirmOpen(false); // Deactivate blur effect
 
-    try {
-      const response = await fetch(`http://localhost:5000/api/auth/users/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    if (result.isConfirmed) {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await fetch(`http://localhost:5000/api/auth/users/${id}`, {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      if (response.ok) {
-        const updated = accounts.filter((acc) => acc._id !== id);
-        setAccounts(updated);
-      } else {
-        console.error('Failed to delete user');
+        if (response.ok) {
+          Swal.fire('Deleted!', 'The user has been deleted.', 'success');
+          fetchAccounts(); // Refresh account list
+        } else {
+          Swal.fire('Error', 'Failed to delete user', 'error');
+        }
+      } catch (err) {
+        Swal.fire('Error', 'An error occurred while deleting the user', 'error');
       }
-    } catch (err) {
-      console.error('Error deleting user:', err);
     }
   };
 
-  //search input and category changes handlers 
+  // ========== SEARCH & FILTER ==========
+  // Handle search input changes
   const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
+    const query = e.target.value;
+    setSearchQuery(query);
+    
+    if (!query) {
+      setFilteredAccounts(accounts);
+      return;
+    }
+    
+    const filtered = accounts.filter((account) => {
+      switch (category) {
+        case "ID":
+          return account._id.toString().includes(query);
+        case "Username":
+          return account.username?.toLowerCase().includes(query.toLowerCase());
+        case "Email":
+          return account.email?.toLowerCase().includes(query.toLowerCase());
+        case "Phone":
+          return (account.phoneNum || "").toLowerCase().includes(query.toLowerCase());
+        case "Address":
+          return (account.address || "").toLowerCase().includes(query.toLowerCase());
+        default:
+          return true;
+      }
+    });
+    
+    setFilteredAccounts(filtered);
+    setCurrentPage(1); // Reset to first page when searching
   };
 
-  // Handle category change
+  // Handle search category change
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
   };
 
-  // Toggle "Add User" popup
+  // ========== FORM HANDLING ==========
+  // Toggle create user modal
   const toggleCreateUserDropdown = () => {
-    setEditAccount(null); // 🔥 Clear previous edit data
+    setEditAccount(null);
     setName("");
     setEmail("");
     setPassword("");
     setRole("viewer");
     setRoleType("admin");
-
     setFacebookClients([]);
     setInstagramClients([]);
     setTwitterClients([]);
-
-    setCreateUserDropdown(!createUserDropdown); //Close the popup
+    setCreateUserDropdown(!createUserDropdown);
   };
 
-  // Save new account to MongoDB
+  // Save account (create or update)
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    const accountData = {username,email , password, role, roleType, facebookClients, instagramClients, twitterClients, permissions: { menus, actions }};
-    const isEditing = !!editAccount;
+    const accountData = {
+      username,
+      email, 
+      password, 
+      role, 
+      roleType, 
+      facebookClients, 
+      instagramClients, 
+      twitterClients, 
+      permissions: { menus, actions }
+    };
   
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(
-        isEditing
-          ? `http://localhost:5000/api/auth/users/${editAccount._id}`
-          : "http://localhost:5000/api/auth/register", // Register goes to this route
-        {
-          method: isEditing ? "PUT" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(accountData),
-        }
-      );
+      const url = editAccount 
+        ? `http://localhost:5000/api/auth/users/${editAccount._id}`
+        : "http://localhost:5000/api/auth/register";
+      
+      const response = await fetch(url, {
+        method: editAccount ? "PUT" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(accountData),
+      });
   
-    if (!response.ok) throw new Error("Save failed");
+      if (!response.ok) throw new Error("Save failed");
 
-    const result = await response.json();
-    const saved = result.account || result;
-
-    await fetchAccounts();   // ✅ refresh data from backend
-    setCurrentPage(1); // ✅ Re-trigger pagination render
-    setCreateUserDropdown(false); // ✅ Close modal
-    
-    // Reset state
-    setEditAccount(null);
-    setName("");
-    setPassword("");
-    setFacebookClients([]);
-    setInstagramClients([]);
-    setTwitterClients([]);
+      await fetchAccounts();
+      setCreateUserDropdown(false);
+      Swal.fire('Success', `Account ${editAccount ? 'updated' : 'created'} successfully`, 'success');
     } catch (err) {
-      console.error("Account save error:", err);
-      alert("Failed to save account.");
+      Swal.fire('Error', 'Failed to save account', 'error');
     }
   };
-  
-  // Filter accounts based on search query and selected category
-  const filteredAccounts = searchQuery
-  ? accounts.filter((account) => {
-      switch (category) {
-        case "ID":
-          return account._id.toString().includes(searchQuery);
-        case "Username":
-          return account.username?.toLowerCase().includes(searchQuery.toLowerCase());
-        case "Email":
-          return account.email?.toLowerCase().includes(searchQuery.toLowerCase());
-        case "Phone":
-          return (account.phoneNum || "").toLowerCase().includes(searchQuery.toLowerCase());
-        case "Address":
-          return (account.address || "").toLowerCase().includes(searchQuery.toLowerCase());
-        default:
-          return true;
-      }
-    })
-  : accounts;
 
-  // Pagination Logic
+  // ========== PAGINATION LOGIC ==========
   const indexOfLastAccount = currentPage * accountsPerPage;
   const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
   const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
   const totalPages = Math.ceil(filteredAccounts.length / accountsPerPage);
 
-   //handles for ui inputs
-   const handleRefresh = () => window.location.reload();
+  // Pagination navigation functions
+  const goToFirstPage = () => setCurrentPage(1);
+  const goToLastPage = () => setCurrentPage(totalPages);
+  const goToPrevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+  const goToNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
 
+  // Refresh page
+  const handleRefresh = () => fetchAccounts();
 
   return (
-    <div ref={mainContentRef} className={`posts-container ${createUserDropdown ? "blurred" : ""}`}>
-      {/* Top Section */}
-      <div className="posts-header">
-        <div className="welcome-message">
-          <p>Welcome,</p>
-          <h2 className="user-name">Amber Broos</h2>
-        </div>
-      </div>
-
-      {/* Search & Filter */}
-      <div className="search-container">
-        <div className="search-container-left">
-          {/* Search Category Dropdown */}
-          <select className="dropdown" value={category} onChange={handleCategoryChange}>
-            <option value="ID">ID</option>
-            <option value="Username">Username</option>
-            <option value="Email">Email</option>
-            <option value="Phone">Phone</option>
-            <option value="Address">Address</option>
-          </select>
-
-          {/* Search Box */}
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder={`Search by ${category}`}
-              value={searchQuery}
-              onChange={handleSearch}
-            />
-            <FaSearch className="search-icon" />
+    <div className="account-page-wrapper">
+      {/* 🔲 Main content container with conditional blur */}
+      <div className={`posts-container ${createUserDropdown || assignClientPopup || isDeleteConfirmOpen ? "blurred" : ""}`}>
+        {/* Header Section */}
+        <div className="posts-header">
+          <div className="welcome-message">
+            <p>Welcome,</p>
+            <h2 className="user-name">Amber Broos</h2>
           </div>
         </div>
 
-        <div className="posts-actions">
-        <FaSyncAlt className="refresh-icon" title="Refresh Data" onClick={handleRefresh}/>
-          <button className="create-user-btn" onClick={toggleCreateUserDropdown}>
+        {/* Search & Filter Section */}
+        <div className="search-container">
+          <div className="search-container-left">
+            <select className="dropdown" value={category} onChange={handleCategoryChange}>
+              <option value="ID">ID</option>
+              <option value="Username">Username</option>
+              <option value="Email">Email</option>
+              <option value="Phone">Phone</option>
+              <option value="Address">Address</option>
+            </select>
+
+            <div className="search-box">
+              <input
+                type="text"
+                placeholder={`Search by ${category}`}
+                value={searchQuery}
+                onChange={handleSearch}
+              />
+              <FaSearch className="search-icon" />
+            </div>
+          </div>
+
+          <div className="posts-actions">
+            <FaSyncAlt className="refresh-icon" title="Refresh Data" onClick={handleRefresh}/>
+            <button className="create-user-btn" onClick={toggleCreateUserDropdown}>
               <FaPlus /> Add User
             </button>
+          </div>
         </div>
-      </div>
 
-      {createUserDropdown &&
-        createPortal(
-          <CreateUserForm
-            username={username}
-            setName={setName}
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            role={role}
-            setRole={setRole}
-            roleType={roleType}
-            setRoleType={setRoleType}
-            facebookClients={facebookClients}
-            setFacebookClients={setFacebookClients}
-            instagramClients={instagramClients}
-            setInstagramClients={setInstagramClients}
-            twitterClients={twitterClients}
-            setTwitterClients={setTwitterClients}
-            menus={menus}
-            setMenus={setMenus}
-            actions={actions}
-            setActions={setActions}
-            onClose={toggleCreateUserDropdown}
-            onSubmit={handleSubmit}
-            isEditing={!!editAccount}
-            setEditAccount={setEditAccount}
-          />,
-          document.body
-        )}
-
-        {assignClientPopup && selectedUserId &&
-          createPortal(
-            <AssignClients
-              userId={selectedUserId}
-              onClose={() => setAssignClientPopup(false)}
-            />,
-            document.body
-          )
-        }
-
-      {/* Accounts Table */}
-      <table className="posts-table">
-        <thead>
-          <tr>
-            <th>Username</th>
-            <th>Email</th>
-            <th>RoleType</th>
-            <th>Role</th>
-            <th>Assigned Clients</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentAccounts.map((account) => (
-            <tr key={account._id}>
-              <td>{account.username}</td>
-              <td>{account.email}</td>
-              <td>{account.roleType}</td>
-              <td>{account.role}</td>
-              <td>{Array.isArray(account.facebookClients) ? account.facebookClients.join(', ') : account.facebookClients}</td>
-              <td>
-              <FaEllipsisV className="popup-icon" onClick={(e) => menuDropdown(e, account._id)} />
-                {accountMenuDropdown === account._id &&
-                  createPortal(
-                    <div
-                      className="post-actions-dropdown"
-                      style={{ top: accountMenuPosition.top, left: accountMenuPosition.left }}
-                    >
-                      <button onClick={() => handleEditAccount(account)}>Edit</button>
-                      {account.role === 'editor' && (
-                        <button onClick={() => {
-                          setSelectedUserId(account._id);
-                          setAssignClientPopup(true);
-                          setAccountMenuDropdown(null); // Close dropdown after opening assign clients
-                        }}>
-                          Assign Clients
-                        </button>
-                      )}
-                      <button className="delete-btn" onClick={() => handleDelete(account._id)}>Delete</button>
-                    </div>,
-                    document.body
-                  )}
-              </td>
-
+        {/* Accounts Table */}
+        <table className="posts-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>RoleType</th>
+              <th>Role</th>
+              <th>Assigned Clients</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Pagination */}
-      <div className="pagination-container">
-        <p>
-          Showing {indexOfFirstAccount + 1} to{" "}
-          {Math.min(indexOfLastAccount, filteredAccounts.length)} of{" "}
-          {filteredAccounts.length} entries
-        </p>
-        <div className="pagination">
-          <FaAnglesLeft 
-            className="pagination-navigation" 
-            onClick={() => setCurrentPage(1)} 
-            disabled={currentPage === 1}
-          />
-          <FaAngleLeft 
-            className="pagination-navigation" 
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          />
-          {[...Array(totalPages).keys()]
-            .slice(Math.max(0, currentPage - 2), currentPage + 1)
-            .map((number) => (
-              <button
-                key={number + 1}
-                onClick={() => setCurrentPage(number + 1)}
-                className={currentPage === number + 1 ? "active" : ""}
-              >
-                {number + 1}
-              </button>
+          </thead>
+          <tbody>
+            {currentAccounts.map((account) => (
+              <tr key={account._id}>
+                <td>{account.username}</td>
+                <td>{account.email}</td>
+                <td>{account.roleType}</td>
+                <td>{account.role}</td>
+                <td>{Array.isArray(account.facebookClients) ? account.facebookClients.join(', ') : account.facebookClients}</td>
+                <td>
+                  <FaEllipsisV 
+                    className="popup-icon" 
+                    onClick={(e) => menuDropdown(e, account._id)} 
+                  />
+                  {accountMenuDropdown === account._id &&
+                    createPortal(
+                      <div
+                        className="post-actions-dropdown"
+                        style={{ top: accountMenuPosition.top, left: accountMenuPosition.left }}
+                      >
+                        <button onClick={() => handleEditAccount(account)}>Edit</button>
+                        {account.role === 'editor' && (
+                          <button onClick={() => {
+                            setSelectedUserId(account._id);
+                            setAssignClientPopup(true);
+                            setAccountMenuDropdown(null);
+                          }}>
+                            Assign Clients
+                          </button>
+                        )}
+                        <button 
+                          className="delete-btn" 
+                          onClick={() => handleDelete(account._id)}
+                        >
+                          Delete
+                        </button>
+                      </div>,
+                      document.body
+                    )}
+                </td>
+              </tr>
             ))}
-          <FaAngleRight 
-            className="pagination-navigation"
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          />
-          <FaAnglesRight
-            className="pagination-navigation"
-            onClick={() => setCurrentPage(totalPages)}
-            disabled={currentPage === totalPages}
-          />
+          </tbody>
+        </table>
+      </div>
+
+      {/* ✅ Fixed Pagination Section */}
+      <div className="pagination-fixed">
+        <div className="pagination-container">
+          <p>
+            Showing {indexOfFirstAccount + 1} to{" "}
+            {Math.min(indexOfLastAccount, filteredAccounts.length)} of{" "}
+            {filteredAccounts.length} entries
+          </p>
+          <div className="pagination">
+            <FaAnglesLeft 
+              className={`pagination-navigation ${currentPage === 1 ? 'disabled' : ''}`}
+              onClick={goToFirstPage} 
+            />
+            <FaAngleLeft 
+              className={`pagination-navigation ${currentPage === 1 ? 'disabled' : ''}`}
+              onClick={goToPrevPage}
+            />
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(page => 
+                page === 1 || 
+                page === totalPages || 
+                Math.abs(page - currentPage) <= 2
+              )
+              .map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={currentPage === page ? "active" : ""}
+                >
+                  {page}
+                </button>
+              ))}
+            <FaAngleRight 
+              className={`pagination-navigation ${currentPage === totalPages ? 'disabled' : ''}`}
+              onClick={goToNextPage}
+            />
+            <FaAnglesRight
+              className={`pagination-navigation ${currentPage === totalPages ? 'disabled' : ''}`}
+              onClick={goToLastPage}
+            />
+          </div>
         </div>
       </div>
 
+      {/* ✅ Modal Portals - rendered outside main content */}
+      {createUserDropdown && createPortal(
+        <CreateUserForm
+          username={username}
+          setName={setName}
+          email={email}
+          setEmail={setEmail}
+          password={password}
+          setPassword={setPassword}
+          role={role}
+          setRole={setRole}
+          roleType={roleType}
+          setRoleType={setRoleType}
+          facebookClients={facebookClients}
+          setFacebookClients={setFacebookClients}
+          instagramClients={instagramClients}
+          setInstagramClients={setInstagramClients}
+          twitterClients={twitterClients}
+          setTwitterClients={setTwitterClients}
+          menus={menus}
+          setMenus={setMenus}
+          actions={actions}
+          setActions={setActions}
+          onClose={toggleCreateUserDropdown}
+          onSubmit={handleSubmit}
+          isEditing={!!editAccount}
+        />,
+        document.body
+      )}
+
+      {assignClientPopup && selectedUserId && createPortal(
+        <AssignClients
+          userId={selectedUserId}
+          onClose={() => setAssignClientPopup(false)}
+        />,
+        document.body
+      )}
     </div>
   );
 };

@@ -68,3 +68,43 @@
   background-color: #eeffee;
   border-radius: 4px;
 }
+
+/* Dropdown Wrapper */
+.role-select-wrapper {
+  margin-bottom: 15px;
+}
+
+/* Label Styling */
+.role-select-wrapper label {
+  font-weight: bold;
+  color: var(--label-color);
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Stylish Dropdown */
+.role-select-wrapper select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.role-select-wrapper select:focus {
+  border-color: #0046d4;
+  outline: none;
+  background-color: #fff;
+}
+
+/* Light mode (default) */
+:root {
+  --label-color: #002266;
+}
+
+/* Dark mode */
+[data-selected-theme="dark"] {
+  --label-color: #ffffff; /* white or light grey for contrast */
+}
