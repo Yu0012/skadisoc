@@ -2214,13 +2214,20 @@ body {
 }
 
 .refresh-icon {
-  font-size: 25px;
-  cursor: pointer;
+  font-size: 20px;
   color: var(--icon-color);
-  transition: 0.3s;
-  margin-right: 0px;
-  margin-left: auto;
+  padding: 8px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(0,0,0,0.1);
+  margin-right: 12px;
+  transition: transform 0.3s ease;
 }
+
+.refresh-icon:hover {
+  transform: rotate(180deg);
+}
+
 
 /* Just for client page, need to adjust */
 .refresh-icon#client {
@@ -4042,4 +4049,46 @@ label {
 .swal2-popup.swal-popup {
   border-radius: 12px;
   padding: 25px;
+}
+
+.platform-toggle-group {
+  display: inline-flex;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--button-border);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.platform-toggle-group button {
+  padding: 10px 20px;
+  background: var(--button-bg);
+  color: white;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.platform-toggle-group button:not(:last-child) {
+  border-right: 1px solid var(--button-border);
+}
+
+.platform-toggle-group button:hover {
+  background: var(--button-hover);
+}
+
+.platform-toggle-group .active {
+  background-color: white;
+  color: var(--button-bg);
+  font-weight: bold;
+}
+
+.client-select-view-btn {
+  background-color: #e0e0e0; /* Lighter gray for inactive */
+  color: black;
+}
+
+.client-select-view-btn-selected {
+  background-color: var(--button-bg);
+  color: white;
 }
