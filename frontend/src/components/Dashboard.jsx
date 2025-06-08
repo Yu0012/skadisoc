@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import PostTable from "./PostTable";
 import "../styles.css";
 import SummaryCards from "./SummaryCards";
+import DashboardCharts from "./DashboardChart";
+import TopPostsWidget from "./TopPostsWidget";
 
 const Dashboard = () => {
   const [selectedPlatform, setSelectedPlatform] = useState("");
@@ -14,34 +16,41 @@ const Dashboard = () => {
   
     // Fetch all posts and filter by platform
   useEffect(() => {
-  const fetchPosts = async () => {
+    const fetchPosts = async () => {
     if (!selectedPlatform) return;
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/api/posts", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText);
+      const [postsRes, clientsRes] = await Promise.all([
+        fetch("http://localhost:5000/api/posts", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`http://localhost:5000/api/clients/${selectedPlatform.toLowerCase()}/all`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+      ]);
+
+      if (!postsRes.ok || !clientsRes.ok) {
+        throw new Error("❌ Failed to fetch posts or clients");
       }
 
-      const data = await response.json();
+      const postData = await postsRes.json();
+      const clientData = await clientsRes.json();
 
-      const platformFiltered = data.posts.filter(post =>
+      const allClients = clientData.clients;
+      const platformFiltered = postData.posts.filter(post =>
         post.selectedPlatforms.includes(selectedPlatform.toLowerCase())
       );
 
-      const clientsWithPosts = [
-        ...new Set(platformFiltered.map(post => post.client)),
-      ];
+      const clientsWithPosts = [...new Set(platformFiltered.map(post => post.client))];
+
+      const matchedClientObjs = clientsWithPosts
+        .map(id => allClients.find(c => c._id === id))
+        .filter(Boolean);
 
       setAllPosts(platformFiltered);
-      setFilteredClients(clientsWithPosts);
+      setFilteredClients(matchedClientObjs);
       setSelectedClient("");
       setFilteredPosts([]);
     } catch (err) {
@@ -50,7 +59,7 @@ const Dashboard = () => {
   };
 
   fetchPosts();
-}, [selectedPlatform]);
+  }, [selectedPlatform]);
 
 useEffect(() => {
   const fetchAllPostCounts = async () => {
@@ -96,24 +105,19 @@ useEffect(() => {
 
     // Get token for Facebook or Instagram
     try {
-      if (selectedPlatform === "Facebook") {
-        const res = await fetch("http://localhost:5000/api/facebook-clients");
-        const fbClients = await res.json();
-        const matched = fbClients.find(c => c.companyName === selectedClient);
-        if (matched) {
-          const fbRes = await fetch(`http://localhost:5000/api/facebook-clients/by-client/${matched._id}`);
-          const fbData = await fbRes.json();
-          accessToken = fbData?.pageAccessToken;
-        }
-      } else if (selectedPlatform === "Instagram") {
-        const res = await fetch("http://localhost:5000/api/instagram-clients");
-        const igClients = await res.json();
-        const matched = igClients.find(c => c.companyName === selectedClient);
-        if (matched) {
-          const igRes = await fetch(`http://localhost:5000/api/instagram-clients/by-client/${matched._id}`);
-          const igData = await igRes.json();
-          accessToken = igData?.accessToken;
-        }
+      const token = localStorage.getItem("token");
+      const platform = selectedPlatform.toLowerCase();
+      const res = await fetch(`http://localhost:5000/api/clients/${platform}/all`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const { clients } = await res.json();
+      const matched = clients.find(c => c._id === selectedClient);
+
+      accessToken = matched?.pageAccessToken || matched?.accessToken || null;
+
+      if (!accessToken) {
+        console.warn("⚠️ No access token found for selected client.");
       }
     } catch (err) {
       console.warn("⚠️ Failed to fetch access token:", err.message);
@@ -179,6 +183,46 @@ useEffect(() => {
   enrichPostsWithStats();
 }, [selectedClient, selectedPlatform, allPosts]);
 
+const fetchInsights = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const platform = selectedPlatform.toLowerCase();
+
+    // Fetch all clients for the selected platform
+    const res = await fetch(`http://localhost:5000/api/clients/${platform}/all`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const { clients } = await res.json();
+
+    // Match selected client by _id
+    const matched = clients.find(c => c._id === selectedClient);
+
+    // Detect token field based on platform
+    const accessToken = matched?.pageAccessToken || matched?.accessToken || null;
+
+    if (!accessToken) {
+      console.warn("⚠️ No access token found for selected client.");
+      return;
+    }
+
+    // Call your insights logic here with the accessToken
+    console.log(`✅ Access token ready for ${selectedPlatform}:`, accessToken);
+    
+    // Placeholder: You can now use accessToken to fetch platform insights (e.g., Graph API)
+    // Example: await getFacebookInsights(accessToken);
+
+  } catch (err) {
+    console.error("❌ Error fetching platform client or token:", err);
+  }
+};
+
+useEffect(() => {
+  if (selectedPlatform && selectedClient) {
+    fetchInsights();
+  }
+}, [selectedPlatform, selectedClient]);
+
 
 
   return (
@@ -205,17 +249,22 @@ useEffect(() => {
         >
           <option value="">Select Client</option>
           {filteredClients.map((client, idx) => (
-            <option key={idx} value={client}>{client}</option>
+            <option key={client._id} value={client._id}>
+              {client.pageName || client.username || client.name || client._id}
+            </option>
           ))}
         </select>
       )}
-
       {filteredPosts.length > 0 && (
-        <PostTable
-          posts={filteredPosts}
-          platform={selectedPlatform}
-          clientId={selectedClient}
-        />
+        <>
+          <SummaryCards posts={filteredPosts} />
+          <DashboardCharts posts={filteredPosts} />
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem", marginTop: "2rem" }}>
+            <TopPostsWidget posts={filteredPosts} metric="likes" />
+            <TopPostsWidget posts={filteredPosts} metric="comments" />
+            <TopPostsWidget posts={filteredPosts} metric="shares" />
+          </div>
+        </>
       )}
     </div>
   );

@@ -4092,3 +4092,10 @@ label {
   background-color: var(--button-bg);
   color: white;
 }
+
+.dashboard-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 2rem;
+}
