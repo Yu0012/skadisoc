@@ -3466,28 +3466,3 @@ body {
   align-items: center;
   gap: 12px;
 }
-
-.notification-popup {
-  position: absolute;
-  right: 10px;
-  top: 60px;
-  background: white;
-  border: 1px solid #ccc;
-  padding: 1rem;
-  border-radius: 8px;
-  width: 300px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  z-index: 1000;
-}
-.notification-popup h4 {
-  margin-top: 0;
-}
-.notification-popup ul {
-  list-style: none;
-  padding: 0;
-}
-.notification-popup li {
-  border-bottom: 1px solid #eee;
-  padding: 0.5rem 0;
-}
-

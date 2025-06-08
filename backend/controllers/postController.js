@@ -5,7 +5,6 @@ const FacebookClient = require('../models/FacebookClientSchema');
 const InstagramClient = require('../models/InstagramClientSchema');
 const TwitterClient = require('../models/TwitterClientSchema');
 const LinkedInClient = require('../models/LinkedInClientSchema');
-const Notification = require('../models/Notification');
 
 
 // GET all posts (accessible to all authenticated users)
@@ -100,25 +99,16 @@ exports.createPost = async (req, res) => {
       content,
       title,
       client,
-      clientName, 
+      clientName, // ✅ Add this
       scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
       selectedPlatforms,
       filePath,
-      createdBy: {
-        id: req.user._id,
-        name: req.user.name || req.user.username || req.user.email
-      },
       posted: false,
       status: scheduledDate ? 'scheduled' : 'draft',
+      createdBy: requestingUser._id
     });
 
     await newPost.save();
-    await Notification.create({
-      type: 'post_created',
-      message: `📝 Post titled "${title}" was created by ${requestingUser.name || requestingUser.username || requestingUser.email} at ${new Date().toLocaleString()}`,
-      createdBy: requestingUser._id,
-      createdAt: new Date(),
-    });
 
     res.status(201).json({
       message: 'Post created successfully',
@@ -337,12 +327,3 @@ exports.deletePost = async (req, res) => {
   }
 };
 
-exports.getNotifications = async (req, res) => {
-  try {
-    const notifications = await Notification.find().sort({ createdAt: -1 }).limit(20).populate('createdBy', 'username');
-    res.json(notifications);
-  } catch (err) {
-    console.error('❌ Error fetching notifications:', err);
-    res.status(500).json({ message: 'Failed to fetch notifications' });
-  }
-};

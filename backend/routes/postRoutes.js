@@ -38,9 +38,4 @@ router.put('/:id', authenticateJWT, upload.single('file'), postController.update
 // Delete User
 router.delete('/:id', authenticateJWT, postController.deletePost);
 
-router.get('/notifications', authenticateJWT, postController.getNotifications);
-
-// router.get('/notifications', getNotifications);
-
-
 module.exports = router;

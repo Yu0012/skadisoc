@@ -12,7 +12,6 @@ import bellStatic_light from "../assets/bellring-no_light.png";
 import userIcon from "../assets/icon-women.png";
 import sunIcon from "../assets/icon-sun-light.png";
 import moonIcon from "../assets/icon-moon.png";
-import Notification from "./Notification";
 
 const Navbar = () => {
   const location = useLocation();
@@ -29,7 +28,6 @@ const Navbar = () => {
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
 
   //Updates elements with data-selected-theme attribute, also saves theme to localStorage for consistency across pages
   useEffect(() => {
@@ -42,6 +40,20 @@ const Navbar = () => {
     setDarkMode(currentTheme === 'dark');
   }, [currentTheme]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newNotifications =
+        Math.random() < 0.5
+          ? [
+              { id: 1, message: "New comment on your post" },
+              { id: 2, message: "Your scheduled post has been published" },
+            ]
+          : [];
+      setNotifications(newNotifications);
+      setHasNotifications(newNotifications.length > 0);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -125,7 +137,7 @@ const Navbar = () => {
 
         {/* 🔔 Notification Bell */}
         <div className="notification-menu">
-          <div onClick={() => setShowNotifications(!showNotifications)} className="bell-container">
+          <div onClick={() => setNotifDropdownOpen(!notifDropdownOpen)} className="bell-container">
             {hasNotifications ? (
               <Lottie animationData={darkMode ? bellAnimation_light : bellAnimation} className="bell-icon" />
             ) : (
@@ -133,10 +145,20 @@ const Navbar = () => {
             )}
           </div>
 
-          
-            {showNotifications && (
-              <Notification onClose={() => setShowNotifications(false)} />
-            )}
+          {notifDropdownOpen && (
+            <div className="dropdown-menu notifications-dropdown">
+              <h4>Notifications</h4>
+              {hasNotifications ? (
+                notifications.map((notif) => <p key={notif.id}>{notif.message}</p>)
+              ) : (
+                <p>No new notifications</p>
+              )}
+              <hr />
+              <Link to="/notifications" className="view-all" onClick={() => setNotifDropdownOpen(false)}>
+                View All
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* 👤 User Menu */}

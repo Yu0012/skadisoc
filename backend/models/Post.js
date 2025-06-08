@@ -21,21 +21,7 @@ const postSchema = new mongoose.Schema({
     twitter: String,
     linkedin: String
   },
-  createdBy: {
-    id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true
-    },
-    name: {
-      type: String,
-      required: true,
-  }
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true }); // Add createdAt and updatedAt automatically
 
