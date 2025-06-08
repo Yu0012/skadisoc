@@ -435,7 +435,7 @@ body {
 /* ➕ Create Post Button */
 .create-post-btn {
   background-color: var(--button-bg) !important;
-  color: white;
+  color: white !important;
   padding: 10px 15px;
   border: 1px solid var(--button-bg);
   border-radius: 5px;
