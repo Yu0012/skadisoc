@@ -318,7 +318,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
           <Preview
             platform={(Array.isArray(selectedPlatforms) ? selectedPlatforms[0] : selectedPlatforms) || ""}
             content={content}
-            client={client}
+            client={clientName}
             attachedFile={attachedFile}
           />
         </div>
