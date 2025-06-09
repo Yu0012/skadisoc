@@ -46,62 +46,24 @@ body {
 }
 
 /* 🏠 Navbar Styling */
-/* Fixed height for the navbar */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 20px;
-  background-color: var(--bg-color);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  position: fixed; /* fix navbar at the top */
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
+  padding: 15px 30px;
+  background-color: var(--bg-color); /* Switch between light and dark theme */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.navbar-left,
-.navbar-center,
-.navbar-right {
-  display: flex;
-  align-items: center;
-}
-
-.navbar-left {
-  flex: 1;
-}
-
-.navbar-center {
-  flex: 2;
-  justify-content: center;
-  gap: 120px;
-}
-
-.navbar-right {
-  flex: 1;
-  justify-content: flex-end;
-  gap: 20px;
-}
-
-.navbar-logo {
-  height: 48px; /* unified size */
+/* 🔷 Logo Styling */
+.logo {
+  height: 60px;        
+  max-height: 60px;
   width: auto;
   object-fit: contain;
-  padding: 4px;
-  background-color: transparent;
+  display: block;
 }
 
-
-.navbar-center a {
-  text-decoration: none;
-  font-weight: bold;
-  color: var(--text-color);
-}
-
-.navbar-center a.active {
-  color: var(--highlight-color);
-}
 
 /* 🔗 Navigation Links */
 .nav-links {
@@ -129,9 +91,10 @@ body {
 }
 
 /* Active link styling */
-.navbar-center a.active {
-  color: rgb(241, 164, 20) !important;
+.nav-links a.active {
+  color: rgb(241, 164, 20);
   font-weight: bold;
+  background-color: transparent;
 }
 
 /* 🔔 Right Side Icons */
@@ -2262,10 +2225,8 @@ body {
 }
 
 .refresh-icon:hover {
-  background-color: #4a4b56; /* slightly lighter hover */
   transform: rotate(180deg);
 }
-
 
 
 /* Just for client page, need to adjust */
@@ -4137,16 +4098,4 @@ label {
   flex-wrap: wrap;
   gap: 2rem;
   margin-top: 2rem;
-}
-
-[data-selected-theme="dark"] .refresh-icon {
-  background-color: #3a3b44;   /* Slightly lighter than dark bg */
-  color: white;                /* Make sure the icon is visible */
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
-}
-
-.draggable-calendar-box {
-  cursor: grab;
-  top: 100px; /* default position */
-  left: 100px;
 }
