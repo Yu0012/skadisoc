@@ -6,6 +6,8 @@ const path = require('path');
 const router = express.Router();
 const postController = require('../controllers/postController');
 const { authenticateJWT } = require('../middleware/authMiddleware');
+const { getLatestNotifications } = require('../controllers/notificationController');
+const Notification = require('../models/Notification');
 
 //Multer setup for file uploads
 const storage = multer.diskStorage({
@@ -37,5 +39,7 @@ router.put('/:id', authenticateJWT, upload.single('file'), postController.update
 
 // Delete User
 router.delete('/:id', authenticateJWT, postController.deletePost);
+
+router.get('/notifications', authenticateJWT, getLatestNotifications);
 
 module.exports = router;

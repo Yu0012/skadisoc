@@ -12,6 +12,7 @@ import bellStatic_light from "../assets/bellring-no_light.png";
 import userIcon from "../assets/icon-women.png";
 import sunIcon from "../assets/icon-sun-light.png";
 import moonIcon from "../assets/icon-moon.png";
+import axios from "axios";
 
 const Navbar = () => {
   const location = useLocation();
@@ -41,17 +42,21 @@ const Navbar = () => {
   }, [currentTheme]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const newNotifications =
-        Math.random() < 0.5
-          ? [
-              { id: 1, message: "New comment on your post" },
-              { id: 2, message: "Your scheduled post has been published" },
-            ]
-          : [];
-      setNotifications(newNotifications);
-      setHasNotifications(newNotifications.length > 0);
-    }, 5000);
+    const fetchLatestNotifications = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/notifications/latest");
+        setNotifications(res.data);
+        setHasNotifications(res.data.length > 0);
+      } catch (err) {
+        console.error("❌ Notification Fetch Error:", err);
+        console.error("🔍 Error Data:", err.response?.data);
+        console.error("❌ Failed to fetch notifications", err);
+      }
+    };
+
+    fetchLatestNotifications();
+    const interval = setInterval(fetchLatestNotifications, 60000); // every 60 seconds
+
     return () => clearInterval(interval);
   }, []);
 
@@ -145,20 +150,24 @@ const Navbar = () => {
             )}
           </div>
 
-          {notifDropdownOpen && (
-            <div className="dropdown-menu notifications-dropdown">
-              <h4>Notifications</h4>
-              {hasNotifications ? (
-                notifications.map((notif) => <p key={notif.id}>{notif.message}</p>)
-              ) : (
-                <p>No new notifications</p>
-              )}
-              <hr />
-              <Link to="/notifications" className="view-all" onClick={() => setNotifDropdownOpen(false)}>
-                View All
-              </Link>
-            </div>
-          )}
+            {notifDropdownOpen && (
+              <div className="dropdown-menu notifications-dropdown">
+                <h4>Notifications</h4>
+
+                <div className="notification-scroll">
+                  {notifications.length === 0 ? (
+                    <p className="no-notification">No new notifications</p>
+                  ) : (
+                    notifications.map((note, index) => (
+                      <div key={index} className="notification-item">
+                        <p>{note.message}</p>
+                        <span className="timestamp">{note.timestamp}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
         </div>
 
         {/* 👤 User Menu */}

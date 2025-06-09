@@ -18,6 +18,7 @@ import InstagramPreview from "./components/InstagramPreview";
 import TwitterPreview from "./components/TwitterPreview";
 import SocialMediaDashboard from './components/SocialMediaDashboard';
 import AssignClients from './components/AssignClients';
+import Notification from './components/Notification';
 import "./styles.css";
 
 
@@ -46,6 +47,7 @@ const AppContent = () => {
         <Route path="/twitter-preview/:postId" element={<TwitterPreview />} />
         <Route path="/client-login" element={<SocialMediaDashboard />} />
         <Route path="/assign-clients/:userId" element={<AssignClients />} />
+        <Route path="/notifications" element={<Notification />} />
       </Routes>
     </>
   );

@@ -3466,3 +3466,40 @@ body {
   align-items: center;
   gap: 12px;
 }
+
+.notification-list {
+  list-style: none;
+  padding: 0;
+}
+
+.notification-list li {
+  background-color: var(--table-bg);
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-light);
+}
+
+
+.dropdown-menu.notifications-dropdown {
+  max-height: 400px; /* Total dropdown height */
+  width: 300px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-scroll {
+  overflow-y: auto;
+  max-height: 300px; /* Scrollable area height */
+  padding-right: 8px;
+}
+
+.notification-item {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}

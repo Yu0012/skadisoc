@@ -5,7 +5,14 @@ const FacebookClient = require('../models/FacebookClientSchema');
 const InstagramClient = require('../models/InstagramClientSchema');
 const TwitterClient = require('../models/TwitterClientSchema');
 const LinkedInClient = require('../models/LinkedInClientSchema');
-
+const Notification = require('../models/Notification');
+const now = new Date();
+const day = String(now.getDate()).padStart(2, '0');
+const month = String(now.getMonth() + 1).padStart(2, '0');
+const year = String(now.getFullYear()).slice(-2);
+const minutes = String(now.getMinutes()).padStart(2, '0');
+const hours = String(now.getHours()).padStart(2, '0');
+const formattedTime = `${day}/${month}/${year}, ${hours}:${minutes}`;
 
 // GET all posts (accessible to all authenticated users)
 exports.getAllPosts = async (req, res) => {
@@ -109,6 +116,11 @@ exports.createPost = async (req, res) => {
     });
 
     await newPost.save();
+    await Notification.create({
+      type: 'post_created',
+      message: `📢 Post titled "${newPost.title}" was created by ${requestingUser.username} at ${formattedTime}` ,
+      createdBy: req.user._id
+    });
 
     res.status(201).json({
       message: 'Post created successfully',
@@ -224,6 +236,13 @@ exports.updatePost = async (req, res) => {
       .populate('createdBy', 'username email role')
       .populate('updatedBy', 'username email role');
 
+    await Notification.create({
+      type: 'post_edited',
+      message: `🗑️ Post titled "${req.body.title}" was edit by ${req.user.username} at ${formattedTime}`,
+      createdBy: req.user._id
+    });
+      
+
     console.log('✅ Post updated:', updatedPost._id);
     res.json({
       message: 'Post updated successfully',
@@ -252,6 +271,12 @@ exports.deletePost = async (req, res) => {
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }
+
+    await Notification.create({
+      type: 'post_deleted',
+      message: `🗑️ Post titled "${post.title}" was deleted by ${req.user.username} at ${formattedTime}`,
+      createdBy: req.user._id
+    });
 
     // 🌐 Delete Facebook post
     if (post.platformPostIds?.facebook) {
@@ -317,6 +342,7 @@ exports.deletePost = async (req, res) => {
 
     // 🚮 Delete MongoDB post
     await Post.findByIdAndDelete(id);
+
     console.log('✅ Deleted post from DB:', post._id);
 
     res.json({ message: 'Post deleted from all platforms & DB' });
