@@ -21,7 +21,7 @@ const instagramClientsRoute = require('./routes/instagramClients');
 const twitterClientsRoute = require('./routes/twitterClients');
 const { checkAndPostScheduledPosts } = require('./utils/scheduledPostHandler');
 const functions = require('firebase-functions');
-
+const notificationRoutes = require('./routes/notificationRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -346,6 +346,8 @@ app.use('/api/posts', postRoutes);
 
 const clientRoutes = require('./routes/clientRoutes');
 app.use('/api/clients', clientRoutes);
+
+app.use('/api/notifications', notificationRoutes);
 
 app.get('/test', (req, res) => res.send('✅ Test route working'));
 
