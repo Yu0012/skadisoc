@@ -226,8 +226,7 @@ const EventCalendar = () => {
         </div>
 
         {/* Main Calendar Area - Wrapped in blur container */}
-        <div className={`calendar-main-wrapper ${createInitialData?.scheduledDate && !isCreateModalOpen ? "blurred" : ""}`}>
-          {/* Calendar Navigation Row */}
+          <div className={`calendar-main-wrapper ${isCreateModalOpen ? 'blurred' : ''}`}>          {/* Calendar Navigation Row */}
           <div className="search-toolbar-container">
             <div className="search-container calendar-controls-row calendar-nav-bar" style={{ justifyContent: "flex-end" }}>
               <div className="calendar-nav-group" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
