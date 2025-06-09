@@ -1775,44 +1775,39 @@ input::-webkit-inner-spin-button {
 }
 
 .profile-card {
-  background: white;
+  background: var(--user-background);
+  color: var(--user-text);
   padding: 30px;
   border-radius: 16px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
   width: 100%;
   max-width: 420px;
-  text-align: center;
-}
-
-.profile-avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 16px;
-  border: 3px solid #f0f0f0;
-}
-
-.profile-card h2 {
-  font-size: 22px;
-  margin-bottom: 8px;
+  text-align: center;         /* ✅ Center all inner content */
+  display: flex;
+  flex-direction: column;
+  align-items: center;        /* ✅ Center horizontally */
 }
 
 .profile-card p {
   margin: 4px 0;
   font-size: 14px;
   color: var(--user-text);
+  text-align: center;         /* ✅ Make sure paragraph is centered */
 }
 
 .edit-btn {
   margin-top: 14px;
   padding: 8px 16px;
-  background: #f0f0f0;
-  border: 1px solid black;
+  background: var(--button-bg);
+  border: 1px solid var(--button-border);
+  color: var(--button-text);
   border-radius: 6px;
   font-size: 13px;
   cursor: pointer;
   transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .theme-icon {
@@ -1880,20 +1875,22 @@ input::-webkit-inner-spin-button {
 .user-stats {
   margin-top: 28px;
   background: var(--user-stats);
-  padding: 18px;
-  border-radius: 12px;
+  padding: 30px 50px;          /* ✅ Increased vertical and horizontal padding */
+  border-radius: 16px;         /* Optional: softer corners */
   text-align: left;
   font-size: 14px;
-  color: #333;
+  color: var(--user-text);     /* ✅ Match theme text color */
 }
 
+
 .user-stats h3 {
-  font-size: 15px;
-  margin-bottom: 10px;
+  font-size: 16px;
+  margin-bottom: 16px;
   color: var(--user-text);
   display: flex;
   align-items: center;
 }
+
 
 .user-stats h3::before {
   content: "📊";
@@ -4098,4 +4095,61 @@ label {
   flex-wrap: wrap;
   gap: 2rem;
   margin-top: 2rem;
+}
+
+[data-selected-theme="dark"] .refresh-icon {
+  background-color: #454555;       /* Slightly lighter than dark background */
+  color: white;                    /* Icon color */
+  border: 1px solid #6c7789;       /* Match your dark border tone */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Subtle glow */
+}
+
+.profile-avatar-initial {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: var(--button-bg);
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
+.user-icon-placeholder {
+  width: 38px;
+  height: 38px;
+  background-color: #3b82f6; /* Blue circle */
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+[data-selected-theme="dark"] .user-icon-placeholder {
+  background-color: #60a5fa; /* Lighter blue in dark mode */
+}
+
+.avatar-circle {
+  width: 40px;
+  height: 40px;
+  background-color: #4a90e2; /* same blue tone */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
+  color: white;
+  cursor: pointer;
+  user-select: none;
 }
