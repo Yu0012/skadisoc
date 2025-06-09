@@ -58,7 +58,7 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Step 1: OAuth Login Route
 app.get('/auth/facebook', (req, res) => {
-  const authUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${process.env.FB_APP_ID}&redirect_uri=${process.env.REDIRECT_URI}&scope=pages_show_list,pages_manage_posts,instagram_basic,instagram_content_publish&response_type=code`;
+  const authUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${process.env.FB_APP_ID}&redirect_uri=${process.env.REDIRECT_URI}&scope=pages_manage_posts,pages_read_engagement,pages_manage_engagement,pages_show_list,publish_video&response_type=code`;
   res.redirect(authUrl);
 });
 

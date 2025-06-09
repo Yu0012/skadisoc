@@ -248,7 +248,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                   ref={fileInputRef}
                   className="file-input"
                   onChange={handleFileChange}
-                  accept="image/*, .pdf, .docx"
+                  accept="image/*, .mp4"
                   style={{ display: "none" }}
                 />
 

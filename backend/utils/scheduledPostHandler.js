@@ -48,6 +48,34 @@ const postToFacebook = async (post, client) => {
       }
     }
 
+    if (hasFile && ['.mp4', '.mov', '.avi'].includes(path.extname(imagePath).toLowerCase())) {
+      // 📤 Upload video as unpublished
+      const url = `https://graph.facebook.com/${pageId}/videos`;
+      const formData = new FormData();
+      formData.append("access_token", pageAccessToken);
+      formData.append("source", fs.createReadStream(path.join(__dirname, '..', post.filePath)));
+      formData.append("published", "false"); // Important
+
+      const uploadRes = await axios.post(url, formData, {
+        headers: formData.getHeaders(),
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+      });
+      console.log("📹 Video uploaded successfully:", uploadRes.data);
+      const videoId = uploadRes.data.id;
+
+      // 📢 Now publish it to feed
+      const publishUrl = `https://graph.facebook.com/${pageId}/feed`;
+      const publishRes = await axios.post(publishUrl, {
+        message: post.content,
+        attached_media: JSON.stringify([{ media_fbid: videoId }]),
+        access_token: pageAccessToken,
+      });
+
+      console.log("✅ Facebook Video Feed Post ID:", publishRes.data.id);
+      return publishRes.data.id;
+    }
+
     // 📝 If no valid image, just post text
     const publishUrl = `https://graph.facebook.com/${pageId}/feed`;
     const publishResponse = await axios.post(publishUrl, {
