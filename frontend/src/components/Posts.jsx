@@ -12,27 +12,27 @@ import Swal from 'sweetalert2';
 
 const Posts = () => {
   // State declarations
-  const [posts, setPosts] = useState([]);//All posts
+  const [posts, setPosts] = useState([]); // All posts
   const [category, setCategory] = useState("All Categories"); // Category filter
-  const [searchQuery, setSearchQuery] = useState("");//search input
-  const [currentPage, setCurrentPage] = useState(1);// current pagination page
-  const [postsPerPage] = useState(7); //number of post per page
-  const [postMenuDropdown, setPostMenuDropdown] = useState(null);//current opened dropdown
-  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 }) //positon for dorpdown menu
-  const [selectedPosts, setSelectedPosts] = useState([]);// selected post IDs
-  const [isModalOpen, setIsModalOpen] = useState(false); //modal open state
-  const [editingPost, setEditingPost] = useState(null);
-  const [isAllSelected, setIsAllSelected] = useState(false);// whether all visible posts are selected
-  const [isPlatformSelectOpen, setIsPlatformSelectOpen] = useState(false);
-  const [selectedPlatforms, setSelectedPlatforms] = useState(null);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [searchQuery, setSearchQuery] = useState(""); // Search input
+  const [currentPage, setCurrentPage] = useState(1); // Current pagination page
+  const [postsPerPage] = useState(7); // Number of posts per page
+  const [postMenuDropdown, setPostMenuDropdown] = useState(null); // Current opened dropdown
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 }); // Position for dropdown menu
+  const [selectedPosts, setSelectedPosts] = useState([]); // Selected post IDs
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
+  const [editingPost, setEditingPost] = useState(null); // Post being edited
+  const [isAllSelected, setIsAllSelected] = useState(false); // Whether all visible posts are selected
+  const [isPlatformSelectOpen, setIsPlatformSelectOpen] = useState(false); // Platform selection modal state
+  const [selectedPlatforms, setSelectedPlatforms] = useState(null); // Selected platforms for new post
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" }); // Sorting configuration
 
-  //Replaces text to icons for social media
+  // Platform icons mapping
   const platformIcons = {
     facebook: <img src={facebookIcon} className="inline-icon" alt="Facebook" />,
-    twitter: <img src={twitterIcon} className="inline-icon" alt="Twitter"/>,
-    instagram: <img src={instagramIcon} className="inline-icon" alt="Instagram"/>,
-    linkedin: <img src={linkedinIcon} className="inline-icon" alt="LinkedIn"/>
+    twitter: <img src={twitterIcon} className="inline-icon" alt="Twitter" />,
+    instagram: <img src={instagramIcon} className="inline-icon" alt="Instagram" />,
+    linkedin: <img src={linkedinIcon} className="inline-icon" alt="LinkedIn" />
   };
 
   // Fetch posts from backend
@@ -42,10 +42,10 @@ const Posts = () => {
       const response = await fetch("http://localhost:5000/api/posts", {
         headers: { Authorization: `Bearer ${token}` } 
       });
-      if(!response.ok) {
+      if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText);
-      };
+      }
       const data = await response.json();
       setPosts(data.posts);
     } catch (error) {
@@ -56,13 +56,14 @@ const Posts = () => {
   useEffect(() => {
     fetchPosts();
   }, []);
-  
-  // 📌 Handle search input
+
+  // Handle search input
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset to first page when searching
   };
 
-  // 📌 Handle Post Creation - Update UI After New Post
+  // Handle Post Creation - Update UI After New Post
   const handlePostCreated = () => {
     fetchPosts(); // Reload posts after a new post is added
     setIsModalOpen(false);
@@ -72,12 +73,17 @@ const Posts = () => {
     setIsPlatformSelectOpen(true);
   };
   
-  //handles for ui inputs
-  const handleRefresh = () => window.location.reload();
+  // Handle refresh
+  const handleRefresh = () => {
+    fetchPosts();
+    setCurrentPage(1);
+    setSearchQuery("");
+    setCategory("All Categories");
+  };
 
   // Edit Post
   const handleEditPost = async (postId) => {
-    setPostMenuDropdown(null); // 👈 Close dropdown
+    setPostMenuDropdown(null); // Close dropdown
     const fullPost = await fetchPostById(postId);
     if (!fullPost) {
       alert("Failed to load post");
@@ -95,7 +101,7 @@ const Posts = () => {
 
   // Delete Post with enhanced SweetAlert2 confirmation
   const handleDeletePost = async (postId) => {
-    setPostMenuDropdown(null); // 🔄 Close dropdown immediately
+    setPostMenuDropdown(null); // Close dropdown immediately
 
     const result = await Swal.fire({
       title: 'Delete this post?',
@@ -178,7 +184,7 @@ const Posts = () => {
     }
   };
   
-  //toggle dropdown menu for a post
+  // Toggle dropdown menu for a post
   const menuDropdown = (event, postID) => {
     event.stopPropagation();
     if (postMenuDropdown === postID) {
@@ -190,7 +196,7 @@ const Posts = () => {
     }
   };
 
-  // 📌 Filtered posts based on search query
+  // Filtered posts based on search query
   const filteredPosts = posts.filter((post) => {
     const valueToSearch = category === "All Categories"
       ? Object.values(post).join(" ").toLowerCase()
@@ -201,7 +207,7 @@ const Posts = () => {
     return valueToSearch.includes(searchQuery.toLowerCase());
   });
 
-  // 📌 Sort posts based on selected criteria
+  // Sort posts based on selected criteria
   const sortedPosts = [...filteredPosts].sort((a, b) => {
     if (!sortConfig.key) return 0;
   
@@ -213,7 +219,7 @@ const Posts = () => {
     return 0;
   });
   
-  //close dropdown menu in outside click
+  // Close dropdown menu on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!event.target.closest(".post-actions-dropdown")) {
@@ -224,13 +230,13 @@ const Posts = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  //pagination logic
+  // Pagination logic
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
-  //handle single checkbox change
+  // Handle single checkbox change
   const handleCheckboxChange = (postID) => {
     setSelectedPosts((prevSelected) =>
       prevSelected.includes(postID)
@@ -239,6 +245,7 @@ const Posts = () => {
     );
   };
 
+  // Handle sorting
   const handleSort = (key) => {
     setSortConfig((prev) => {
       if (prev.key === key) {
@@ -251,6 +258,7 @@ const Posts = () => {
     });
   };
 
+  // Deselect all posts
   const handleDeselectAll = () => {
     setSelectedPosts([]);
     setIsAllSelected(false);
@@ -260,7 +268,7 @@ const Posts = () => {
     <div className="posts-page-wrapper">
       {/* Main content container */}
       <div className={`posts-container ${isModalOpen ? "blurred" : ""}`}>
-        {/*Header and actions*/}
+        {/* Header and actions */}
         <div className="posts-header">
           <div className="welcome-message">
             <p>Welcome,</p>
@@ -268,7 +276,7 @@ const Posts = () => {
           </div>
         </div>
 
-        {/*search and catogories filter*/}
+        {/* Search and categories filter */}
         <div className="search-container">
           <div className="search-container-left">
             <select
@@ -322,8 +330,7 @@ const Posts = () => {
                 <td>{post.content}</td>
 
                 <td> 
-                  {/* For each post, render the icon that corresponds to the social media that's associated with the post. 
-                      Unavailable icons would render the text instead, and posts without platforms would have a dash instead */}
+                  {/* Render platform icons */}
                   {post.selectedPlatforms.length > 0
                     ? post.selectedPlatforms.map((platform, index) => (
                         <span key={index}>
@@ -333,9 +340,9 @@ const Posts = () => {
                     : "-"}
                 </td>
                 <td>
-                  {/* Highlights colours based on text */}
+                  {/* Status highlight with color coding */}
                   <span className={`status-highlight ${post.status?.toLowerCase()}`}>
-                    {post.status?.toUpperCase() || "-"}
+                    {post.status || "-"}
                   </span>
                 </td>
                 <td>
@@ -373,7 +380,7 @@ const Posts = () => {
         )}
       </div>
 
-      {/* Pagination container - now outside the main content */}
+      {/* Pagination container */}
       <div className={`pagination-container ${isModalOpen || postMenuDropdown ? 'disabled' : ''}`}>
         <p className={`${isModalOpen || postMenuDropdown ? 'pagination-disabled-text' : ''}`}>
           Showing {indexOfFirstPost + 1} to{" "}
@@ -382,17 +389,27 @@ const Posts = () => {
         </p>
 
         <div className={`pagination ${isModalOpen || postMenuDropdown ? 'disabled' : ''}`}>
+          {/* First page button */}
           <FaAnglesLeft
-            className="pagination-navigation"
-            onClick={() => !(isModalOpen || postMenuDropdown) && setCurrentPage(1)}
-            disabled={currentPage === 1 || isModalOpen || postMenuDropdown}
+            className={`pagination-navigation ${currentPage === 1 ? "disabled" : ""}`}
+            onClick={() => {
+              if (currentPage !== 1 && !isModalOpen && !postMenuDropdown) {
+                setCurrentPage(1);
+              }
+            }}
           />
+          
+          {/* Previous page button */}
           <FaAngleLeft
-            className="pagination-navigation"
-            onClick={() => !(isModalOpen || postMenuDropdown) && setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1 || isModalOpen || postMenuDropdown}
+            className={`pagination-navigation ${currentPage === 1 ? "disabled" : ""}`}
+            onClick={() => {
+              if (currentPage > 1 && !isModalOpen && !postMenuDropdown) {
+                setCurrentPage(currentPage - 1);
+              }
+            }}
           />
 
+          {/* Page numbers */}
           {[...Array(totalPages).keys()]
             .slice(Math.max(0, currentPage - 2), currentPage + 1)
             .map((number) => (
@@ -406,15 +423,24 @@ const Posts = () => {
               </button>
             ))}
           
+          {/* Next page button */}
           <FaAngleRight
-            className="pagination-navigation"
-            onClick={() => !(isModalOpen || postMenuDropdown) && setCurrentPage(currentPage + 1)}
-            disabled={currentPage === totalPages || isModalOpen || postMenuDropdown}
+            className={`pagination-navigation ${currentPage === totalPages ? "disabled" : ""}`}
+            onClick={() => {
+              if (currentPage < totalPages && !isModalOpen && !postMenuDropdown) {
+                setCurrentPage(currentPage + 1);
+              }
+            }}
           />
+          
+          {/* Last page button */}
           <FaAnglesRight
-            className="pagination-navigation"
-            onClick={() => !(isModalOpen || postMenuDropdown) && setCurrentPage(totalPages)}
-            disabled={currentPage === totalPages || isModalOpen || postMenuDropdown}
+            className={`pagination-navigation ${currentPage === totalPages ? "disabled" : ""}`}
+            onClick={() => {
+              if (currentPage !== totalPages && !isModalOpen && !postMenuDropdown) {
+                setCurrentPage(totalPages);
+              }
+            }}
           />
         </div>
       </div>
@@ -455,12 +481,12 @@ const Posts = () => {
             setPosts((prevPosts) => {
               const existingIndex = prevPosts.findIndex(p => p._id === savedPost._id);
               if (existingIndex !== -1) {
-                // Update existing
+                // Update existing post
                 const updatedPosts = [...prevPosts];
                 updatedPosts[existingIndex] = savedPost;
                 return updatedPosts;
               } else {
-                // Add new
+                // Add new post
                 return [...prevPosts, savedPost];
               }
             });
