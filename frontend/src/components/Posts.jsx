@@ -335,7 +335,7 @@ const Posts = () => {
                 <td>
                   {/* Highlights colours based on text */}
                   <span className={`status-highlight ${post.status?.toLowerCase()}`}>
-                    {post.status || "-"}
+                    {post.status?.toUpperCase() || "-"}
                   </span>
                 </td>
                 <td>
