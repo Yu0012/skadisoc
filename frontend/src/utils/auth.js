@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { resolvePermissions } from './resolvePermissions';
+import config from '../config';
 
 export const login = async (email, password) => {
   try {
-    const response = await axios.post('http://localhost:5000/api/auth/login', {
+    const response = await axios.post(`${config.API_BASE}/api/auth/login`, {
       email,
       password
     });
@@ -42,7 +43,7 @@ export const login = async (email, password) => {
 // Add this to src/utils/auth.js
 export const logout = async () => {
   try {
-    const response = await axios.post('http://localhost:5000/api/auth/logout', {}, {
+    const response = await axios.post(`${config.API_BASE}/api/auth/logout`, {}, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import "../styles.css";
+import config from '../config'; // Adjust the import path as necessary
 
 const TwitterPreview = () => {
   const { postId } = useParams();
@@ -10,7 +11,7 @@ const TwitterPreview = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/posts/${postId}`);
+        const res = await axios.get(`${config.API_BASE}/api/posts/${postId}`);
         setPost(res.data);
       } catch (err) {
         console.error("Error fetching post:", err);

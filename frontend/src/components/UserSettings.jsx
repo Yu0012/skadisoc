@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "../styles.css";
+import config from '../config'; // Adjust the import path as necessary
 
 const UserSettings = () => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -28,7 +29,7 @@ const UserSettings = () => {
       setMessage("");
 
       const token = localStorage.getItem("token"); // JWT from login
-      const response = await fetch("http://localhost:5000/api/auth/reset-password", {
+      const response = await fetch(`${config.API_BASE}/api/auth/reset-password`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

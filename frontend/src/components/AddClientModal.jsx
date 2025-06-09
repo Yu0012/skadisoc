@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { ImCross } from "react-icons/im";
 import { createPortal } from "react-dom";
+import config from '../config'; 
+import axios from 'axios';
 
 const AddClientModal = ({
   onClose,
@@ -41,7 +43,7 @@ const AddClientModal = ({
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/users/simple');
+        const res = await fetch(`${config.API_BASE}/api/users/simple`);
         const data = await res.json();
         setAllUsers(data);
       } catch (err) {

@@ -5,6 +5,7 @@ import "../styles.css";
 import { FaTimes, FaCalendarAlt, FaPaperclip } from "react-icons/fa";
 import Preview from "./Preview";
 import Swal from "sweetalert2";
+import config from '../config';
 
 const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onSave, platform }) => {
   const [content, setContent] = useState(initialData?.content || "");
@@ -36,7 +37,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
       if (initialData.filePath) {
         const fetchFile = async () => {
           try {
-            const response = await fetch(`http://localhost:5000${initialData.filePath}`);
+            const response = await fetch(`${config.API_BASE}${initialData.filePath}`);
             const blob = await response.blob();
             const fileName = initialData.filePath.split("/").pop();
             const file = new File([blob], fileName, { type: blob.type });
@@ -65,7 +66,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
       if (!platform) return;
 
       try {
-        const response = await fetch(`http://localhost:5000/api/clients/${platform.toLowerCase()}/all`, {
+        const response = await fetch(`${config.API_BASE}/api/clients/${platform.toLowerCase()}/all`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -120,8 +121,8 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
 
     const isEditing = initialData && initialData._id;
     const url = isEditing
-      ? `http://localhost:5000/api/posts/${initialData._id}`
-      : "http://localhost:5000/api/posts";
+      ? `${config.API_BASE}/posts/${initialData._id}`
+      : `${config.API_BASE}/posts`;
     const method = isEditing ? "PUT" : "POST";
 
     try {

@@ -2,17 +2,18 @@ import React, { useState, useEffect } from 'react';
 import {FaXTwitter, FaMeta, FaLinkedin} from 'react-icons/fa6';
 import clientLogo from '../assets/skadilogo_light.png';
 import styles from "../components/SocialMediaDashboard.module.css"; // Import your CSS file for styling
+import config from '../config';
 
 const handleFBLogin = () => {
-    window.location.href = "http://localhost:5000/auth/facebook"; // Redirect to backend auth route
+    window.location.href = `${config.API_BASE}/auth/facebook`; // Redirect to backend auth route
   };
 
 const handleTWTLogin = () => {
-  window.location.href = "http://localhost:5000/auth/twitter"; // Redirect to backend auth route
+  window.location.href = `${config.API_BASE}/auth/twitter`; // Redirect to backend auth route
 };
 
 const handleLinkedInLogin = () => {
-  window.location.href = "http://localhost:5000/auth/linkedin"; // Redirect to backend auth route
+  window.location.href = `${config.API_BASE}/auth/linkedin`; // Redirect to backend auth route
 };
 
 const SocialMediaDashboard = () => {

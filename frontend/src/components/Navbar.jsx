@@ -13,6 +13,7 @@ import userIcon from "../assets/icon-women.png";
 import sunIcon from "../assets/icon-sun-light.png";
 import moonIcon from "../assets/icon-moon.png";
 import axios from "axios";
+import config from '../config'; 
 
 const Navbar = () => {
   const location = useLocation();
@@ -44,7 +45,7 @@ const Navbar = () => {
   useEffect(() => {
         const fetchLatestNotifications = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/notifications/latest");
+        const res = await axios.get(`${config.API_BASE}/api/notifications/latest`);
         setNotifications(res.data);
         setHasNotifications(res.data.length > 0);
       } catch (err) {

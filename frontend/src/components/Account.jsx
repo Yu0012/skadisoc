@@ -8,6 +8,8 @@ import CreateUserForm from "../components/CreateUserForm";
 import AssignClients from "../components/AssignClients";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
+import config from '../config';
+import axios from 'axios';
 
 const Accounts = () => {
   // ========== STATE MANAGEMENT ==========
@@ -59,7 +61,7 @@ const Accounts = () => {
   const fetchAccounts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/api/auth/users", {
+      const response = await fetch(`${config.API_BASE}/api/auth/users`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -159,7 +161,7 @@ const Accounts = () => {
       const token = localStorage.getItem("token");
       try {
         // Send DELETE request to API endpoint
-        const response = await fetch(`http://localhost:5000/api/auth/users/${id}`, {
+        const response = await fetch(`${config.API_BASE}/api/auth/users/${id}`, {
           method: 'DELETE',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -253,8 +255,8 @@ const Accounts = () => {
     try {
       const token = localStorage.getItem("token");
       const url = editAccount 
-        ? `http://localhost:5000/api/auth/users/${editAccount._id}`
-        : "http://localhost:5000/api/auth/register";
+        ? `${config.API_BASE}/api/auth/users/${editAccount._id}`
+        : `${config.API_BASE}/api/auth/register`;
       
       const response = await fetch(url, {
         method: editAccount ? "PUT" : "POST",

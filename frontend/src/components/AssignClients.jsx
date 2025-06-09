@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ImCross } from "react-icons/im";
 import "../styles.css"; // Assuming you have a styles.css file for basic styles
 import "./CreateUserForm.css";
-
+import config from '../config';
 
 // Component to assign/unassign clients to a user
 const AssignClients = ({ userId, onClose }) => {
@@ -20,10 +20,10 @@ const AssignClients = ({ userId, onClose }) => {
   // Fetch assigned and unassigned clients for current platform
   const fetchClients = async () => {
     try {
-      const assignedRes = await fetch(`http://localhost:5000/api/clients/${platform}/assigned`, {
+      const assignedRes = await fetch(`${config.API_BASE}/api/clients/${platform}/assigned`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const unassignedRes = await fetch(`http://localhost:5000/api/clients/${platform}/unassigned`, {
+      const unassignedRes = await fetch(`${config.API_BASE}/api/clients/${platform}/unassigned`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -52,7 +52,7 @@ const AssignClients = ({ userId, onClose }) => {
     if (selectedAssignIds.length === 0) return alert('Select clients to assign');
 
     try {
-      const res = await fetch(`http://localhost:5000/api/clients/${platform}/assign-multiple/${userId}`, {
+      const res = await fetch(`${config.API_BASE}/api/clients/${platform}/assign-multiple/${userId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ const AssignClients = ({ userId, onClose }) => {
     if (selectedUnassignIds.length === 0) return alert('Select clients to unassign');
 
     try {
-      const res = await fetch(`http://localhost:5000/api/clients/${platform}/unassign-multiple/${userId}`, {
+      const res = await fetch(`${config.API_BASE}/api/clients/${platform}/unassign-multiple/${userId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

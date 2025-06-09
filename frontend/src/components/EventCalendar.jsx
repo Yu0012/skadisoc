@@ -6,6 +6,7 @@ import { FaSyncAlt } from "react-icons/fa";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "../styles.css";
+import config from '../config'; 
 
 // FullCalendar plugins
 import FullCalendar from "@fullcalendar/react";
@@ -44,7 +45,7 @@ const EventCalendar = () => {
     const fetchPostsAndClients = async () => {
       try {
         // Fetch posts
-        const res = await axios.get("http://localhost:5000/api/posts", {
+        const res = await axios.get(`${config.API_BASE}/api/posts`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const posts = Array.isArray(res.data.posts) ? res.data.posts : [];
@@ -55,7 +56,7 @@ const EventCalendar = () => {
 
         for (let platform of platforms) {
           try {
-            const response = await axios.get(`http://localhost:5000/api/clients/${platform}/assigned`, {
+            const response = await axios.get(`${config.API_BASE}/api/clients/${platform}/assigned`, {
               headers: { Authorization: `Bearer ${token}` },
             });
             const platformClients = response.data.clients.map(client => ({
@@ -99,7 +100,7 @@ const EventCalendar = () => {
         content: post.content,
         hashtags: post.hashtags,
         platforms: post.selectedPlatforms?.join(", "),
-        link: post.filePath ? `http://localhost:5000${post.filePath}` : null,
+        link: post.filePath ? `${config.API_BASE}${post.filePath}` : null,
         scheduledDate: post.scheduledDate,
       },
     }));
@@ -376,7 +377,7 @@ const EventCalendar = () => {
                   content: newPost.content,
                   hashtags: newPost.hashtags,
                   platforms: newPost.selectedPlatforms?.join(", "),
-                  link: newPost.filePath ? `http://localhost:5000${newPost.filePath}` : null,
+                  link: newPost.filePath ? `${config.API_BASE}${newPost.filePath}` : null,
                   scheduledDate: newPost.scheduledDate,
                 },
               },

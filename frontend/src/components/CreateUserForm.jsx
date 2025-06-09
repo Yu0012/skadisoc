@@ -4,6 +4,7 @@ import axios from 'axios';
 import "./CreateUserForm.css";
 import rolePermissions from '../utils/rolePermissions';
 import roleTypePermissions from '../utils/roleTypePermissions';
+import config from '../config';
 
 const CreateUserForm = ({
   username, setName,
@@ -68,7 +69,7 @@ const CreateUserForm = ({
 
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/api/clients/${platform}/unassigned`, {
+      const res = await fetch(`${config.API_BASE}/api/clients/${platform}/unassigned`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to fetch unassigned platform clients");

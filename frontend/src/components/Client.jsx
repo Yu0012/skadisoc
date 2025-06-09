@@ -5,6 +5,8 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import "../styles.css";
 import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
+import config from '../config';
+
 
 const MySwal = withReactContent(Swal);
 
@@ -31,7 +33,7 @@ const Client = () => {
   // ========== REFS & CONSTANTS ==========
   const popupRef = useRef(null); // Reference for popup container
   const platformSlug = activePlatform.toLowerCase(); // Platform name in lowercase for API URLs
-  const baseUrl = `http://localhost:5000/api/clients/${platformSlug}`; // Base API endpoint
+  const baseUrl = `${config.API_BASE}/api/clients/${platformSlug}`; // Base API endpoint
   const clientsPerPage = 7; // Number of clients to show per page (if implementing pagination)
 
   // ========== DATA FETCHING ==========

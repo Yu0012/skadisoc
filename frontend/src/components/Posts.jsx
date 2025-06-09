@@ -9,6 +9,7 @@ import twitterIcon from '../assets/twitter.png';
 import instagramIcon from '../assets/instagram.png';
 import linkedinIcon from '../assets/linkedin.png';
 import Swal from 'sweetalert2';
+import config from '../config';
 
 const Posts = () => {
   // State declarations
@@ -39,7 +40,7 @@ const Posts = () => {
   const fetchPosts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/api/posts", {
+      const response = await fetch(`${config.API_BASE}/api/posts`, {
         headers: { Authorization: `Bearer ${token}` } 
       });
       if(!response.ok) {
@@ -129,7 +130,7 @@ const Posts = () => {
     if (!result.isConfirmed) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/posts/${postId}`, {
+      const res = await fetch(`${config.API_BASE}/api/posts/${postId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -164,7 +165,7 @@ const Posts = () => {
   // For edit post get data by ID
   const fetchPostById = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/posts/${id}`, {
+      const response = await fetch(`${config.API_BASE}/api/posts/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

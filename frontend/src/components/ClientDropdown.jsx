@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
+import config from '../config';
 
 const ClientDropdown = ({ onSelect }) => {
   const [clients, setClients] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/clients")
+    fetch(`${config.API_BASE}/api/clients`)
       .then(res => res.json())
       .then(data => {
         console.log("Clients fetched:", data); // 🔍 Add this line

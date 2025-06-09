@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import PostTable from "./PostTable";
 import "../styles.css";
 import SummaryCards from "./SummaryCards";
+import config from '../config';
 
 const Dashboard = () => {
   const [selectedPlatform, setSelectedPlatform] = useState("");
@@ -19,7 +20,7 @@ const Dashboard = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/api/posts", {
+      const response = await fetch(`${config.API_BASE}/api/posts`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -56,7 +57,7 @@ useEffect(() => {
   const fetchAllPostCounts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/posts", {
+      const res = await fetch(`${config.API_BASE}/api/posts`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -97,20 +98,20 @@ useEffect(() => {
     // Get token for Facebook or Instagram
     try {
       if (selectedPlatform === "Facebook") {
-        const res = await fetch("http://localhost:5000/api/facebook-clients");
+        const res = await fetch(`${config.API_BASE}/api/facebook-clients`);
         const fbClients = await res.json();
         const matched = fbClients.find(c => c.companyName === selectedClient);
         if (matched) {
-          const fbRes = await fetch(`http://localhost:5000/api/facebook-clients/by-client/${matched._id}`);
+          const fbRes = await fetch(`${config.API_BASE}/api/facebook-clients/by-client/${matched._id}`);
           const fbData = await fbRes.json();
           accessToken = fbData?.pageAccessToken;
         }
       } else if (selectedPlatform === "Instagram") {
-        const res = await fetch("http://localhost:5000/api/instagram-clients");
+        const res = await fetch(`${config.API_BASE}/api/instagram-clients`);
         const igClients = await res.json();
         const matched = igClients.find(c => c.companyName === selectedClient);
         if (matched) {
-          const igRes = await fetch(`http://localhost:5000/api/instagram-clients/by-client/${matched._id}`);
+          const igRes = await fetch(`${config.API_BASE}/api/instagram-clients/by-client/${matched._id}`);
           const igData = await igRes.json();
           accessToken = igData?.accessToken;
         }

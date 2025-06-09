@@ -22,6 +22,8 @@ const twitterClientsRoute = require('./routes/twitterClients');
 const { checkAndPostScheduledPosts } = require('./utils/scheduledPostHandler');
 const functions = require('firebase-functions');
 const notificationRoutes = require('./routes/notificationRoutes');
+const { BASE_URL } = require('./config');
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -182,7 +184,7 @@ passport.deserializeUser((obj, done) => {done(null, obj);});
 passport.use(new TwitterStrategy({
   consumerKey: process.env.TWITTER_CONSUMER_KEY,
   consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
-  callbackURL: "http://localhost:5000/auth/twitter/callback"
+  callbackURL: `${BASE_URL}/auth/twitter/callback`
 },
 function(token, tokenSecret, profile, done) {
   // Save tokens to DB for future requests
@@ -238,7 +240,7 @@ app.get('/auth/twitter/callback',
 
 // Step 1: Redirect to LinkedIn OAuth
 app.get("/auth/linkedin", (req, res) => {
-  const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.LINKEDIN_CLIENT_ID}&redirect_uri=http://localhost:5000/auth/linkedin/callback&scope=w_member_social&state=random123`;
+  const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.LINKEDIN_CLIENT_ID}&redirect_uri=${BASE_URL}/auth/linkedin/callback&scope=w_member_social&state=random123`;
   res.redirect(linkedInAuthUrl);
 });
 
@@ -253,7 +255,7 @@ app.get("/auth/linkedin/callback", async (req, res) => {
       qs.stringify({
         grant_type: "authorization_code",
         code,
-        redirect_uri: "http://localhost:5000/auth/linkedin/callback",
+        redirect_uri: `${BASE_URL}/auth/linkedin/callback`,
         client_id: process.env.LINKEDIN_CLIENT_ID,
         client_secret: process.env.LINKEDIN_CLIENT_SECRET
       }),
@@ -356,4 +358,10 @@ app.get('/test', (req, res) => res.send('✅ Test route working'));
 // });
 
 
-exports.api = functions.https.onRequest(app);
+if (process.env.MODE === "local") {
+  app.listen(PORT, () => {
+    console.log(`✅ Server running locally on http://localhost:${PORT}`);
+  });
+} else {
+  exports.api = functions.https.onRequest(app);
+}

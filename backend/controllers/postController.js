@@ -69,6 +69,10 @@ exports.createPost = async (req, res) => {
 
   try {
     const requestingUser = req.user;
+    console.log("🔥 Incoming Create Post Request");
+    console.log("Headers:", req.headers);
+    console.log("Body:", req.body);
+    console.log("File:", req.file);
 
     // Check if user is viewer - viewers can't create posts
     if (requestingUser.role === 'viewer') {
@@ -128,7 +132,14 @@ exports.createPost = async (req, res) => {
     });
 
   } catch (err) {
-    console.error('❌ Error creating post:', err);
+    console.error('❌ Error creating post:', {
+    message: err.message,
+    stack: err.stack,
+    name: err.name,
+    body: req.body,
+    file: req.file,
+    user: req.user,
+  });
     res.status(500).json({ 
       message: 'Failed to create post',
       error: err.message 
