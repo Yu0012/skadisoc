@@ -9,19 +9,22 @@ const { authenticateJWT } = require('../middleware/authMiddleware');
 const { getLatestNotifications } = require('../controllers/notificationController');
 
 //Multer setup for file uploads
-const storage = multer.diskStorage({
-destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, '..', 'uploads');
-    if (!fs.existsSync(uploadPath)) {
-    fs.mkdirSync(uploadPath, { recursive: true }); // Ensure upload directory exists
-    }
-    cb(null, uploadPath);
-},
-filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-},
-});
-const upload = multer({ storage });
+// const storage = multer.diskStorage({
+// destination: (req, file, cb) => {
+//     const uploadPath = path.join(__dirname, '..', 'uploads');
+//     if (!fs.existsSync(uploadPath)) {
+//     fs.mkdirSync(uploadPath, { recursive: true }); // Ensure upload directory exists
+//     }
+//     cb(null, uploadPath);
+// },
+// filename: (req, file, cb) => {
+//     cb(null, `${Date.now()}-${file.originalname}`);
+// },
+// });
+// const upload = multer({ storage });
+// const storage = multer.memoryStorage(); // ✅ Uses in-memory buffer (safe for Firebase)
+
+// const upload = multer({ storage });
 
 // Get all posts
 router.get('/', authenticateJWT, postController.getAllPosts);
@@ -30,10 +33,10 @@ router.get('/', authenticateJWT, postController.getAllPosts);
 router.get('/:id', authenticateJWT, postController.getPostById);
 
 // Create a new post
-router.post('/', authenticateJWT, upload.single('file'), postController.createPost);
+ router.post('/', authenticateJWT, postController.createPost);
 
 // Update post
-router.put('/:id', authenticateJWT, upload.single('file'), postController.updatePost);
+router.put('/:id', authenticateJWT, postController.updatePost);
 
 
 // Delete User

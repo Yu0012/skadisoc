@@ -61,18 +61,28 @@ exports.createPost = async (req, res) => {
   // } = req.body;
   const content = req.body.content;
   const title = req.body.title;
-  const client = req.body.client?.trim();
+  const client = typeof req.body.client === "string" ? req.body.client.trim() : req.body.client;
   const clientName = req.body.clientName;
   const scheduledDate = req.body.scheduledDate;
-  const selectedPlatforms = JSON.parse(req.body.selectedPlatforms || "[]");
-  const filePath = req.file ? `/uploads/${req.file.filename}` : null;
+  let selectedPlatforms = [];
+  if (typeof platforms === 'string') {
+  try {
+    platforms = JSON.parse(platforms);
+  } catch {
+    platforms = [];
+  }
+}
+
+  //const filePath = req.file ? `in-memory:${req.file.originalname}` : null;
 
   try {
     const requestingUser = req.user;
     console.log("🔥 Incoming Create Post Request");
     console.log("Headers:", req.headers);
     console.log("Body:", req.body);
-    console.log("File:", req.file);
+    console.log("🔥 DEBUG client:", req.body.client, typeof req.body.client);
+
+    //console.log("File:", req.file);
 
     // Check if user is viewer - viewers can't create posts
     if (requestingUser.role === 'viewer') {
@@ -113,7 +123,7 @@ exports.createPost = async (req, res) => {
       clientName, // ✅ Add this
       scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
       selectedPlatforms,
-      filePath,
+      //filePath,
       posted: false,
       status: scheduledDate ? 'scheduled' : 'draft',
       createdBy: requestingUser._id
@@ -137,7 +147,7 @@ exports.createPost = async (req, res) => {
     stack: err.stack,
     name: err.name,
     body: req.body,
-    file: req.file,
+    //file: req.file,
     user: req.user,
   });
     res.status(500).json({ 
@@ -204,7 +214,7 @@ exports.updatePost = async (req, res) => {
     ...req.body,
     selectedPlatforms: JSON.parse(req.body.selectedPlatforms || "[]"),
     scheduledDate: req.body.scheduledDate || null,
-    filePath: req.file ? `/uploads/${req.file.filename}` : undefined,
+    //Path: req.file ? `/uploads/${req.file.filename}` : undefined,
   };
 
   try {

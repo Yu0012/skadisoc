@@ -14,7 +14,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
   const [scheduledDate, setScheduledDate] = useState(initialData?.scheduledDate || null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState(initialData?.selectedPlatforms || []);
-  const [attachedFile, setAttachedFile] = useState(null);
+  //const [attachedFile, setAttachedFile] = useState(null);
   const [clients, setClients] = useState([]);
   const [clientName, setClientName] = useState("");
   const [platformToggles, setPlatformToggles] = useState({
@@ -34,20 +34,20 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
       setClient(initialData.client || "");
       setScheduledDate(initialData.scheduledDate ? new Date(initialData.scheduledDate) : null);
       setSelectedPlatforms(initialData.selectedPlatforms || []);
-      if (initialData.filePath) {
-        const fetchFile = async () => {
-          try {
-            const response = await fetch(`${config.API_BASE}${initialData.filePath}`);
-            const blob = await response.blob();
-            const fileName = initialData.filePath.split("/").pop();
-            const file = new File([blob], fileName, { type: blob.type });
-            setAttachedFile(file);
-          } catch (err) {
-            console.error("⚠️ Failed to preload image:", err);
-          }
-        };
-        fetchFile();
-      }
+      // if (initialData.filePath) {
+      //   const fetchFile = async () => {
+      //     try {
+      //       const response = await fetch(`${config.API_BASE}${initialData.filePath}`);
+      //       const blob = await response.blob();
+      //       const fileName = initialData.filePath.split("/").pop();
+      //       const file = new File([blob], fileName, { type: blob.type });
+      //       setAttachedFile(file);
+      //     } catch (err) {
+      //       console.error("⚠️ Failed to preload image:", err);
+      //     }
+      //   };
+      //   fetchFile();
+      // }
     }
   }, [initialData]);
 
@@ -97,7 +97,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     }
   }, [platform]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!content.trim()) {
       alert("Post content cannot be empty!");
       return;
@@ -108,65 +108,28 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
       return;
     }
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("content", content);
-    formData.append("client", client);
-    formData.append("clientName", clientName);
-    formData.append("scheduledDate", scheduledDate ? scheduledDate.toISOString() : "");
-    formData.append("selectedPlatforms", JSON.stringify(selectedPlatforms));
-    if (attachedFile) {
-      formData.append("file", attachedFile);
-    }
+    const selectedClient = clients.find((c) => c._id === client);
+    const finalClientName = selectedClient?.companyName || selectedClient?.pageName || selectedClient?.username || selectedClient?.name || "";
 
-    const isEditing = initialData && initialData._id;
-    const url = isEditing
-      ? `${config.API_BASE}/posts/${initialData._id}`
-      : `${config.API_BASE}/posts`;
-    const method = isEditing ? "PUT" : "POST";
+    const formValues = {
+      title,
+      content,
+      client: selectedClient?._id || "",
+      clientName: finalClientName,
+      scheduledDate,
+      selectedPlatforms,
+    };
 
-    try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: formData,
-      });
+    console.log("client:", client);
+console.log("clientName:", finalClientName);
+console.log("clients:", clients);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText);
-      }
 
-      const result = await response.json();
 
-      // 🎉 SweetAlert2 animation replaces alert!
-      await Swal.fire({
-        icon: 'success',
-        title: `Post ${isEditing ? "updated" : "created"} successfully!`,
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 1800,
-        timerProgressBar: true,
-        background: 'white',
-        color: '#0a0f5c',
-        didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer);
-          toast.addEventListener('mouseleave', Swal.resumeTimer);
-        }
-      });
-
-      // ✅ Close modal after animation and update UI
-      onSave?.(result.post || result);
-      onPostCreated?.();
-      onClose();
-    } catch (error) {
-      console.error("Error submitting post:", error);
-      alert("An error occurred. Please try again.");
-    }
+    onSave?.(formValues); // Pass values up
+    onClose(); // Close modal
   };
+
 
   const handlePlatformChange = (platformId) => {
     setSelectedPlatforms((prev) => {
@@ -201,10 +164,10 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     fileInputRef.current.click();
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) setAttachedFile(file);
-  };
+  // const handleFileChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) setAttachedFile(file);
+  // };
 
   if (!isOpen) return null;
 
@@ -241,7 +204,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
               </div>
 
               <div className="file-schedule-row">
-                <button className="attach-file-btn" onClick={triggerFileInput}>
+                {/* <button className="attach-file-btn" onClick={triggerFileInput}>
                   <FaPaperclip id="paperclip" />
                 </button>
                 <input
@@ -251,7 +214,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                   onChange={handleFileChange}
                   accept="image/*, .pdf, .docx"
                   style={{ display: "none" }}
-                />
+                /> */}
 
                 <div className="schedule-row">
                   <button className="modal-schedule-btn" onClick={toggleDatePicker}>
@@ -281,7 +244,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
               </div>
 
               {/* File preview (optional) */}
-              {attachedFile && (
+              {/* {attachedFile && (
                 <div className="attached-file-preview">
                   {attachedFile.type.startsWith("image/") ? (
                     <img src={URL.createObjectURL(attachedFile)} alt="Attachment Preview" />
@@ -289,7 +252,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                     <p>{attachedFile.name}</p>
                   )}
                 </div>
-              )}
+              )} */}
 
               <div className="">
                 {/* Right */}
@@ -320,7 +283,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
             platform={(Array.isArray(selectedPlatforms) ? selectedPlatforms[0] : selectedPlatforms) || ""}
             content={content}
             client={clientName}
-            attachedFile={attachedFile}
+            // attachedFile={attachedFile}
           />
         </div>
       </div>

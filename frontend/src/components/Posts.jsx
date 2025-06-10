@@ -27,6 +27,8 @@ const Posts = () => {
   const [isPlatformSelectOpen, setIsPlatformSelectOpen] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [refreshTrigger, setRefreshTrigger] = useState(false);
+
 
   //Replaces text to icons for social media
   const platformIcons = {
@@ -76,6 +78,53 @@ const Posts = () => {
   //handles for ui inputs
   const handleRefresh = () => window.location.reload();
 
+  const handleCreatePost = async (formValues) => {
+    try {
+      const token = localStorage.getItem("token");
+      const payload = {
+        title: formValues.title,
+        content: formValues.content,
+        client: formValues.client,
+        clientName: formValues.clientName,
+        scheduledDate: formValues.scheduledDate,
+        selectedPlatforms: formValues.selectedPlatforms
+      };
+
+      // if (formValues.file && formValues.file.size > 0) {
+      //   formData.append("file", formValues.file);
+      // } 
+      
+      const response = await fetch(`${config.API_BASE}/api/posts`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload),
+      });
+
+
+      let resultText = await response.text();
+      let result;
+      try {
+        result = JSON.parse(resultText);
+      } catch (parseError) {
+        console.error("❌ Non-JSON response:", resultText);
+        throw new Error("Server did not return valid JSON.");
+      }
+
+      if (response.ok) {
+        Swal.fire("Success", "Post created successfully", "success");
+        setRefreshTrigger(!refreshTrigger);
+      } else {
+        Swal.fire("Error", result.message || "Failed to create post", "error");
+      }
+    } catch (err) {
+      console.error("Error creating post:", err);
+      Swal.fire("Error", "Something went wrong", "error");
+    }
+  };
+  
   // Edit Post
   const handleEditPost = async (postId) => {
     setPostMenuDropdown(null); // 👈 Close dropdown
@@ -452,20 +501,7 @@ const Posts = () => {
           }}
           onPostCreated={handlePostCreated}
           initialData={editingPost}
-          onSave={async (savedPost) => {
-            setPosts((prevPosts) => {
-              const existingIndex = prevPosts.findIndex(p => p._id === savedPost._id);
-              if (existingIndex !== -1) {
-                // Update existing
-                const updatedPosts = [...prevPosts];
-                updatedPosts[existingIndex] = savedPost;
-                return updatedPosts;
-              } else {
-                // Add new
-                return [...prevPosts, savedPost];
-              }
-            });
-          }}
+          onSave={handleCreatePost} 
           platform={editingPost?.selectedPlatforms?.[0] || selectedPlatforms}
         />
       )}

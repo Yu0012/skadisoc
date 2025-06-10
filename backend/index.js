@@ -351,6 +351,8 @@ app.use('/api/clients', clientRoutes);
 
 app.use('/api/notifications', notificationRoutes);
 
+app.get('/api/test', (req, res) => res.send('✅ API LIVE'));
+
 app.get('/test', (req, res) => res.send('✅ Test route working'));
 
 // app.listen(PORT, () => {
