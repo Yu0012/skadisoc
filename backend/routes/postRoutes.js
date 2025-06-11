@@ -7,24 +7,32 @@ const router = express.Router();
 const postController = require('../controllers/postController');
 const { authenticateJWT } = require('../middleware/authMiddleware');
 const { getLatestNotifications } = require('../controllers/notificationController');
+const cloudinary = require('cloudinary').v2;
 
-//Multer setup for file uploads
-// const storage = multer.diskStorage({
-// destination: (req, file, cb) => {
-//     const uploadPath = path.join(__dirname, '..', 'uploads');
-//     if (!fs.existsSync(uploadPath)) {
-//     fs.mkdirSync(uploadPath, { recursive: true }); // Ensure upload directory exists
-//     }
-//     cb(null, uploadPath);
-// },
-// filename: (req, file, cb) => {
-//     cb(null, `${Date.now()}-${file.originalname}`);
-// },
-// });
-// const upload = multer({ storage });
-// const storage = multer.memoryStorage(); // ✅ Uses in-memory buffer (safe for Firebase)
+router.use(express.json());
+// ✅ Enable CORS properly for Cloud Functions
+router.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*"); // 👈 Or use specific origin
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+  if (req.method === 'OPTIONS') return res.sendStatus(200); // Pre-flight
+  next();
+});
 
-// const upload = multer({ storage });
+router.post('/upload', authenticateJWT, async (req, res) => {
+  try {
+    const { base64, fileType } = req.body;
+
+    const uploaded = await cloudinary.uploader.upload(base64, {
+      resource_type: fileType.startsWith("video") ? "video" : "image",
+    });
+
+    res.json({ filePath: uploaded.secure_url });
+  } catch (err) {
+    console.error("☠️ Upload failed:", err.message);
+    res.status(500).json({ message: "Upload to Cloudinary failed" });
+  }
+});
 
 // Get all posts
 router.get('/', authenticateJWT, postController.getAllPosts);
@@ -42,26 +50,5 @@ router.put('/:id', authenticateJWT, postController.updatePost);
 router.delete('/:id', authenticateJWT, postController.deletePost);
 
 router.get('/notifications', authenticateJWT, getLatestNotifications);
-
-// routes/postRoutes.js
-router.post('/upload', authenticateJWT, async (req, res) => {
-  try {
-    let data = '';
-    req.on('data', chunk => (data += chunk));
-    req.on('end', async () => {
-      const { base64, fileType } = JSON.parse(data); // base64 = data:image/png;base64,xxx
-
-      const uploaded = await cloudinary.uploader.upload(base64, {
-        resource_type: fileType.startsWith("video") ? "video" : "image",
-      });
-
-      res.json({ filePath: uploaded.secure_url });
-    });
-  } catch (err) {
-    console.error("☠️ Upload failed:", err);
-    res.status(500).json({ message: "Upload to cloudinary failed" });
-  }
-});
-
 
 module.exports = router;

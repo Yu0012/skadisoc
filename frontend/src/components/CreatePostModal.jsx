@@ -106,12 +106,16 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
   });
 
   const handleUpload = async (file) => {
+    const token = localStorage.getItem("token");
     const base64 = await toBase64(file);
     const fileType = file.type;
 
-    const res = await fetch("/api/posts/upload", {
+    const res = await fetch(`${config.API_BASE}/api/posts/upload`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
       body: JSON.stringify({ base64, fileType }),
     });
 
@@ -119,7 +123,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     return data.filePath; // 🟢 Cloudinary URL
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!content.trim()) {
       alert("Post content cannot be empty!");
       return;
@@ -130,39 +134,36 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64File = reader.result; // includes data:image/... OR data:video/...
+    const selectedClient = clients.find((c) => c._id === client);
+    const finalClientName = selectedClient?.companyName || selectedClient?.pageName || selectedClient?.username || selectedClient?.name || "";
 
-      const selectedClient = clients.find((c) => c._id === client);
-      const finalClientName = selectedClient?.companyName || selectedClient?.pageName || selectedClient?.username || selectedClient?.name || "";
-
-      const formValues = {
-        title,
-        content,
-        client: selectedClient?._id || "",
-        clientName: finalClientName,
-        scheduledDate,
-        selectedPlatforms,
-        base64File, // 🎯 Send base64 string
-      };
-
-      console.log("Client:", client);
-      console.log("Client Name:", finalClientName);
-      console.log("Client:", clients);
-
-      onSave?.(formValues);
-      onClose();
-    };
+    let filePath = null;
 
     if (attachedFile) {
-      reader.readAsDataURL(attachedFile); // triggers .onloadend above
-    } else {
-      reader.onloadend(); // manually trigger with no file
+      try {
+        filePath = await handleUpload(attachedFile); // 🔥 Use Cloudinary uploader
+      } catch (err) {
+        console.error("❌ Upload error:", err);
+        alert("Failed to upload file.");
+        return;
+      }
     }
+
+    const formValues = {
+      title,
+      content,
+      client: selectedClient?._id || "",
+      clientName: finalClientName,
+      scheduledDate,
+      selectedPlatforms,
+      filePath, // 🔗 ✅ Cloudinary URL
+    };
+
+    console.log("🛰️ Submitting with formValues:", formValues);
+
+    onSave?.(formValues);
+    onClose();
   };
-
-
 
   const handlePlatformChange = (platformId) => {
     setSelectedPlatforms((prev) => {

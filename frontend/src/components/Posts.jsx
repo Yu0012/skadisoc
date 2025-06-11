@@ -99,7 +99,8 @@ const Posts = () => {
         clientName: formValues.clientName,
         scheduledDate: formValues.scheduledDate,
         selectedPlatforms: formValues.selectedPlatforms,
-        base64File: formValues.base64File || null,
+        filePath: formValues.filePath || null, // ✅ Use Cloudinary filePath here
+        // base64File: formValues.base64File || null,
       };
 
       // if (formValues.file && formValues.file.size > 0) {
