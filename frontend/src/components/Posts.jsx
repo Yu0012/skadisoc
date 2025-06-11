@@ -57,8 +57,15 @@ const Posts = () => {
   };
 
   useEffect(() => {
-    fetchPosts();
+    fetchPosts(); // Initial fetch
+
+    const intervalId = setInterval(() => {
+      fetchPosts(); // Refresh every 60 seconds
+    }, 60000); // 60,000 ms = 1 minute
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
+
   
   // 📌 Handle search input
   const handleSearch = (e) => {
@@ -116,6 +123,7 @@ const Posts = () => {
       if (response.ok) {
         Swal.fire("Success", "Post created successfully", "success");
         setRefreshTrigger(!refreshTrigger);
+        handlePostCreated();
       } else {
         Swal.fire("Error", result.message || "Failed to create post", "error");
       }

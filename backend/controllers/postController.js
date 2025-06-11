@@ -65,13 +65,17 @@ exports.createPost = async (req, res) => {
   const clientName = req.body.clientName;
   const scheduledDate = req.body.scheduledDate;
   let selectedPlatforms = [];
-  if (typeof platforms === 'string') {
-  try {
-    platforms = JSON.parse(platforms);
-  } catch {
-    platforms = [];
+
+  if (typeof req.body.selectedPlatforms === 'string') {
+    try {
+      selectedPlatforms = JSON.parse(req.body.selectedPlatforms);
+    } catch {
+      selectedPlatforms = [];
+    }
+  } else if (Array.isArray(req.body.selectedPlatforms)) {
+    selectedPlatforms = req.body.selectedPlatforms;
   }
-}
+
 
   //const filePath = req.file ? `in-memory:${req.file.originalname}` : null;
 
