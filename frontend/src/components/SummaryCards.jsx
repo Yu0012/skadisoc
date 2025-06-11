@@ -1,14 +1,20 @@
-// components/SummaryCards.jsx
 import React from "react";
 
 const SummaryCards = ({ posts }) => {
   if (!Array.isArray(posts)) return null;
-  
+
+  // Helper function to safely parse numbers
+  const safeNumber = (value) => {
+    const parsed = parseInt(value);
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
+  // Calculate totals using safe values
   const totalPosts = posts.length;
-  const totalLikes = posts.reduce((sum, p) => sum + (p.insights?.likes || 0), 0);
-  const totalComments = posts.reduce((sum, p) => sum + (p.insights?.comments || 0), 0);
-  const totalShares = posts.reduce((sum, p) => sum + (p.insights?.shares || 0), 0);
-  const avgLikes = totalPosts > 0 ? (totalLikes / totalPosts).toFixed(1) : 0;
+  const totalLikes = posts.reduce((sum, post) => sum + safeNumber(post.insights?.likes), 0);
+  const totalComments = posts.reduce((sum, post) => sum + safeNumber(post.insights?.comments), 0);
+  const totalShares = posts.reduce((sum, post) => sum + safeNumber(post.insights?.shares), 0);
+  const avgLikes = totalPosts > 0 ? (totalLikes / totalPosts).toFixed(1) : "0";
 
   const cardStyle = {
     background: "#f4f6f8",
@@ -20,7 +26,15 @@ const SummaryCards = ({ posts }) => {
   };
 
   return (
-    <div style={{ display: "flex", gap: "1.5rem", marginBottom: "2rem", flexWrap: "wrap" }}>
+    <div
+      style={{
+        display: "flex",
+        gap: "1.5rem",
+        marginBottom: "2rem",
+        flexWrap: "wrap",
+        justifyContent: "center",
+      }}
+    >
       <div style={cardStyle}>
         <h4>Total Posts</h4>
         <p>{totalPosts}</p>

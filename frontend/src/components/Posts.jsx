@@ -9,25 +9,57 @@ import twitterIcon from '../assets/twitter.png';
 import instagramIcon from '../assets/instagram.png';
 import linkedinIcon from '../assets/linkedin.png';
 import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+// Initialize SweetAlert2 with React support
+const MySwal = withReactContent(Swal);
 
 const Posts = () => {
-  // State declarations
-  const [posts, setPosts] = useState([]); // All posts
-  const [category, setCategory] = useState("All Categories"); // Category filter
-  const [searchQuery, setSearchQuery] = useState(""); // Search input
-  const [currentPage, setCurrentPage] = useState(1); // Current pagination page
-  const [postsPerPage] = useState(7); // Number of posts per page
-  const [postMenuDropdown, setPostMenuDropdown] = useState(null); // Current opened dropdown
-  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 }); // Position for dropdown menu
-  const [selectedPosts, setSelectedPosts] = useState([]); // Selected post IDs
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
-  const [editingPost, setEditingPost] = useState(null); // Post being edited
-  const [isAllSelected, setIsAllSelected] = useState(false); // Whether all visible posts are selected
-  const [isPlatformSelectOpen, setIsPlatformSelectOpen] = useState(false); // Platform selection modal state
-  const [selectedPlatforms, setSelectedPlatforms] = useState(null); // Selected platforms for new post
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" }); // Sorting configuration
+  // State declarations with explanations:
 
-  // Platform icons mapping
+  // Stores all posts fetched from the API
+  const [posts, setPosts] = useState([]);
+  
+  // Current selected category filter
+  const [category, setCategory] = useState("All Categories");
+  
+  // Search query input value
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  // Current pagination page number
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  // Number of posts to display per page
+  const [postsPerPage] = useState(7);
+  
+  // ID of the post whose dropdown menu is currently open
+  const [postMenuDropdown, setPostMenuDropdown] = useState(null);
+  
+  // Position coordinates for the dropdown menu
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+  
+  // Array of selected post IDs for bulk actions
+  const [selectedPosts, setSelectedPosts] = useState([]);
+  
+  // Controls visibility of the create/edit post modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Stores the post being edited (null when creating new)
+  const [editingPost, setEditingPost] = useState(null);
+  
+  // Tracks if all visible posts are selected
+  const [isAllSelected, setIsAllSelected] = useState(false);
+  
+  // Controls visibility of platform selection modal
+  const [isPlatformSelectOpen, setIsPlatformSelectOpen] = useState(false);
+  
+  // Stores the selected platform for new posts
+  const [selectedPlatforms, setSelectedPlatforms] = useState(null);
+  
+  // Configuration for sorting (key and direction)
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+
+  // Mapping of platform names to their icon components
   const platformIcons = {
     facebook: <img src={facebookIcon} className="inline-icon" alt="Facebook" />,
     twitter: <img src={twitterIcon} className="inline-icon" alt="Twitter" />,
@@ -35,75 +67,133 @@ const Posts = () => {
     linkedin: <img src={linkedinIcon} className="inline-icon" alt="LinkedIn" />
   };
 
-  // Fetch posts from backend
+  /**
+   * Fetches posts from the backend API
+   * Handles authentication with JWT token
+   * Updates the posts state with fetched data
+   */
   const fetchPosts = async () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:5000/api/posts", {
         headers: { Authorization: `Bearer ${token}` } 
       });
+      
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText);
       }
+      
       const data = await response.json();
       setPosts(data.posts);
     } catch (error) {
       console.error("Error fetching posts:", error);
+      MySwal.fire({
+        title: 'Error',
+        text: 'Failed to fetch posts. Please try again.',
+        icon: 'error',
+        confirmButtonColor: '#0D286E',
+      });
     }
   };
 
+  // Fetch posts when component mounts
   useEffect(() => {
     fetchPosts();
   }, []);
 
-  // Handle search input
+  /**
+   * Handles search input changes
+   * @param {Object} e - The event object
+   */
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
     setCurrentPage(1); // Reset to first page when searching
   };
 
-  // Handle Post Creation - Update UI After New Post
+  /**
+   * Callback after successful post creation
+   * Refreshes the posts list and closes modal
+   */
   const handlePostCreated = () => {
-    fetchPosts(); // Reload posts after a new post is added
+    fetchPosts();
     setIsModalOpen(false);
   };
 
+  /**
+   * Initiates the post creation flow
+   * Opens platform selection first
+   */
   const handleCreatePostClick = () => {
     setIsPlatformSelectOpen(true);
   };
   
-  // Handle refresh
+  /**
+   * Handles refresh action with loading indicator
+   * Resets filters and pagination after refresh
+   */
   const handleRefresh = () => {
-    fetchPosts();
-    setCurrentPage(1);
-    setSearchQuery("");
-    setCategory("All Categories");
+    MySwal.fire({
+      title: 'Refreshing...',
+      timer: 1000,
+      timerProgressBar: true,
+      allowOutsideClick: false,
+      didOpen: () => {
+        MySwal.showLoading();
+      },
+      willClose: () => {
+        fetchPosts();
+        setCurrentPage(1);
+        setSearchQuery("");
+        setCategory("All Categories");
+      }
+    });
   };
 
-  // Edit Post
+  /**
+   * Initiates post editing flow
+   * @param {string} postId - ID of the post to edit
+   */
   const handleEditPost = async (postId) => {
     setPostMenuDropdown(null); // Close dropdown
+    
+    // Fetch full post details
     const fullPost = await fetchPostById(postId);
     if (!fullPost) {
-      alert("Failed to load post");
+      MySwal.fire({
+        title: 'Error',
+        text: 'Failed to load post for editing',
+        icon: 'error',
+        confirmButtonColor: '#0D286E',
+      });
       return;
     }
 
+    // Prevent editing of already posted content
     if (fullPost.status === "posted") {
-      alert("Posted content cannot be edited.");
+      MySwal.fire({
+        title: 'Cannot Edit',
+        text: 'Posted content cannot be edited.',
+        icon: 'warning',
+        confirmButtonColor: '#0D286E',
+      });
       return;
     }
 
+    // Set up editing state
     setEditingPost(fullPost);
     setIsModalOpen(true);
   };
 
-  // Delete Post with enhanced SweetAlert2 confirmation
+  /**
+   * Handles post deletion with confirmation dialog
+   * @param {string} postId - ID of the post to delete
+   */
   const handleDeletePost = async (postId) => {
     setPostMenuDropdown(null); // Close dropdown immediately
 
-    const result = await Swal.fire({
+    // Show confirmation dialog
+    const result = await MySwal.fire({
       title: 'Delete this post?',
       text: 'This action cannot be undone.',
       icon: 'warning',
@@ -135,6 +225,7 @@ const Posts = () => {
     if (!result.isConfirmed) return;
 
     try {
+      // Send delete request to API
       const res = await fetch(`http://localhost:5000/api/posts/${postId}`, {
         method: "DELETE",
         headers: {
@@ -144,9 +235,11 @@ const Posts = () => {
 
       if (!res.ok) throw new Error("Failed to delete post");
 
+      // Update UI by removing deleted post
       setPosts((prev) => prev.filter((p) => p._id !== postId));
 
-      await Swal.fire({
+      // Show success notification
+      await MySwal.fire({
         title: 'Deleted!',
         text: 'Your post has been successfully deleted.',
         icon: 'success',
@@ -156,7 +249,7 @@ const Posts = () => {
       });
     } catch (err) {
       console.error("Delete error:", err);
-      await Swal.fire({
+      await MySwal.fire({
         title: 'Error',
         text: 'Failed to delete the post. Please try again.',
         icon: 'error',
@@ -167,7 +260,11 @@ const Posts = () => {
     }
   };
 
-  // For edit post get data by ID
+  /**
+   * Fetches a single post by ID
+   * @param {string} id - The post ID to fetch
+   * @returns {Object|null} The post data or null if error
+   */
   const fetchPostById = async (id) => {
     try {
       const response = await fetch(`http://localhost:5000/api/posts/${id}`, {
@@ -184,19 +281,27 @@ const Posts = () => {
     }
   };
   
-  // Toggle dropdown menu for a post
+  /**
+   * Toggles dropdown menu for a post
+   * @param {Object} event - The click event
+   * @param {string} postID - The post ID to show menu for
+   */
   const menuDropdown = (event, postID) => {
     event.stopPropagation();
     if (postMenuDropdown === postID) {
       setPostMenuDropdown(null);
     } else {
+      // Calculate position for dropdown
       const rect = event.currentTarget.getBoundingClientRect();
-      setMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left });
+      setMenuPosition({ 
+        top: rect.bottom + window.scrollY, 
+        left: rect.left 
+      });
       setPostMenuDropdown(postID);
     }
   };
 
-  // Filtered posts based on search query
+  // Filter posts based on search query and category
   const filteredPosts = posts.filter((post) => {
     const valueToSearch = category === "All Categories"
       ? Object.values(post).join(" ").toLowerCase()
@@ -207,7 +312,7 @@ const Posts = () => {
     return valueToSearch.includes(searchQuery.toLowerCase());
   });
 
-  // Sort posts based on selected criteria
+  // Sort posts based on current sort configuration
   const sortedPosts = [...filteredPosts].sort((a, b) => {
     if (!sortConfig.key) return 0;
   
@@ -219,7 +324,7 @@ const Posts = () => {
     return 0;
   });
   
-  // Close dropdown menu on outside click
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!event.target.closest(".post-actions-dropdown")) {
@@ -230,13 +335,16 @@ const Posts = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  // Pagination logic
+  // Pagination calculations
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
-  // Handle single checkbox change
+  /**
+   * Toggles selection of a post
+   * @param {string} postID - The post ID to toggle
+   */
   const handleCheckboxChange = (postID) => {
     setSelectedPosts((prevSelected) =>
       prevSelected.includes(postID)
@@ -245,7 +353,10 @@ const Posts = () => {
     );
   };
 
-  // Handle sorting
+  /**
+   * Handles column sorting
+   * @param {string} key - The column key to sort by
+   */
   const handleSort = (key) => {
     setSortConfig((prev) => {
       if (prev.key === key) {
@@ -258,7 +369,7 @@ const Posts = () => {
     });
   };
 
-  // Deselect all posts
+  // Clears all post selections
   const handleDeselectAll = () => {
     setSelectedPosts([]);
     setIsAllSelected(false);
@@ -268,7 +379,7 @@ const Posts = () => {
     <div className="posts-page-wrapper">
       {/* Main content container */}
       <div className={`posts-container ${isModalOpen ? "blurred" : ""}`}>
-        {/* Header and actions */}
+        {/* Header section */}
         <div className="posts-header">
           <div className="welcome-message">
             <p>Welcome,</p>
@@ -276,9 +387,10 @@ const Posts = () => {
           </div>
         </div>
 
-        {/* Search and categories filter */}
+        {/* Search and filter section */}
         <div className="search-container">
           <div className="search-container-left">
+            {/* Category filter dropdown */}
             <select
               className="dropdown"
               value={category}
@@ -291,6 +403,7 @@ const Posts = () => {
               <option value="status">Status</option>
             </select>
 
+            {/* Search input */}
             <div className="search-box">
               <input
                 type="text"
@@ -302,6 +415,7 @@ const Posts = () => {
             </div>
           </div>
         
+          {/* Action buttons */}
           <div className="posts-actions">
             <FaSyncAlt className="refresh-icon" onClick={handleRefresh} />
             <button className="create-post-btn" onClick={handleCreatePostClick}>
@@ -342,11 +456,11 @@ const Posts = () => {
                 <td>
                   {/* Status highlight with color coding */}
                   <span className={`status-highlight ${post.status?.toLowerCase()}`}>
-                    {post.status || "-"}
+                  {post.status?.toUpperCase() || "-"}
                   </span>
                 </td>
                 <td>
-                  {/* Ellipsis icon and dropdown */}
+                  {/* Action menu */}
                   <FaEllipsisV className="popup-icon" onClick={(e) => menuDropdown(e, post._id)} />
                   {postMenuDropdown === post._id &&
                     createPortal(
@@ -364,7 +478,7 @@ const Posts = () => {
           </tbody>
         </table>
 
-        {/* Bulk actions for selected posts */}
+        {/* Bulk actions section */}
         {selectedPosts.length > 0 && (
           <div className="checkbox-selection">
             <button className="unselect-selected-btn" onClick={handleDeselectAll}>
@@ -380,7 +494,7 @@ const Posts = () => {
         )}
       </div>
 
-      {/* Pagination container */}
+      {/* Pagination section */}
       <div className={`pagination-container ${isModalOpen || postMenuDropdown ? 'disabled' : ''}`}>
         <p className={`${isModalOpen || postMenuDropdown ? 'pagination-disabled-text' : ''}`}>
           Showing {indexOfFirstPost + 1} to{" "}
@@ -409,7 +523,7 @@ const Posts = () => {
             }}
           />
 
-          {/* Page numbers */}
+          {/* Page number buttons */}
           {[...Array(totalPages).keys()]
             .slice(Math.max(0, currentPage - 2), currentPage + 1)
             .map((number) => (
