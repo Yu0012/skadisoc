@@ -15,6 +15,8 @@ const hours = String(now.getHours()).padStart(2, '0');
 const formattedTime = `${day}/${month}/${year}, ${hours}:${minutes}`;
 const fs = require('fs');
 const path = require('path');
+const cloudinary = require('../utils/cloudinary');
+
 
 // GET all posts (accessible to all authenticated users)
 exports.getAllPosts = async (req, res) => {

@@ -23,6 +23,7 @@ const { checkAndPostScheduledPosts } = require('./utils/scheduledPostHandler');
 const functions = require('firebase-functions');
 const notificationRoutes = require('./routes/notificationRoutes');
 const { BASE_URL } = require('./config');
+const cloudinary = require('./utils/cloudinary');
 
 
 const app = express();

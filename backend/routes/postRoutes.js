@@ -7,7 +7,7 @@ const router = express.Router();
 const postController = require('../controllers/postController');
 const { authenticateJWT } = require('../middleware/authMiddleware');
 const { getLatestNotifications } = require('../controllers/notificationController');
-const cloudinary = require('cloudinary').v2;
+const cloudinary = require('../utils/cloudinary');
 
 router.use(express.json());
 // ✅ Enable CORS properly for Cloud Functions

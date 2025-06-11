@@ -25,7 +25,8 @@ const postToFacebook = async (post, client) => {
       const url = `https://graph.facebook.com/${pageId}/photos`;
       const formData = new FormData();
       formData.append("access_token", pageAccessToken);
-      formData.append("source", fs.createReadStream(path.join(__dirname, '..', post.filePath)));
+      // formData.append("source", fs.createReadStream(path.join(__dirname, '..', post.filePath))); //Use this line if you want to upload from local file system
+      formData.append("url", post.filePath); // Use this line if you want to upload from a URL
       formData.append("published", "false");
 
       const response = await axios.post(url, formData, {
@@ -138,7 +139,19 @@ const postToTwitter = async (post, client) => {
     let imagePath = null;
 
     if (hasFile) {
-      imagePath = path.join(__dirname, '..', post.filePath);
+      const downloadImageFromUrl = async (url, tempPath) => {
+        const writer = fs.createWriteStream(tempPath);
+        const response = await axios({ url, method: 'GET', responseType: 'stream' });
+        response.data.pipe(writer);
+        return new Promise((resolve, reject) => {
+          writer.on('finish', resolve);
+          writer.on('error', reject);
+        });
+      };
+
+      const tempImagePath = path.join(__dirname, '..', `${post._id}.jpg`);
+      await downloadImageFromUrl(post.filePath, tempImagePath);
+      imagePath = tempImagePath; // Use the downloaded image path
     }
 
     if (hasFile && ['.jpg', '.jpeg', '.png'].includes(path.extname(imagePath).toLowerCase())) {
@@ -161,6 +174,11 @@ const postToTwitter = async (post, client) => {
 
     if (tweetId) {
       console.log(`Tweet ID: ${tweetId}`);
+      // 🧹 Clean up downloaded image file
+      fs.unlink(imagePath, (err) => {
+        if (err) console.error("Failed to delete temp image:", err);
+        else console.log("🧹 Temp image deleted:", imagePath);
+      });
       return tweetId; // ⬅️ Return tweet ID
     }
 
