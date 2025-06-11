@@ -26,6 +26,22 @@ const { getLatestNotifications } = require('../controllers/notificationControlle
 
 // const upload = multer({ storage });
 
+const uploadPath = path.join(__dirname, "../uploads");
+if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: (_, __, cb) => cb(null, uploadPath),
+  filename: (_, file, cb) =>
+    cb(null, `${Date.now()}-${file.originalname}`),
+});
+
+const upload = multer({ storage });
+
+router.post("/upload", upload.single("file"), (req, res) => {
+  if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+  res.json({ filePath: `/uploads/${req.file.filename}` });
+});
+
 // Get all posts
 router.get('/', authenticateJWT, postController.getAllPosts);
 

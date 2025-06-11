@@ -85,8 +85,30 @@ const Posts = () => {
   //handles for ui inputs
   const handleRefresh = () => window.location.reload();
 
+  const uploadFile = async (file) => {
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch(`${config.API_BASE}/api/upload`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "File upload failed");
+    return data.filePath;
+  };
+  
   const handleCreatePost = async (formValues) => {
     try {
+      let filePath = null;
+      if (formValues.file) {
+        filePath = await uploadFile(formValues.file);
+      }
       const token = localStorage.getItem("token");
       const payload = {
         title: formValues.title,
@@ -94,7 +116,8 @@ const Posts = () => {
         client: formValues.client,
         clientName: formValues.clientName,
         scheduledDate: formValues.scheduledDate,
-        selectedPlatforms: formValues.selectedPlatforms
+        selectedPlatforms: formValues.selectedPlatforms,
+        filePath,
       };
 
       // if (formValues.file && formValues.file.size > 0) {

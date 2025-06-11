@@ -14,7 +14,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
   const [scheduledDate, setScheduledDate] = useState(initialData?.scheduledDate || null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState(initialData?.selectedPlatforms || []);
-  //const [attachedFile, setAttachedFile] = useState(null);
+  const [attachedFile, setAttachedFile] = useState(null);
   const [clients, setClients] = useState([]);
   const [clientName, setClientName] = useState("");
   const [platformToggles, setPlatformToggles] = useState({
@@ -118,6 +118,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
       clientName: finalClientName,
       scheduledDate,
       selectedPlatforms,
+      file: attachedFile || null  // 🆕 pass file up to Posts.jsx
     };
 
     console.log("client:", client);
@@ -204,17 +205,17 @@ console.log("clients:", clients);
               </div>
 
               <div className="file-schedule-row">
-                {/* <button className="attach-file-btn" onClick={triggerFileInput}>
+                <button className="attach-file-btn" onClick={triggerFileInput}>
                   <FaPaperclip id="paperclip" />
                 </button>
                 <input
                   type="file"
                   ref={fileInputRef}
                   className="file-input"
-                  onChange={handleFileChange}
-                  accept="image/*, .pdf, .docx"
+                  onChange={(e) => setAttachedFile(e.target.files[0])}
+                  accept="image/*"
                   style={{ display: "none" }}
-                /> */}
+                /> 
 
                 <div className="schedule-row">
                   <button className="modal-schedule-btn" onClick={toggleDatePicker}>
@@ -244,7 +245,7 @@ console.log("clients:", clients);
               </div>
 
               {/* File preview (optional) */}
-              {/* {attachedFile && (
+              {attachedFile && (
                 <div className="attached-file-preview">
                   {attachedFile.type.startsWith("image/") ? (
                     <img src={URL.createObjectURL(attachedFile)} alt="Attachment Preview" />
@@ -252,7 +253,7 @@ console.log("clients:", clients);
                     <p>{attachedFile.name}</p>
                   )}
                 </div>
-              )} */}
+              )} 
 
               <div className="">
                 {/* Right */}
@@ -283,7 +284,7 @@ console.log("clients:", clients);
             platform={(Array.isArray(selectedPlatforms) ? selectedPlatforms[0] : selectedPlatforms) || ""}
             content={content}
             client={clientName}
-            // attachedFile={attachedFile}
+            attachedFile={attachedFile}
           />
         </div>
       </div>

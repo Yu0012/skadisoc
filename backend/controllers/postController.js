@@ -76,7 +76,7 @@ exports.createPost = async (req, res) => {
     selectedPlatforms = req.body.selectedPlatforms;
   }
 
-
+  const filePath = req.body.filePath || null;
   //const filePath = req.file ? `in-memory:${req.file.originalname}` : null;
 
   try {
@@ -127,7 +127,7 @@ exports.createPost = async (req, res) => {
       clientName, // ✅ Add this
       scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
       selectedPlatforms,
-      //filePath,
+      filePath,
       posted: false,
       status: scheduledDate ? 'scheduled' : 'draft',
       createdBy: requestingUser._id
