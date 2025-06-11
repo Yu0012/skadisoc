@@ -13,6 +13,8 @@ const year = String(now.getFullYear()).slice(-2);
 const minutes = String(now.getMinutes()).padStart(2, '0');
 const hours = String(now.getHours()).padStart(2, '0');
 const formattedTime = `${day}/${month}/${year}, ${hours}:${minutes}`;
+const fs = require('fs');
+const path = require('path');
 
 // GET all posts (accessible to all authenticated users)
 exports.getAllPosts = async (req, res) => {
@@ -75,8 +77,26 @@ exports.createPost = async (req, res) => {
   } else if (Array.isArray(req.body.selectedPlatforms)) {
     selectedPlatforms = req.body.selectedPlatforms;
   }
+  const base64File = req.body.base64File || null;
+  let filePath = null;
 
-  const filePath = req.body.filePath || null;
+  if (base64File) {
+    const matches = base64File.match(/^data:(.+);base64,(.+)$/);
+    if (!matches) throw new Error("Invalid base64 format");
+
+    const mimeType = matches[1];
+    const extension = mimeType.split("/")[1];
+    const buffer = Buffer.from(matches[2], "base64");
+
+    const uploadsDir = path.join(__dirname, "..", "uploads");
+    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+
+    const filename = `${Date.now()}.${extension}`;
+    filePath = `/uploads/${filename}`;
+
+    fs.writeFileSync(path.join(uploadsDir, filename), buffer);
+  }
+
   //const filePath = req.file ? `in-memory:${req.file.originalname}` : null;
 
   try {

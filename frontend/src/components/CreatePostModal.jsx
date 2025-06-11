@@ -97,6 +97,28 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     }
   }, [platform]);
 
+  const toBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file); // ⬅️ This gives base64 string
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (err) => reject(err);
+  });
+
+  const handleUpload = async (file) => {
+    const base64 = await toBase64(file);
+    const fileType = file.type;
+
+    const res = await fetch("/api/posts/upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ base64, fileType }),
+    });
+
+    const data = await res.json();
+    return data.filePath; // 🟢 Cloudinary URL
+  };
+
   const handleSubmit = () => {
     if (!content.trim()) {
       alert("Post content cannot be empty!");
@@ -108,28 +130,38 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
       return;
     }
 
-    const selectedClient = clients.find((c) => c._id === client);
-    const finalClientName = selectedClient?.companyName || selectedClient?.pageName || selectedClient?.username || selectedClient?.name || "";
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64File = reader.result; // includes data:image/... OR data:video/...
 
-    const formValues = {
-      title,
-      content,
-      client: selectedClient?._id || "",
-      clientName: finalClientName,
-      scheduledDate,
-      selectedPlatforms,
-      file: attachedFile || null  // 🆕 pass file up to Posts.jsx
+      const selectedClient = clients.find((c) => c._id === client);
+      const finalClientName = selectedClient?.companyName || selectedClient?.pageName || selectedClient?.username || selectedClient?.name || "";
+
+      const formValues = {
+        title,
+        content,
+        client: selectedClient?._id || "",
+        clientName: finalClientName,
+        scheduledDate,
+        selectedPlatforms,
+        base64File, // 🎯 Send base64 string
+      };
+
+      console.log("Client:", client);
+      console.log("Client Name:", finalClientName);
+      console.log("Client:", clients);
+
+      onSave?.(formValues);
+      onClose();
     };
 
-    console.log("client:", client);
-console.log("clientName:", finalClientName);
-console.log("clients:", clients);
-
-
-
-    onSave?.(formValues); // Pass values up
-    onClose(); // Close modal
+    if (attachedFile) {
+      reader.readAsDataURL(attachedFile); // triggers .onloadend above
+    } else {
+      reader.onloadend(); // manually trigger with no file
+    }
   };
+
 
 
   const handlePlatformChange = (platformId) => {
@@ -245,7 +277,7 @@ console.log("clients:", clients);
               </div>
 
               {/* File preview (optional) */}
-              {attachedFile && (
+               {attachedFile && (
                 <div className="attached-file-preview">
                   {attachedFile.type.startsWith("image/") ? (
                     <img src={URL.createObjectURL(attachedFile)} alt="Attachment Preview" />

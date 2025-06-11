@@ -26,22 +26,6 @@ const { getLatestNotifications } = require('../controllers/notificationControlle
 
 // const upload = multer({ storage });
 
-const uploadPath = path.join(__dirname, "../uploads");
-if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (_, __, cb) => cb(null, uploadPath),
-  filename: (_, file, cb) =>
-    cb(null, `${Date.now()}-${file.originalname}`),
-});
-
-const upload = multer({ storage });
-
-router.post("/upload", upload.single("file"), (req, res) => {
-  if (!req.file) return res.status(400).json({ message: "No file uploaded" });
-  res.json({ filePath: `/uploads/${req.file.filename}` });
-});
-
 // Get all posts
 router.get('/', authenticateJWT, postController.getAllPosts);
 
@@ -54,10 +38,30 @@ router.get('/:id', authenticateJWT, postController.getPostById);
 // Update post
 router.put('/:id', authenticateJWT, postController.updatePost);
 
-
 // Delete User
 router.delete('/:id', authenticateJWT, postController.deletePost);
 
 router.get('/notifications', authenticateJWT, getLatestNotifications);
+
+// routes/postRoutes.js
+router.post('/upload', authenticateJWT, async (req, res) => {
+  try {
+    let data = '';
+    req.on('data', chunk => (data += chunk));
+    req.on('end', async () => {
+      const { base64, fileType } = JSON.parse(data); // base64 = data:image/png;base64,xxx
+
+      const uploaded = await cloudinary.uploader.upload(base64, {
+        resource_type: fileType.startsWith("video") ? "video" : "image",
+      });
+
+      res.json({ filePath: uploaded.secure_url });
+    });
+  } catch (err) {
+    console.error("☠️ Upload failed:", err);
+    res.status(500).json({ message: "Upload to cloudinary failed" });
+  }
+});
+
 
 module.exports = router;
