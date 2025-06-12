@@ -85,13 +85,28 @@ const CreateUserForm = ({
     handlePlatformChange("facebook");
   }, []);
 
+  const handleSubmit = (e) => {
+  e.preventDefault(); // prevent page reload
+
+  // Validate matching passwords
+  if (password !== confirmPassword) {
+    setError("❌ Password and Confirm Password must be the same");
+    return;
+  }
+
+  // Clear any old error and call parent onSubmit
+  setError(null);
+  onSubmit(e);
+};
+
+
   return (
     <div className="newUserMenu">
       {/* ❌ Close button */}
       <ImCross className="exitButton" onClick={onClose} />
 
       {/* 📋 Form start */}
-      <form className="form-group" onSubmit={onSubmit}>
+      <form className="form-group" onSubmit={handleSubmit}>
         <a className="form-title">{isEditing ? "Edit User" : "Create New User"}</a>
 
         {/* 🛑 Error or ✅ success messages */}
