@@ -31,10 +31,10 @@ const Dashboard = () => {
 
         // Fetch both posts and clients data in parallel
         const [postsRes, clientsRes] = await Promise.all([
-          fetch("http://localhost:5000/api/posts", {
+          fetch(`${config.API_BASE}/api/posts`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch(`http://localhost:5000/api/clients/${selectedPlatform.toLowerCase()}/all`, {
+          fetch(`${config.API_BASE}/api/clients/${selectedPlatform.toLowerCase()}/all`, {
             headers: { Authorization: `Bearer ${token}` },
           })
         ]);
@@ -82,7 +82,7 @@ const Dashboard = () => {
     const fetchAllPostCounts = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5000/api/posts", {
+        const res = await fetch(`${config.API_BASE}/api/posts`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -127,7 +127,7 @@ const Dashboard = () => {
       try {
         const token = localStorage.getItem("token");
         const platform = selectedPlatform.toLowerCase();
-        const res = await fetch(`http://localhost:5000/api/clients/${platform}/all`, {
+        const res = await fetch(`${config.API_BASE}/api/clients/${platform}/all`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -214,7 +214,7 @@ const Dashboard = () => {
       const platform = selectedPlatform.toLowerCase();
 
       // Fetch all clients for the selected platform
-      const res = await fetch(`http://localhost:5000/api/clients/${platform}/all`, {
+      const res = await fetch(`${config.API_BASE}/api/clients/${platform}/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
