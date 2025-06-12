@@ -28,6 +28,7 @@ const Posts = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [refreshTrigger, setRefreshTrigger] = useState(false);
+  const [username, setUsername] = useState("");
 
 
   //Replaces text to icons for social media
@@ -55,6 +56,31 @@ const Posts = () => {
       console.error("Error fetching posts:", error);
     }
   };
+
+useEffect(() => {
+    const fetchUserInfo = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${config.API_BASE}/api/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch user info");
+
+        const data = await res.json();
+        setUsername(data.username); // username is sent from backend
+      } catch (err) {
+        console.error("User info fetch error:", err);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   useEffect(() => {
     fetchPosts(); // Initial fetch
@@ -330,7 +356,7 @@ const Posts = () => {
         <div className="posts-header">
           <div className="welcome-message">
             <p>Welcome,</p>
-            <h2 className="user-name">Amber Broos</h2>
+            <h2 className="user-name">{username || "Loading..."}</h2>
           </div>
         </div>
 

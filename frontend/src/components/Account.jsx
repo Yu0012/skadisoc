@@ -12,6 +12,8 @@ import config from '../config';
 import axios from 'axios';
 
 const Accounts = () => {
+
+  
   // ========== STATE MANAGEMENT ==========
   // Data states
   const [accounts, setAccounts] = useState([]); // Stores all user accounts
@@ -37,6 +39,8 @@ const Accounts = () => {
   const [accountMenuPosition, setAccountMenuPosition] = useState({ top: 0, left: 0 }); // Dropdown position
   
   // Form states
+  const [loggedInUsername, setLoggedInUsername] = useState("");
+
   const [username, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("viewer"); // User role (viewer/editor/admin)
@@ -83,6 +87,31 @@ const Accounts = () => {
   useEffect(() => {
     fetchAccounts();
   }, []);
+
+  useEffect(() => {
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${config.API_BASE}/api/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch user info");
+
+      const data = await res.json();
+      setLoggedInUsername(data.username);
+    } catch (err) {
+      console.error("User info fetch error:", err);
+    }
+  };
+
+  fetchUserInfo();
+}, []);
+
 
   // ========== UI HANDLERS ==========
   // Handle click on account menu dropdown
@@ -300,7 +329,7 @@ const Accounts = () => {
         <div className="posts-header">
           <div className="welcome-message">
             <p>Welcome,</p>
-            <h2 className="user-name">Amber Broos</h2>
+            <h2 className="user-name">{loggedInUsername || "Loading..."}</h2>
           </div>
         </div>
 

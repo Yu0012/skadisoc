@@ -7,6 +7,9 @@ import TopPostsWidget from "./TopPostsWidget";
 import config from "../config";
 
 const Dashboard = () => {
+  // Get username from localStorage
+  const [username, setUsername] = useState("");
+
   // State management for selected platform and client
   const [selectedPlatform, setSelectedPlatform] = useState("");
   const [selectedClient, setSelectedClient] = useState("");
@@ -74,6 +77,35 @@ const Dashboard = () => {
 
     fetchPosts();
   }, [selectedPlatform]);
+
+  /**
+   * Fetch user info to get username
+   */
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${config.API_BASE}/api/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch user info");
+
+        const data = await res.json();
+        setUsername(data.username); // Update state with username
+      } catch (err) {
+        console.error("❌ Failed to load user info:", err);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
 
   /**
    * Fetch total post counts for each platform
@@ -248,10 +280,15 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container" style={{ padding: "2rem" }}>
-      {/* Dashboard Header */}
-      <h2 className="dashboard-header">
-        📊 Dashboard
-      </h2>
+          {/* Dashboard Header */}
+          <div className="posts-header">
+            <div className="welcome-message">
+              <p>Welcome back,</p>
+              <h2 className="user-name">{username || "Loading..."}</h2>
+            </div>
+          </div>
+
+
 
       {/* Platform and Client Selectors */}
       <div className="dashboard-selectors">

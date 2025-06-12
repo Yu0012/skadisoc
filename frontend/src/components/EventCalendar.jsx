@@ -40,6 +40,8 @@ const EventCalendar = () => {
 
   const token = localStorage.getItem("token"); // JWT token for authentication
 
+  const [username, setUsername] = useState("");
+
   // Initial fetch of all posts and clients
   useEffect(() => {
     const fetchPostsAndClients = async () => {
@@ -87,6 +89,31 @@ const EventCalendar = () => {
       }
     };
     fetchPostsAndClients();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${config.API_BASE}/api/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch user info");
+
+        const data = await res.json();
+        setUsername(data.username); // username is sent from backend
+      } catch (err) {
+        console.error("User info fetch error:", err);
+      }
+    };
+
+    fetchUserInfo();
   }, []);
 
   // Format API response to FullCalendar-compatible objects
@@ -164,7 +191,7 @@ const EventCalendar = () => {
       <div className="posts-header">
         <div className="welcome-message">
           <p>Welcome,</p>
-          <h2 className="user-name">Amber Broos</h2>
+          <h2 className="user-name">{username || "Loading..."}</h2>
         </div>
       </div>
 

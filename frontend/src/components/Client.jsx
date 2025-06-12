@@ -12,6 +12,9 @@ const MySwal = withReactContent(Swal);
 
 const Client = () => {
   // ========== STATE MANAGEMENT ==========
+
+  // User data states
+  const [username, setUsername] = useState("");
   // Client data states
   const [clients, setClients] = useState([]); // Stores all client data
   const [searchQuery, setSearchQuery] = useState(""); // Search input value
@@ -35,6 +38,33 @@ const Client = () => {
   const platformSlug = activePlatform.toLowerCase(); // Platform name in lowercase for API URLs
   const baseUrl = `${config.API_BASE}/api/clients/${platformSlug}`; // Base API endpoint
   const clientsPerPage = 7; // Number of clients to show per page (if implementing pagination)
+
+  // ========== INITIALIZATION ==========
+  // Fetch user info when component mounts
+    useEffect(() => {
+    const fetchUserInfo = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${config.API_BASE}/api/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch user info");
+
+        const data = await res.json();
+        setUsername(data.username); // username is sent from backend
+      } catch (err) {
+        console.error("User info fetch error:", err);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   // ========== DATA FETCHING ==========
   // Fetch clients when component mounts or platform changes
@@ -278,7 +308,7 @@ const Client = () => {
       <div className="posts-header">
         <div className="welcome-message">
           <p>Welcome,</p>
-          <h2 className="user-name">Amber Broos</h2>
+          <h2 className="user-name">{username || "Loading..."}</h2>
         </div>
       </div>
 
