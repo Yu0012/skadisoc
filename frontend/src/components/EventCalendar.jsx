@@ -226,7 +226,8 @@ const EventCalendar = () => {
         </div>
 
         {/* Main Calendar Area - Wrapped in blur container */}
-          <div className={`calendar-main-wrapper ${isCreateModalOpen ? 'blurred' : ''}`}>          {/* Calendar Navigation Row */}
+        <div className={`calendar-main-wrapper ${isCreateModalOpen ? 'blurred' : ''}`}>
+          {/* Calendar Navigation Row */}
           <div className="search-toolbar-container">
             <div className="search-container calendar-controls-row calendar-nav-bar" style={{ justifyContent: "flex-end" }}>
               <div className="calendar-nav-group" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -250,11 +251,12 @@ const EventCalendar = () => {
                 events={events}
                 dayHeaderFormat={{ weekday: "long" }}
                 showNonCurrentDates={true}
-                contentHeight="auto"
                 expandRows={true}
                 fixedWeekCount={false}
-                dayMaxEventRows={true}
+                dayMaxEventRows={false}
+                dayMaxEvents={false}
                 height="auto"
+                contentHeight={650}
                 eventTimeFormat={{ hour: "2-digit", minute: "2-digit", hour12: true }}
                 datesSet={(info) => {
                   updateTitle(info.view.currentStart);

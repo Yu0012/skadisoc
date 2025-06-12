@@ -374,6 +374,9 @@ body,
   flex-direction: column;
 }
 
+body.theme-transition {
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
 
 /* 🏠 **Header Section (Welcome, Refresh, Create Post)** */
 .posts-header {
@@ -4420,4 +4423,78 @@ body {
 body.theme-transition,
 html.theme-transition {
   transition: all 0.4s ease !important;
+}
+
+/* 📅 Limit each calendar date box to show max 3 events with vertical scrolling */
+.fc-daygrid-day-frame {
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  height: 130px; /* Adjust total cell height if needed */
+}
+
+.fc-daygrid-day-events {
+  flex: 1;
+  overflow-y: auto !important;
+  max-height: 100px; /* Controls the scrollable event area height */
+}
+
+/* Optional: Thin scrollbar styling */
+.fc-daygrid-day-events::-webkit-scrollbar {
+  width: 4px;
+}
+
+.fc-daygrid-day-events::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+/* Ensure consistent spacing between events */
+.custom-event-box {
+  margin-bottom: 4px;
+}
+
+.chart-section-wrapper {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.chart-grid {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.summary-side {
+  flex: 1;
+  max-width: 320px;
+}
+
+.chart-side {
+  flex: 2;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.chart-slide {
+  flex: 1;
+  transition: all 0.5s ease;
+}
+
+.chart-arrow {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0 10px;
+  transition: transform 0.3s ease;
+}
+
+.chart-arrow:hover {
+  transform: scale(1.2);
 }

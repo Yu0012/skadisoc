@@ -1,123 +1,84 @@
 import React, { useState, useEffect } from 'react';
-import styles from './AuthForm.module.css'; // Import your CSS file for styling
+import styles from './AuthForm.module.css';
 import { login } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
-import ForgotPassword from './ForgotPassword';
-import Swal from 'sweetalert2'; // Import SweetAlert2
+import Swal from 'sweetalert2';
 
+// Correct image imports from assets folder
+import logoLight from '../assets/skadiLogo_light.png';
+import logoDark from '../assets/skadiLogo.png'; // Using available dark logo
+import sunIcon from '../assets/icon-sun-light.png'; // For dark background
+import moonIcon from '../assets/icon-moon.png'; // For light background
+
+/**
+ * Authentication Form Component
+ * Handles user login with email/password and theme toggling
+ */
 const AuthForm = () => {
-  // State management for form inputs and UI
+  // Form state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [permissions, setPermissions] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [icons, setIcons] = useState([]);
+  
+  // Theme state
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [logo, setLogo] = useState('img/logo_light-removebg-preview.png');
+  
+  // Navigation hook
   const navigate = useNavigate();
 
-  // Detect and set initial theme (dark/light) based on system preference or localStorage
+  /**
+   * Initialize theme based on user preference or system settings
+   * Runs once on component mount
+   */
   useEffect(() => {
+    // Check for saved theme preference in localStorage
     const savedMode = localStorage.getItem('darkMode');
-    const hours = new Date().getHours();
-    const systemDarkMode = hours < 6 || hours >= 18;
     
-    if (savedMode === null) {
-      setIsDarkMode(systemDarkMode);
-      localStorage.setItem('darkMode', systemDarkMode);
-    } else {
-      setIsDarkMode(savedMode === 'true');
-      // Still update localStorage with current time for next visit
-      localStorage.setItem('darkMode', systemDarkMode);
-    }
+    // Detect system color scheme preference
+    const hours = new Date().getHours();
+    const systemDarkMode = hours < 6 || hours >= 18; // Night time (6PM-6AM)
+
+    // Use saved preference if exists, otherwise use system preference
+    const initialMode = savedMode !== null ? savedMode === 'true' : systemDarkMode;
+    
+    setIsDarkMode(initialMode);
+    document.documentElement.classList.toggle('dark-theme', initialMode);
   }, []);
 
-  // Apply theme changes when dark mode state changes
-  useEffect(() => {
-    document.body.classList.toggle('dark-theme', isDarkMode);
-    setLogo(isDarkMode ? 'img/logo_dark-removebg-preview.png' : 'img/logo_light-removebg-preview.png');
-    localStorage.setItem('darkMode', isDarkMode);
-    generateIcons();
-  }, [isDarkMode]);
-
-  // Toggle between dark and light theme
+  /**
+   * Toggle between light/dark theme
+   */
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-  };
-
-  // Generate floating social media icons with random positions and animations
-  const generateIcons = () => {
-    // Expand the form zone to give icons more space to float
-    const formZone = { left: 25, right: 75, top: 15, bottom: 85 };
+    const nextMode = !isDarkMode;
     
-    // Create larger zones for floating
-    const zones = [
-      { left: [0, formZone.left], top: [0, formZone.top] },
-      { left: [formZone.right, 100], top: [0, formZone.top] },
-      { left: [0, formZone.left], top: [formZone.bottom, 100] },
-      { left: [formZone.right, 100], top: [formZone.bottom, 100] },
-      { left: [formZone.left, formZone.right], top: [0, formZone.top] },
-      { left: [formZone.left, formZone.right], top: [formZone.bottom, 100] },
-      { left: [0, formZone.left], top: [formZone.top, formZone.bottom] },
-      { left: [formZone.right, 100], top: [formZone.top, formZone.bottom] },
-    ];
-  
-    setIcons([
-      { id: 1, name: 'facebook', color: '#1877F2' },
-      { id: 2, name: 'instagram', color: '#E4405F' },
-      { id: 3, name: 'twitter', color: '#1DA1F2' },
-      { id: 4, name: 'linkedin', color: '#0A66C2' },
-      { id: 5, name: 'youtube', color: '#FF0000' },
-      { id: 6, name: 'tiktok', color: isDarkMode ? '#69C9D0' : '#000000' },
-      { id: 7, name: 'whatsapp', color: '#25D366' },
-      { id: 8, name: 'reddit', color: '#FF5700' },
-      { id: 9, name: 'discord', color: '#5865F2' },
-      { id: 10, name: 'pinterest', color: '#E60023' },
-      { id: 11, name: 'snapchat', color: isDarkMode ? '#FFFC00' : '#000000' },
-      { id: 12, name: 'telegram', color: '#0088CC' },
-      { id: 13, name: 'spotify', color: '#1DB954' },
-      { id: 14, name: 'twitch', color: '#9146FF' },
-      { id: 15, name: 'vimeo', color: '#1AB7EA' },
-      // New social media icons
-      { id: 16, name: 'github', color: isDarkMode ? '#f0f6fc' : '#24292f' },
-      { id: 17, name: 'slack', color: '#4A154B' },
-      { id: 18, name: 'microsoft', color: '#00A1F1' },
-      { id: 19, name: 'apple', color: isDarkMode ? '#A2AAAD' : '#000000' },
-      { id: 20, name: 'amazon', color: '#FF9900' },
-      { id: 21, name: 'behance', color: '#1769FF' },
-      { id: 22, name: 'dribbble', color: '#EA4C89' },
-      { id: 23, name: 'dropbox', color: '#0061FF' },
-      { id: 24, name: 'flickr', color: '#FF0084' },
-      { id: 25, name: 'medium', color: isDarkMode ? '#f5f5f5' : '#000000' },
-      { id: 26, name: 'skype', color: '#00AFF0' },
-      { id: 27, name: 'soundcloud', color: '#FF5500' },
-      { id: 28, name: 'stackoverflow', color: '#F48024' },
-      { id: 29, name: 'wordpress', color: '#21759B' },
-      { id: 30, name: 'xing', color: '#006567' },
-    ].map((icon, index) => {
-      const zone = zones[index % zones.length];
-      return {
-        ...icon,
-        top: zone.top[0] + Math.random() * (zone.top[1] - zone.top[0]),
-        left: zone.left[0] + Math.random() * (zone.left[1] - zone.left[0]),
-        animationDuration: `${8 + Math.random() * 7}s`,
-        scale: 0.4 + Math.random() * 0.5, // Slightly smaller since we have more icons
-        glow: isDarkMode ? `drop-shadow(0 0 8px ${icon.color})` : 'none',
-        opacity: isDarkMode ? 0.18 : 0.12, // More transparent to avoid clutter
-        hoverGlow: isDarkMode ? `drop-shadow(0 0 15px ${icon.color})` : `drop-shadow(0 0 5px ${icon.color})`,
-        hoverOpacity: isDarkMode ? 0.4 : 0.2,
-      };
-    }));
+    // Update state and localStorage
+    setIsDarkMode(nextMode);
+    localStorage.setItem('darkMode', nextMode);
+    
+    // Apply smooth transition
+    document.documentElement.classList.add("theme-transition");
+    document.documentElement.classList.toggle("dark-theme", nextMode);
+    
+    // Remove transition class after animation completes
+    setTimeout(() => {
+      document.documentElement.classList.remove("theme-transition");
+    }, 400);
   };
 
-  // Handle form submission with SweetAlert notifications
+  /**
+   * Handle form submission
+   * @param {Event} e - Form submit event
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
+      // Attempt login
       const { permissions } = await login(email, password);
       setPermissions(permissions);
-      
-      // Show success notification with SweetAlert
+
+      // Show success notification
       Swal.fire({
         title: 'Login Successful!',
         text: 'Redirecting to your dashboard...',
@@ -132,7 +93,7 @@ const AuthForm = () => {
       });
 
     } catch (err) {
-      // Show error notification with SweetAlert
+      // Show error notification
       Swal.fire({
         title: 'Login Failed',
         text: err.message,
@@ -141,8 +102,10 @@ const AuthForm = () => {
       });
     }
   };
-  
-  // Navigate to dashboard after successful login (when permissions are set)
+
+  /**
+   * Redirect to dashboard when permissions are set
+   */
   useEffect(() => {
     if (permissions) {
       navigate('/dashboard');
@@ -150,56 +113,39 @@ const AuthForm = () => {
   }, [permissions, navigate]);
 
   return (
-    <div className={styles['authFormContainer', isDarkMode ? styles.dark : styles.light]}>  
-      {/* Theme toggle button */}
-      <button 
-        className={styles['theme-toggle']}
+    <div className={`${styles.authFormContainer} ${isDarkMode ? styles.dark : ''}`}>
+      {/* Theme toggle button (top-right corner) */}
+      <button
+        className={styles.themeToggleButton}
         onClick={toggleTheme}
         aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
       >
+        <img
+          src={isDarkMode ? sunIcon : moonIcon}
+          alt="Theme Toggle"
+          style={{ width: '20px', height: '20px' }}
+        />
       </button>
 
-      {/* Floating social media icons background */}
-      <div className={styles['floating-icons']}>
-        {icons.map((icon) => (
-          <div 
-            key={icon.id} 
-            className={styles['floating-icon']} 
-            style={{
-              color: icon.color,
-              top: `${icon.top}%`,
-              left: `${icon.left}%`,
-              animationDuration: icon.animationDuration,
-              transform: `scale(${icon.scale})`,
-              filter: icon.glow,
-              opacity: icon.opacity,
-              '--hover-glow': icon.hoverGlow,
-              '--hover-opacity': icon.hoverOpacity,
-              '--hover-scale': icon.scale * 1.3,
-            }}
-          >
-            {getIconSVG(icon.name)}
-          </div>
-        ))}
-      </div>
-
-      {/* Main auth form */}
-      <div className={styles['auth-form']}>
-        <div className= {styles['auth-header']}>
-          <div className={styles['logo-container']}>
-            <img src={logo} alt="Company Logo" />
+      {/* Main form card */}
+      <div className={styles.authForm}>
+        {/* Form header with logo */}
+        <div className={styles.authHeader}>
+          <div className={styles.logoContainer}>
+            <img src={isDarkMode ? logoDark : logoLight} alt="Company Logo" />
           </div>
           <h1>Welcome Back</h1>
           <p>Please enter your details to login</p>
         </div>
 
+        {/* Login form */}
         <form onSubmit={handleSubmit}>
-          <div className={styles['form-fields']}>
+          <div className={styles.formFields}>
             {/* Email input field */}
-            <div className={styles['form-group']}>
+            <div className={styles.formGroup}>
               <label htmlFor="email">Email</label>
-              <div className={styles['input-container']}>
-                <div className={styles['input-icon']}>
+              <div className={styles.inputContainer}>
+                <div className={styles.inputIcon}>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
@@ -207,32 +153,28 @@ const AuthForm = () => {
                 </div>
                 <div className={styles.inputField}>
                   <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  placeholder="your@email.com"
-                  value={email}onChange={(e) => setEmail(e.target.value)}
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
               </div>
             </div>
 
             {/* Password input field */}
-            <div className={styles['form-group']}>
-              <div className={styles['label-container']}>
+            <div className={styles.formGroup}>
+              <div className={styles.labelContainer}>
                 <label htmlFor="password">Password</label>
-                <a href="/forgotpassword">Forgot password?</a>
               </div>
-              <div className={styles['input-container']}>
-                <div className={styles['input-icon']}>
+              <div className={styles.inputContainer}>
+                <div className={styles.inputIcon}>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path
-                      fillRule="evenodd"
-                      d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                      clipRule="evenodd"
-                    />
+                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                   </svg>
                 </div>
                 <div className={styles.inputField}>
@@ -243,14 +185,17 @@ const AuthForm = () => {
                     autoComplete="current-password"
                     required
                     placeholder="your password"
-                    className={styles["password-input"]}
-                    value={password}onChange={(e) => setPassword(e.target.value)}
+                    className={styles.passwordInput}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                <button 
-                  type="button" 
-                  className={styles["password-toggle"]}
+                {/* Password visibility toggle */}
+                <button
+                  type="button"
+                  className={styles.passwordToggle}
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -267,31 +212,25 @@ const AuthForm = () => {
               </div>
             </div>
 
-            {/* Remember me checkbox */}
-            <div className={styles["remember-me"]}>
-              <input id="remember_me" name="remember_me" type="checkbox" />
-              <label htmlFor="remember_me">Stay Signed In</label>
-            </div>
-
             {/* Submit button */}
-            <div className={styles["submit-button"]}>
+            <div className={styles.submitButton}>
               <button type="submit">Login</button>
             </div>
           </div>
         </form>
 
-        {/* Divider for social login options */}
-        <div className={styles["divider-container"]}>
-          <div className={styles["divider-line"]}></div>
-          <div className={styles["divider-text"]}>Or continue with</div>
-          <div className={styles["divider-line"]}></div>
+        {/* Divider with "Or" text */}
+        <div className={styles.dividerContainer}>
+          <div className={styles.dividerLine}></div>
+          <div className={styles.dividerText}>Or continue with</div>
+          <div className={styles.dividerLine}></div>
         </div>
 
-        {/* Social login buttons */}
-        <div className={styles['social-login-buttons']}>
+        {/* Guest login button */}
+        <div className={styles.socialLoginButtons}>
           <button
             type="button"
-            className={styles['google-btn']}
+            className={styles.googleBtn}
             onClick={() => window.open(`/client-login`, "_blank")}
           >
             Guest Login
@@ -303,10 +242,3 @@ const AuthForm = () => {
 };
 
 export default AuthForm;
-
-// Helper function to get SVG icons for social media (should be defined or imported)
-function getIconSVG(name) {
-  // This should return the appropriate SVG for each social media icon
-  // You'll need to implement this based on your icon library
-  return <svg>{/* SVG path for the icon */}</svg>;
-}
