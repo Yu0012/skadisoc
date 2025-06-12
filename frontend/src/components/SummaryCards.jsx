@@ -1,32 +1,59 @@
 import React from "react";
 
-const SummaryCards = ({ stats }) => {
+const SummaryCards = ({ posts }) => {
+  if (!Array.isArray(posts)) return null;
+
+  // Helper function to safely parse numbers
+  const safeNumber = (value) => {
+    const parsed = parseInt(value);
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
+  // Calculate totals using safe values
+  const totalPosts = posts.length;
+  const totalLikes = posts.reduce((sum, post) => sum + safeNumber(post.insights?.likes), 0);
+  const totalComments = posts.reduce((sum, post) => sum + safeNumber(post.insights?.comments), 0);
+  const totalShares = posts.reduce((sum, post) => sum + safeNumber(post.insights?.shares), 0);
+  const avgLikes = totalPosts > 0 ? (totalLikes / totalPosts).toFixed(1) : "0";
+
   const cardStyle = {
-    padding: "1rem",
-    border: "1px solid #ccc",
+    background: "#f4f6f8",
     borderRadius: "8px",
-    width: "150px",
+    padding: "1rem 2rem",
     textAlign: "center",
-    background: "#f9f9f9"
+    flex: 1,
+    minWidth: 120,
   };
 
   return (
-    <div style={{ display: "flex", gap: "1rem", marginTop: "1rem", marginBottom: "1rem" }}>
+    <div
+      style={{
+        display: "flex",
+        gap: "1.5rem",
+        marginBottom: "2rem",
+        flexWrap: "wrap",
+        justifyContent: "center",
+      }}
+    >
       <div style={cardStyle}>
-        <h4>Facebook</h4>
-        <p>{stats.facebook || 0}</p>
+        <h4>Total Posts</h4>
+        <p>{totalPosts}</p>
       </div>
       <div style={cardStyle}>
-        <h4>Instagram</h4>
-        <p>{stats.instagram || 0}</p>
+        <h4>❤️ Total Likes</h4>
+        <p>{totalLikes}</p>
       </div>
       <div style={cardStyle}>
-        <h4>Twitter</h4>
-        <p>{stats.twitter || 0}</p>
+        <h4>💬 Comments</h4>
+        <p>{totalComments}</p>
       </div>
       <div style={cardStyle}>
-        <h4>LinkedIn</h4>
-        <p>{stats.linkedin || 0}</p>
+        <h4>🔁 Shares</h4>
+        <p>{totalShares}</p>
+      </div>
+      <div style={cardStyle}>
+        <h4>📊 Avg Likes</h4>
+        <p>{avgLikes}</p>
       </div>
     </div>
   );
