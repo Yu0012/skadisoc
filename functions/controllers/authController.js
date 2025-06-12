@@ -111,105 +111,7 @@ exports.register = async (req, res) => {
   res.json({ message: 'User registered successfully' });
 };
 
-// GET ALL USERS (ONLY USER WITH ROLETYPE 'SUPERADMIN' & ROLE 'ADMIN' CAN) USED IN ACCOUNT.JSX
-// GET ALL USERS (WITH PAGINATION & ADVANCED SEARCH)
-//GET /api/users?role=admin&isActive=true
-//GET /api/users?startCreatedAt=2024-01-01&endCreatedAt=2024-12-31
-//GET /api/users?sortBy=lastLogin&sortOrder=desc
-//GET /api/users?search=amy&sortBy=username&order=asc&page=1&pageSize=10
-// exports.getUsers = async (req, res) => {
-//   console.log('🟢 Fetching users with filters/sort/pagination/search');
 
-//   if (!(req.user.roleType === 'superadmin' && req.user.role === 'admin')) {
-//     console.log('⛔ Fetch users failed: insufficient permission');
-//     return res.status(403).json({ message: 'Only superadmin with admin role can view users' });
-//   }
-
-//   try {
-//     const {
-//       roleType,
-//       role,
-//       status,
-//       isActive,
-//       startLastLogin,
-//       endLastLogin,
-//       startCreatedAt,
-//       endCreatedAt,
-//       startUpdatedAt,
-//       endUpdatedAt,
-//       sortBy,
-//       sortOrder = 'asc',
-//       username,
-//       email,
-//       page = 1,
-//       limit = 10,
-//     } = req.query;
-
-//     const query = {};
-
-//     if (roleType) query.roleType = roleType;
-//     if (role) query.role = role;
-//     if (status) query.status = status;
-//     if (typeof isActive !== 'undefined') query.isActive = isActive === 'true' || isActive === true;
-
-
-//     // Regex filters for advanced search
-//     if (username) query.username = { $regex: username, $options: 'i' };
-//     if (email) query.email = { $regex: email, $options: 'i' };
-
-//     // Date range filters
-//     if (startLastLogin || endLastLogin) {
-//       query.lastLogin = {};
-//       if (startLastLogin) query.lastLogin.$gte = new Date(startLastLogin);
-//       if (endLastLogin) query.lastLogin.$lte = new Date(endLastLogin);
-//     }
-
-//     if (startCreatedAt || endCreatedAt) {
-//       query.createdAt = {};
-//       if (startCreatedAt) query.createdAt.$gte = new Date(startCreatedAt);
-//       if (endCreatedAt) query.createdAt.$lte = new Date(endCreatedAt);
-//     }
-
-//     if (startUpdatedAt || endUpdatedAt) {
-//       query.updatedAt = {};
-//       if (startUpdatedAt) query.updatedAt.$gte = new Date(startUpdatedAt);
-//       if (endUpdatedAt) query.updatedAt.$lte = new Date(endUpdatedAt);
-//     }
-
-//     // Sorting
-//     const sortFields = {
-//       id: '_id',
-//       username: 'username',
-//       email: 'email',
-//       lastLogin: 'lastLogin',
-//       createdAt: 'createdAt',
-//       updatedAt: 'updatedAt',
-//     };
-
-//     const sortField = sortFields[sortBy] || '_id';
-//     const sort = {};
-//     sort[sortField] = sortOrder === 'desc' ? -1 : 1;
-
-//     // Pagination
-//     const skip = (parseInt(page) - 1) * parseInt(limit);
-//     const total = await User.countDocuments(query);
-
-//     const users = await User.find(query).sort(sort).skip(skip).limit(parseInt(limit));
-
-//     res.set({
-//       'X-Total-Count': total,
-//       'X-Page': page,
-//       'X-Pages': Math.ceil(total / limit),
-//       'X-Limit': limit
-//     });
-//     res.json(users);
-
-
-//   } catch (err) {
-//     console.error('❌ Error fetching users with filters:', err);
-//     res.status(500).json({ message: 'Failed to fetch users with filters' });
-//   }
-// };
 // GET ALL USERS WITHOUT FILTER/SORT/PAGINATION (ONLY SUPERADMIN & ADMIN CAN)
 exports.getUsers = async (req, res) => {
   console.log('🟢 Fetching all users (no filters)');
@@ -544,3 +446,40 @@ exports.isActiveUpdate = async (req, res) => {
     res.status(500).json({ message: 'Failed to update activation status' });
   }
 };
+
+exports.updateUsername = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const newUsername = req.params.username;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { username: newUsername },
+      { new: true }
+    ).select("-password");
+
+    res.json({ message: "Username updated", user: updatedUser });
+  } catch (err) {
+    console.error("Error updating username:", err);
+    res.status(500).json({ message: "Update failed" });
+  }
+};
+
+exports.updateEmail = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const newEmail = req.params.email;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { email: newEmail },
+      { new: true }
+    ).select("-password");
+
+    res.json({ message: "Email updated", user: updatedUser });
+  } catch (err) {
+    console.error("Error updating email:", err);
+    res.status(500).json({ message: "Update failed" });
+  }
+};
+

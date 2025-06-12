@@ -23,7 +23,7 @@ const AssignClients = ({ userId, onClose }) => {
       const assignedRes = await fetch(`${config.API_BASE}/api/clients/${platform}/assigned`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const unassignedRes = await fetch(`${config.API_BASE}/api/clients/${platform}/unassigned`, {
+      const unassignedRes = await fetch(`${config.API_BASE}/api/clients/unassigned/${platform}/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

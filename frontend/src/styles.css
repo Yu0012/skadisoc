@@ -4252,4 +4252,19 @@ label {
   border-bottom: none;
 }
 
+.avatar-fallback {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #4c6ef5;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 1rem;
+}
+
+
 

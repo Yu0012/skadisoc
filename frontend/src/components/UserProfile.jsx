@@ -1,8 +1,8 @@
 // export default UserProfile;
 import React, { useState, useEffect } from "react";
 import "../styles.css";
-import defaultAvatar from "../assets/man.jpg";
 import config from "../config"; // Adjust the path as necessary
+import Swal from "sweetalert2";
 
 
 
@@ -10,16 +10,12 @@ import config from "../config"; // Adjust the path as necessary
 const UserProfile = () => {
   const [editMode, setEditMode] = useState(false);
   const [originalUser, setOriginalUser] = useState(null);
+  const [updatedData, setUpdatedData] = useState({ username: '', email: '' });
+  const [user, setUser] = useState({});
+  const [UserId, setUserId] = useState(null);
+  
 
 
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-    role: "",
-    avatar: defaultAvatar,
-  });
-
-  const [previewAvatar, setPreviewAvatar] = useState(null);
 
   const [stats, setStats] = useState({
     totalPosts: 0,
@@ -41,17 +37,18 @@ const UserProfile = () => {
 
         const data = await response.json();
 
-        if (!response.ok) {
-          console.error("Failed to fetch profile:", data.message);
+        if (!response.ok || !data.username) {
+          console.error("Failed to fetch profile: No user in response");
           return;
         }
 
         setUser({
-          name: data.name,
+          id: data._id,
+          username: data.username,
           email: data.email,
           role: data.role,
-          avatar: data.profilePicture || defaultAvatar,
         });
+
 
         setStats({
           totalPosts: data.postStats?.total || 0,
@@ -68,27 +65,65 @@ const UserProfile = () => {
     fetchUserData();
   }, []);
 
-  const handleChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+  const handleEdit = () => {
+    setUpdatedData({
+      username: user.username || '',
+      email: user.email || '',
+    });
+    setEditMode(true);
   };
 
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setUser({ ...user, avatar: imageUrl });
-      setPreviewAvatar(file);
+
+  const handleChange = (e) => {
+    setUpdatedData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+
+  const handleSave = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    const { username, email } = updatedData;
+
+    try {
+      const usernameRes = await fetch(`${config.API_BASE}/api/user/username/${username}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const emailRes = await fetch(`${config.API_BASE}/api/user/email/${email}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!usernameRes.ok || !emailRes.ok) {
+        throw new Error('Failed to update username or email');
+      }
+
+      // Manually update user state since backend doesn't return updated user
+      setUser(prev => ({
+        ...prev,
+        username,
+        email,
+      }));
+
+      setEditMode(false);
+      Swal.fire("✅ Updated!", "Your profile was updated.", "success");
+    } catch (error) {
+      console.error("❌ Update failed:", error);
+      Swal.fire("❌ Error", "Update failed. Please try again.", "error");
     }
   };
 
-  const handleSave = () => {
-    setEditMode(false);
-    // Optional backend update logic here
-  };
 
   const handleCancel = () => {
     setEditMode(false);
-    setPreviewAvatar(null);
     // Reset to original or refetch
       if (originalUser) {
         setUser(originalUser); // restore saved values
@@ -113,56 +148,51 @@ const UserProfile = () => {
     return "Invalid Date";
   }
 };
+  
 
   return (
     <div className="profile-container">
       <div className="profile-card">
-        <img src={user.avatar} alt="User Avatar" className="profile-avatar" />
+      <div className="avatar">
+        {user?.username ? (
+          <span className="avatar-letter">{user.username.charAt(0).toUpperCase()}</span>
+        ) : (
+          <span className="avatar-letter">?</span>
+        )}
+      </div>
+
 
         {editMode ? (
           <div className="profile-form">
             <input
-              type="file"
-              accept="image/*"
-              onChange={handleAvatarChange}
-              className="avatar-upload"
-            />
-            <input
-              name="name"
-              value={user.name}
+              type="text"
+              name="username"
+              value={updatedData.username}
               onChange={handleChange}
               className="profile-input"
               placeholder="Insert Name Here"
             />
             <input
+              type="email"
               name="email"
-              value={user.email}
+              value={updatedData.email}
               onChange={handleChange}
               className="profile-input"
               placeholder="Insert Email Here"
             />
-            <input
-              name="role"
-              value={user.role}
-              onChange={handleChange}
-              className="profile-input"
-              placeholder="Insert Role Here"
-            />
+
             <div className="profile-btn-group">
               <button onClick={handleSave} className="save-btn">Save</button>
-              <button onClick={handleCancel} className="cancel-btn">Cancel</button>
+              <button onClick={() => setEditMode(false)} className="cancel-btn">Cancel</button>
             </div>
           </div>
         ) : (
           <>
-            <h2>{user.name}</h2>
+            <p><strong>Name:</strong> {user.username}</p>
             <p><strong>Email:</strong> {user.email}</p>
             <p><strong>Role:</strong> {user.role}</p>
 
-            <button onClick={() => {
-              setOriginalUser(user); // save current state
-              setEditMode(true);
-            }} className="edit-btn">✏️ Edit Profile</button>
+            <button onClick={handleEdit} className="edit-btn">✏️ Edit Profile</button>
 
 
             <div className="user-stats">

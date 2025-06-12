@@ -80,7 +80,7 @@ app.get('/auth/facebook/callback', async (req, res) => {
     const tokenResponse = await axios.get(`https://graph.facebook.com/v18.0/oauth/access_token`, {
       params: {
         client_id: process.env.FB_APP_ID,
-        redirect_uri: process.env.REDIRECT_URI,
+        redirect_uri: "https://skadisocmed-954f4.web.app/auth/facebook/callback",
         client_secret: process.env.FB_APP_SECRET,
         code,
       },
