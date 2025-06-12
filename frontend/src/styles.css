@@ -32,13 +32,6 @@ body {
   margin-bottom: 20px;
 }
 
-.card {
-  background: white;
-  padding: 15px;
-  margin: 10px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
 
 .subtitle {
   font-size: 18px;
@@ -3312,8 +3305,15 @@ body {
 
   --label-color: #002266; /* dark blue for light mode */
 
-   --dropdown-bg: white;
-   --dropdown-hover: #f5f5f5;
+  --dropdown-bg: white;
+  --dropdown-hover: #f5f5f5;
+
+  --chart-text-color: #333;
+  --chart-grid-color: rgba(0, 0, 0, 0.05);
+   --chart-bg-color: #ffffff;
+   --card-bg-color: #ffffff;
+  --text-color: #333333;
+  --card-text-color: #000000;
 }
 
 /* Dark Theme */
@@ -3411,6 +3411,12 @@ body {
   --modal-calendar-datepicker: #3a3b45;
   --modal-calendar-datepicker-header: #272831;
   --modal-calendar-currentday: #3b82f6;
+
+  --chart-bg-color: #1e1e2f;
+  --chart-text-color: #ffffff;
+   --card-bg-color: #2a2a3a;
+  --text-color: #ffffff;
+  --card-text-color: #ffffff;
 }
 
 .calendar-sidebar {
@@ -4221,3 +4227,172 @@ label {
   font-size: 22px;
 }
 
+.card {
+  background: var(--card-bg-color);
+  color: var(--text-color); /* optional: text visibility */
+  padding: 15px;
+  margin: 10px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.title,
+.subtitle {
+  color: var(--text-color);
+}
+
+.top-posts-widget {
+  width: 100%;
+  max-width: 500px;
+}
+
+.widget-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+
+.top-posts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.top-post-item {
+  background-color: var(--table-bg);
+  color: var(--text-color);
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: background-color 0.3s ease;
+}
+
+[data-selected-theme="dark"] .top-post-item {
+  background-color: #2b2c34;
+  color: white;
+}
+
+.widget-container {
+  background-color: var(--table-bg);
+  color: var(--text-color);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  flex: 1;
+  min-width: 280px;
+}
+
+.dashboard-charts-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+[data-theme="dark"] {
+  --chart-text-color: #eee;
+  --chart-grid-color: rgba(255, 255, 255, 0.1);
+  --card-bg: #1e1e1e;
+}
+
+/* Chart containers */
+.dashboard-bar-chart {
+  width: 100%;
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: var(--card-bg, #fff);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.top-widget-carousel-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-top: 2rem;
+  padding: 1rem;
+}
+
+.arrow {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--chart-text-color, #fff);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.arrow:hover {
+  transform: scale(1.2);
+}
+
+.arrow.left {
+  margin-right: 1rem;
+}
+
+.arrow.right {
+  margin-left: 1rem;
+}
+
+.carousel-slide {
+  transition: all 0.4s ease-in-out;
+  width: 100%;
+  max-width: 600px;
+}
+
+.top-posts-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-top: 2rem;
+  flex-wrap: nowrap;
+}
+
+.top-posts-widget {
+  flex: 1;
+  min-width: 280px;
+  max-width: 320px;
+  background-color: var(--card-bg-color);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  color: var(--text-color);
+}
+
+.top-posts-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 12px;
+}
+
+.top-post-item {
+  background: var(--item-bg-color);
+  color: var(--text-color);
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.top-posts-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  flex-wrap: nowrap;
+  margin-top: 2rem;
+}
+
+.top-posts-row {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+  flex-wrap: nowrap;
+}

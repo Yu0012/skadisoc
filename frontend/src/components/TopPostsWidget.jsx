@@ -1,6 +1,5 @@
-// components/TopPostsWidget.jsx
 import React from "react";
-
+import "../styles.css"; 
 const TopPostsWidget = ({ posts, metric = "likes" }) => {
   const sorted = [...posts]
     .filter(p => p.insights && typeof p.insights[metric] === "number")
@@ -14,11 +13,11 @@ const TopPostsWidget = ({ posts, metric = "likes" }) => {
   };
 
   return (
-    <div style={{ width: "100%", maxWidth: 500 }}>
-      <h3>Top 5 Posts by {labelMap[metric]}</h3>
-      <ul style={{ listStyle: "none", padding: 0 }}>
+    <div className="top-posts-widget">
+      <h3 className="widget-title">Top 5 Posts by {labelMap[metric]}</h3>
+      <ul className="top-posts-list">
         {sorted.map((post, index) => (
-          <li key={post._id} style={{ marginBottom: "10px", background: "#f5f5f5", padding: "10px", borderRadius: "6px" }}>
+          <li key={post._id} className="top-post-item">
             <strong>{index + 1}. {post.title || "Untitled"}</strong><br />
             {labelMap[metric]}: {post.insights[metric]}
           </li>
