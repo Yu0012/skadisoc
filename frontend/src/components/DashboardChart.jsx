@@ -1,4 +1,3 @@
-// components/DashboardCharts.jsx
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
@@ -9,6 +8,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { motion } from "framer-motion"; // ✅ 动画容器导入
 
 // Register chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
@@ -19,7 +19,6 @@ const DashboardCharts = ({ posts }) => {
   const [gridColor, setGridColor] = useState("rgba(0, 0, 0, 0.05)");
 
   useEffect(() => {
-    // Recalculate on mount and when theme changes
     const applyThemeColors = () => {
       const rootStyle = getComputedStyle(document.documentElement);
       setBgColor(rootStyle.getPropertyValue('--chart-bg-color')?.trim() || "#1e1e2f");
@@ -29,7 +28,6 @@ const DashboardCharts = ({ posts }) => {
 
     applyThemeColors();
 
-    // Optional: observe theme change
     const observer = new MutationObserver(applyThemeColors);
     observer.observe(document.documentElement, {
       attributes: true,
@@ -39,15 +37,17 @@ const DashboardCharts = ({ posts }) => {
     return () => observer.disconnect();
   }, []);
 
-  // Prepare chart data
   const labels = posts.map((p) => p.title || "Untitled");
   const likes = posts.map((p) => p.insights?.likes || 0);
   const comments = posts.map((p) => p.insights?.comments || 0);
   const shares = posts.map((p) => p.insights?.shares || 0);
 
   return (
-    <div
+    <motion.div
       className="dashboard-bar-chart"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
       style={{
         background: bgColor,
         borderRadius: "8px",
@@ -81,6 +81,11 @@ const DashboardCharts = ({ posts }) => {
         options={{
           responsive: true,
           maintainAspectRatio: false,
+          animation: {
+            duration: 800,
+            easing: "easeOutCubic",
+            delay: (ctx) => ctx.dataIndex * 100,
+          },
           plugins: {
             legend: {
               labels: {
@@ -108,7 +113,7 @@ const DashboardCharts = ({ posts }) => {
         }}
         height={400}
       />
-    </div>
+    </motion.div>
   );
 };
 

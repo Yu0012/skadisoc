@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import Lottie from "lottie-react";
 import "../styles.css";
+
+// Assets
 import logo from "../assets/skadiLogo.png";
 import logo_light from "../assets/skadiLogo_light.png";
 import bellAnimation from "../assets/bellring.json";
@@ -17,11 +19,11 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { permissions, user, logout } = useContext(AuthContext);
-  const themes = ['light', 'dark'] //For Light/Dark themes
+
+  const themes = ["light", "dark"]; // Supported themes
   const [currentTheme, setCurrentTheme] = useState(
     localStorage.getItem("theme") || "light"
   );
-
 
   const [hasNotifications, setHasNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -29,17 +31,18 @@ const Navbar = () => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
-  //Updates elements with data-selected-theme attribute, also saves theme to localStorage for consistency across pages
+  // Apply theme to HTML attribute and store it in localStorage
   useEffect(() => {
     document.documentElement.setAttribute("data-selected-theme", currentTheme);
     localStorage.setItem("theme", currentTheme);
   }, [currentTheme]);
 
-  //Ensures dark mode is in sync with the current theme
+  // Sync darkMode boolean with the selected theme
   useEffect(() => {
-    setDarkMode(currentTheme === 'dark');
+    setDarkMode(currentTheme === "dark");
   }, [currentTheme]);
 
+  // Fake polling: updates notifications every 5s
   useEffect(() => {
     const interval = setInterval(() => {
       const newNotifications =
@@ -55,6 +58,7 @@ const Navbar = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!event.target.closest(".notification-menu")) {
@@ -68,12 +72,28 @@ const Navbar = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
+  // Improved theme toggle with smooth transition
   const toggleTheme = () => {
-    setDarkMode((prev) => !prev);
-    document.body.classList.toggle("dark-mode");
-    const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
+    // Add transition class to body
+    document.body.classList.add("theme-transition");
+    
+    // Calculate next theme
+    const nextTheme = currentTheme === "light" ? "dark" : "light";
+    
+    // Update state
+    setDarkMode(nextTheme === "dark");
     setCurrentTheme(nextTheme);
+    
+    // Apply to HTML element
+    document.documentElement.setAttribute("data-selected-theme", nextTheme);
+    
+    // Remove transition class after animation completes
+    setTimeout(() => {
+      document.body.classList.remove("theme-transition");
+    }, 400); // matches CSS transition duration
   };
+
+  // Navigation logic for user dropdown
   const handleUserNav = (path) => {
     if (path === "/logout") {
       logout();
@@ -84,6 +104,7 @@ const Navbar = () => {
     setUserDropdownOpen(false);
   };
 
+  // Check if user has access to a certain menu
   const hasMenuAccess = (menuName) => {
     return permissions?.menus?.includes(menuName);
   };
@@ -93,32 +114,51 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       {/* Logo */}
-      <img src={darkMode ? logo : logo_light} alt="SOCMEDMT Logo" className="logo" />
+      <img
+        src={darkMode ? logo : logo_light}
+        alt="SOCMEDMT Logo"
+        className="logo"
+      />
 
       {/* Navigation Links */}
       <div className="nav-links">
         {hasMenuAccess("dashboard") && (
-          <Link to="/dashboard" className={location.pathname === "/dashboard" ? "active" : ""}>
+          <Link
+            to="/dashboard"
+            className={location.pathname === "/dashboard" ? "active" : ""}
+          >
             Dashboard
           </Link>
         )}
         {hasMenuAccess("posts") && (
-          <Link to="/posts" className={location.pathname === "/posts" ? "active" : ""}>
+          <Link
+            to="/posts"
+            className={location.pathname === "/posts" ? "active" : ""}
+          >
             Posts
           </Link>
         )}
         {hasMenuAccess("calendar") && (
-          <Link to="/calendar" className={location.pathname === "/calendar" ? "active" : ""}>
+          <Link
+            to="/calendar"
+            className={location.pathname === "/calendar" ? "active" : ""}
+          >
             Calendar
           </Link>
         )}
         {hasMenuAccess("account") && (
-          <Link to="/account" className={location.pathname === "/account" ? "active" : ""}>
+          <Link
+            to="/account"
+            className={location.pathname === "/account" ? "active" : ""}
+          >
             Account
           </Link>
         )}
         {hasMenuAccess("client") && (
-          <Link to="/client" className={location.pathname === "/client" ? "active" : ""}>
+          <Link
+            to="/client"
+            className={location.pathname === "/client" ? "active" : ""}
+          >
             Client
           </Link>
         )}
@@ -126,7 +166,7 @@ const Navbar = () => {
 
       {/* Right Side Icons */}
       <div className="nav-icons">
-        {/* 🌗 Theme Toggle */}
+        {/* Theme Toggle */}
         <div className="theme-toggle" onClick={toggleTheme}>
           <img
             src={darkMode ? sunIcon : moonIcon}
@@ -135,13 +175,23 @@ const Navbar = () => {
           />
         </div>
 
-        {/* 🔔 Notification Bell */}
+        {/* Notification Bell */}
         <div className="notification-menu">
-          <div onClick={() => setNotifDropdownOpen(!notifDropdownOpen)} className="bell-container">
+          <div
+            onClick={() => setNotifDropdownOpen(!notifDropdownOpen)}
+            className="bell-container"
+          >
             {hasNotifications ? (
-              <Lottie animationData={darkMode ? bellAnimation_light : bellAnimation} className="bell-icon" />
+              <Lottie
+                animationData={darkMode ? bellAnimation_light : bellAnimation}
+                className="bell-icon"
+              />
             ) : (
-              <img src={darkMode ? bellStatic_light : bellStatic } alt="No Notifications" className="bell-icon" />
+              <img
+                src={darkMode ? bellStatic_light : bellStatic}
+                alt="No Notifications"
+                className="bell-icon"
+              />
             )}
           </div>
 
@@ -149,19 +199,25 @@ const Navbar = () => {
             <div className="dropdown-menu notifications-dropdown">
               <h4>Notifications</h4>
               {hasNotifications ? (
-                notifications.map((notif) => <p key={notif.id}>{notif.message}</p>)
+                notifications.map((notif) => (
+                  <p key={notif.id}>{notif.message}</p>
+                ))
               ) : (
                 <p>No new notifications</p>
               )}
               <hr />
-              <Link to="/notifications" className="view-all" onClick={() => setNotifDropdownOpen(false)}>
+              <Link
+                to="/notifications"
+                className="view-all"
+                onClick={() => setNotifDropdownOpen(false)}
+              >
                 View All
               </Link>
             </div>
           )}
         </div>
 
-        {/* 👤 User Menu */}
+        {/* User Menu */}
         <div className="user-menu">
           <img
             src={userIcon}

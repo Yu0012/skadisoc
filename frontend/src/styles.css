@@ -359,6 +359,16 @@ body {
 
 
 /* 📌 **Posts Page Styles** */
+
+body,
+.posts-page-wrapper,
+.posts-container,
+.posts-table,
+.platform-dropdown-wrapper,
+.swal2-popup {
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
 .posts-container {
   display: flex;
   flex-direction: column;
@@ -3211,6 +3221,8 @@ body {
 
  /* Light Theme (Default) */
  :root {
+
+  transition: all 0.4s ease;
   --bg-color: white;
   --bg-color-secondary: #f5f7fb;
   --text-color: #0a0f5c;
@@ -4395,4 +4407,17 @@ label {
   gap: 2rem;
   margin-top: 1rem;
   flex-wrap: nowrap;
+}
+
+:root,
+[data-theme='dark'],
+[data-theme='light'],
+html,
+body {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+
+body.theme-transition,
+html.theme-transition {
+  transition: all 0.4s ease !important;
 }
