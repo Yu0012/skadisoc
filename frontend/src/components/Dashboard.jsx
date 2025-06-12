@@ -105,6 +105,16 @@ const Dashboard = () => {
 
     fetchUserInfo();
   }, []);
+  
+
+  useEffect(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('loggedIn') === 'true') {
+    urlParams.delete('loggedIn'); // remove flag from URL
+    window.history.replaceState({}, '', window.location.pathname); // clean up URL
+    window.location.reload(); // reload just once
+  }
+}, []);
 
 
   /**

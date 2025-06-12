@@ -130,7 +130,7 @@ const AuthForm = () => {
           Swal.showLoading();
         }
       });
-
+      window.location.href = "/dashboard?loggedIn=true";
     } catch (err) {
       // Show error notification with SweetAlert
       Swal.fire({
@@ -146,7 +146,7 @@ const AuthForm = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (permissions && token) {
-      // small delay to let AuthContext or Navbar load
+      // Optional: Add a small delay to let AuthContext or Navbar load
       const timer = setTimeout(() => {
         navigate("/dashboard");
       }, 100); 

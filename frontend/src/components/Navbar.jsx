@@ -42,14 +42,6 @@ const Navbar = () => {
     setDarkMode(currentTheme === 'dark');
   }, [currentTheme]);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      // trigger refetch logic here if control AuthContext
-      window.location.reload(); //trigger a custom fetchPermissions() if available
-    }, 2000);
-
-    return () => clearTimeout(timeout);
-  }, []);
 
 
   useEffect(() => {
