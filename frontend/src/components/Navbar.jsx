@@ -43,6 +43,16 @@ const Navbar = () => {
   }, [currentTheme]);
 
   useEffect(() => {
+    const timeout = setTimeout(() => {
+      // trigger refetch logic here if control AuthContext
+      window.location.reload(); //trigger a custom fetchPermissions() if available
+    }, 2000);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+
+  useEffect(() => {
         const fetchLatestNotifications = async () => {
       try {
         const res = await axios.get(`${config.API_BASE}/api/notifications/latest`);
@@ -94,7 +104,14 @@ const Navbar = () => {
     return permissions?.menus?.includes(menuName);
   };
 
-  if (!user || !permissions || !permissions.menus.length) return null;
+  if (!user || !permissions) {
+    return (
+      <nav className="navbar">
+        <img src={logo_light} alt="Logo" className="logo" />
+      </nav>
+    );
+  }
+
 
   return (
     <nav className="navbar">

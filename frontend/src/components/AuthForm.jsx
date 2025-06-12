@@ -144,10 +144,17 @@ const AuthForm = () => {
   
   // Navigate to dashboard after successful login (when permissions are set)
   useEffect(() => {
-    if (permissions) {
-      navigate('/dashboard');
+    const token = localStorage.getItem("token");
+    if (permissions && token) {
+      // small delay to let AuthContext or Navbar load
+      const timer = setTimeout(() => {
+        navigate("/dashboard");
+      }, 100); 
+
+      return () => clearTimeout(timer);
     }
   }, [permissions, navigate]);
+
 
   return (
     <div className={styles['authFormContainer', isDarkMode ? styles.dark : styles.light]}>  
