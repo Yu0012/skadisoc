@@ -7,7 +7,11 @@ const { authenticateJWT } = require('../middleware/authMiddleware');
 // Single assignment routes
 router.post('/:platform/assign/:clientId/:userId', authenticateJWT, clientController.assignUserToClient);
 router.delete('/:platform/unassign/:clientId/:userId', authenticateJWT, clientController.unassignUserFromClient);
+// Multiple assignment routes
+router.post('/:platform/:clientId/assign-users', authenticateJWT, clientController.assignMultipleUsersToClient);
+router.post('/:platform/:clientId/unassign-users', authenticateJWT, clientController.unassignMultipleUsersFromClient);
 
+// Assign & Unassign client from editor
 // Multiple assignment routes
 router.post('/:platform/assign-multiple/:userId', authenticateJWT, clientController.assignMultipleClientsToUser);
 router.post('/:platform/unassign-multiple/:userId', authenticateJWT, clientController.unassignMultipleClientsFromUser);
@@ -23,6 +27,15 @@ router.get('/:platform/assigned', authenticateJWT, clientController.getAllAssign
 
 // Delete a client
 router.delete('/:platform/:clientId', authenticateJWT, clientController.deleteOneClient);
+
+// Get client unassigned users (admin only)
+router.get('/:platform/:clientId/unassigned-users', authenticateJWT, clientController.getUnassignedUsers);
+
+// Get client assigned users (filtered by permissions)
+router.get('/:platform/:clientId/assigned-users', authenticateJWT, clientController.getAssignedUsers);
+
+// Get user unassigned clients
+router.get('/unassigned/:platform/:userId', authenticateJWT, clientController.getUserUnassignedClients);
 
 
 module.exports = router;

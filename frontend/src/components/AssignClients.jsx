@@ -17,7 +17,7 @@ const AssignClients = ({userId, onClose}) => {
       const assignedRes = await fetch(`http://localhost:5000/api/clients/${platform}/assigned`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const unassignedRes = await fetch(`http://localhost:5000/api/clients/${platform}/unassigned`, {
+      const unassignedRes = await fetch(`http://localhost:5000/api/clients/unassigned/${platform}/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
