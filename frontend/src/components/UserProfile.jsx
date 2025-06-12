@@ -133,6 +133,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles.css";
 import defaultAvatar from "../assets/man.jpg";
+import config from "../config"; // Adjust the path as necessary
 
 const UserProfile = () => {
   const [editMode, setEditMode] = useState(false);
@@ -158,7 +159,7 @@ const UserProfile = () => {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:5000/api/auth/me", {
+        const response = await fetch(`${config.API_BASE}/api/auth/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

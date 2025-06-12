@@ -4,6 +4,7 @@ import "../styles.css";
 import SummaryCards from "./SummaryCards";
 import DashboardCharts from "./DashboardChart";
 import TopPostsWidget from "./TopPostsWidget";
+import config from "../config";
 
 const Dashboard = () => {
   // State management for selected platform and client
