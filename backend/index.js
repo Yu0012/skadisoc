@@ -24,6 +24,9 @@ const functions = require('firebase-functions');
 const notificationRoutes = require('./routes/notificationRoutes');
 const { BASE_URL } = require('./config');
 const cloudinary = require('./utils/cloudinary');
+const cron = require('node-cron');
+const admin = require("firebase-admin");
+admin.initializeApp();
 
 
 const app = express();
@@ -314,9 +317,13 @@ const checkAndRefreshTokens = async () => {
   }
 };
 
-// Run the function every minute
-setInterval(checkAndPostScheduledPosts, 60 * 1000);
-checkAndPostScheduledPosts(); // Run immediately on server start
+exports.scheduledPostHandler = functions.pubsub
+  .schedule('every 1 minutes')
+  .timeZone('Asia/Kuala_Lumpur')
+  .onRun(async () => {
+    console.log("⏰ Running scheduled task");
+    await checkAndPostScheduledPosts();
+  });
 
 // 🔁 Check Facebook tokens once a day
 setInterval(checkAndRefreshTokens, 24 * 60 * 60 * 1000); // Every 24 hours
