@@ -112,60 +112,62 @@ useEffect(() => {
   const handleRefresh = () => window.location.reload();
   
   const handleCreatePost = async (formValues) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const payload = {
+      title: formValues.title,
+      content: formValues.content,
+      client: formValues.client,
+      clientName: formValues.clientName,
+      scheduledDate: formValues.scheduledDate,
+      selectedPlatforms: formValues.selectedPlatforms,
+      filePath: formValues.filePath || null,
+    };
+
+    const isEdit = !!formValues._id;
+    const url = isEdit
+      ? `${config.API_BASE}/api/posts/${formValues._id}`
+      : `${config.API_BASE}/api/posts`;
+
+    const method = isEdit ? "PUT" : "POST";
+
+    const response = await fetch(url, {
+      method,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const resultText = await response.text();
+    let result;
     try {
-      let filePath = null;
-      if (formValues.file) {
-        filePath = await uploadFile(formValues.file);
-      }
-      const token = localStorage.getItem("token");
-      const payload = {
-        title: formValues.title,
-        content: formValues.content,
-        client: formValues.client,
-        clientName: formValues.clientName,
-        scheduledDate: formValues.scheduledDate,
-        selectedPlatforms: formValues.selectedPlatforms,
-        filePath: formValues.filePath || null, // ✅ Use Cloudinary filePath here
-        // base64File: formValues.base64File || null,
-      };
-
-      // if (formValues.file && formValues.file.size > 0) {
-      //   formData.append("file", formValues.file);
-      // } 
-      
-      const response = await fetch(`${config.API_BASE}/api/posts`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload),
-      });
-
-      console.log("🔥 Payload to backend:", payload);
-
-
-      let resultText = await response.text();
-      let result;
-      try {
-        result = JSON.parse(resultText);
-      } catch (parseError) {
-        console.error("❌ Non-JSON response:", resultText);
-        throw new Error("Server did not return valid JSON.");
-      }
-
-      if (response.ok) {
-        Swal.fire("Success", "Post created successfully", "success");
-        setRefreshTrigger(!refreshTrigger);
-        handlePostCreated();
-      } else {
-        Swal.fire("Error", result.message || "Failed to create post", "error");
-      }
-    } catch (err) {
-      console.error("Error creating post:", err);
-      Swal.fire("Error", "Something went wrong", "error");
+      result = JSON.parse(resultText);
+    } catch (parseError) {
+      console.error("❌ Non-JSON response:", resultText);
+      throw new Error("Server did not return valid JSON.");
     }
-  };
+
+    if (response.ok) {
+      Swal.fire(
+        "Success",
+        isEdit ? "Post updated successfully" : "Post created successfully",
+        "success"
+      );
+      setEditingPost(null); // Reset editing state
+      setRefreshTrigger(!refreshTrigger); // Reload posts
+      handlePostCreated(); // Close modal
+    } else {
+      Swal.fire("Error", result.message || "Failed to save post", "error");
+    }
+  } catch (err) {
+    console.error("Error saving post:", err);
+    Swal.fire("Error", "Something went wrong", "error");
+  }
+};
+
   
   // Edit Post
   const handleEditPost = async (postId) => {

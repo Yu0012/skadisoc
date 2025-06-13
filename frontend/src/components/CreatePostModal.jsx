@@ -15,6 +15,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState(initialData?.selectedPlatforms || []);
   const [attachedFile, setAttachedFile] = useState(null);
+  const [existingFilePath, setExistingFilePath] = useState(initialData?.filePath || null);
   const [clients, setClients] = useState([]);
   const [clientName, setClientName] = useState("");
   const [platformToggles, setPlatformToggles] = useState({
@@ -34,20 +35,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
       setClient(initialData.client || "");
       setScheduledDate(initialData.scheduledDate ? new Date(initialData.scheduledDate) : null);
       setSelectedPlatforms(initialData.selectedPlatforms || []);
-      // if (initialData.filePath) {
-      //   const fetchFile = async () => {
-      //     try {
-      //       const response = await fetch(`${config.API_BASE}${initialData.filePath}`);
-      //       const blob = await response.blob();
-      //       const fileName = initialData.filePath.split("/").pop();
-      //       const file = new File([blob], fileName, { type: blob.type });
-      //       setAttachedFile(file);
-      //     } catch (err) {
-      //       console.error("⚠️ Failed to preload image:", err);
-      //     }
-      //   };
-      //   fetchFile();
-      // }
+      setExistingFilePath(initialData.filePath || null); // Reset file input when editing
     }
   }, [initialData]);
 
@@ -137,7 +125,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     const selectedClient = clients.find((c) => c._id === client);
     const finalClientName = selectedClient?.companyName || selectedClient?.pageName || selectedClient?.username || selectedClient?.name || "";
 
-    let filePath = null;
+    let filePath = existingFilePath; // Use existing file path if editing
 
     if (attachedFile) {
       try {
@@ -150,6 +138,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     }
 
     const formValues = {
+      _id: initialData?._id || null,
       title,
       content,
       client: selectedClient?._id || "",
@@ -277,17 +266,6 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                 </div>
               </div>
 
-              {/* File preview (optional) */}
-               {attachedFile && (
-                <div className="attached-file-preview">
-                  {attachedFile.type.startsWith("image/") ? (
-                    <img src={URL.createObjectURL(attachedFile)} alt="Attachment Preview" />
-                  ) : (
-                    <p>{attachedFile.name}</p>
-                  )}
-                </div>
-              )} 
-
               <div className="">
                 {/* Right */}
                 <div className="client-column">
@@ -318,6 +296,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
             content={content}
             client={clientName}
             attachedFile={attachedFile}
+            imageURL={initialData?.filePath}
           />
         </div>
       </div>

@@ -1,18 +1,19 @@
 import React from "react";
 import "../styles.css";
-const Preview = ({ platform, content, client, attachedFile }) => {
+const Preview = ({ platform, content, client, attachedFile, imageURL }) => {
   const renderPreview = () => {
     const renderImagePreview = () => {
-      if (!attachedFile) return null;
+      if (!attachedFile && !imageURL) return null;
       return (
         <div className="post-image">
-          {attachedFile.type?.startsWith("image/") ? (
-            <img
-              src={URL.createObjectURL(attachedFile)}
-              alt="Attachment Preview"
-            />
+          {attachedFile ? (
+            attachedFile.type?.startsWith("image/") ? (
+              <img src={URL.createObjectURL(attachedFile)} alt="Attachment Preview" />
+            ) : (
+              <p>{attachedFile.name}</p>
+            )
           ) : (
-            <p>{attachedFile.name}</p>
+            <img src={imageURL} alt="Attachment Preview" />
           )}
         </div>
       );

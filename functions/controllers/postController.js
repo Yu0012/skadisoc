@@ -238,7 +238,9 @@ exports.updatePost = async (req, res) => {
   const { id } = req.params;
   const updateData = {
     ...req.body,
-    selectedPlatforms: JSON.parse(req.body.selectedPlatforms || "[]"),
+    selectedPlatforms: Array.isArray(req.body.selectedPlatforms)
+      ? req.body.selectedPlatforms
+      : JSON.parse(req.body.selectedPlatforms || "[]"),
     scheduledDate: req.body.scheduledDate || null,
     //Path: req.file ? `/uploads/${req.file.filename}` : undefined,
   };
