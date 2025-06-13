@@ -86,20 +86,22 @@ const UserProfile = () => {
     const { username, email } = updatedData;
 
     try {
-      const usernameRes = await fetch(`${config.API_BASE}/api/user/username/${username}`, {
+      const usernameRes = await fetch(`${config.API_BASE}/auth/user/username/${user.id}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ username })
       });
 
-      const emailRes = await fetch(`${config.API_BASE}/api/user/email/${email}`, {
+      const emailRes = await fetch(`${config.API_BASE}/auth/user/email/${user.id}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ email })
       });
 
       if (!usernameRes.ok || !emailRes.ok) {

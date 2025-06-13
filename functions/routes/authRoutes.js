@@ -52,8 +52,8 @@ router.put('/reset-password', authenticateJWT, authController.resetPassword);
 router.post('/logout', authenticateJWT, authController.logout); // 🔥 New logout route
 
 
-router.put('/user/username/:username', authenticateJWT, authController.updateUsername);
-router.put('/user/email/:email', authenticateJWT, authController.updateEmail);
+router.put('/user/username/:id', authenticateJWT, authController.updateUsername);
+router.put('/user/email/:id', authenticateJWT, authController.updateEmail);
 
 
 module.exports = router;

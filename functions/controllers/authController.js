@@ -449,16 +449,18 @@ exports.isActiveUpdate = async (req, res) => {
 
 exports.updateUsername = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const newUsername = req.params.username;
+    const userId = req.params.id;
+    const { username } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { username: newUsername },
+      { username },
       { new: true }
-    ).select("-password");
+    ).select('-password');
 
-    res.json({ message: "Username updated", user: updatedUser });
+    if (!updatedUser) return res.status(404).json({ message: 'User not found' });
+
+    res.json({ message: 'Username updated', user: updatedUser });
   } catch (err) {
     console.error("Error updating username:", err);
     res.status(500).json({ message: "Update failed" });
@@ -467,19 +469,20 @@ exports.updateUsername = async (req, res) => {
 
 exports.updateEmail = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const newEmail = req.params.email;
+    const userId = req.params.id;
+    const { email } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { email: newEmail },
+      { email },
       { new: true }
-    ).select("-password");
+    ).select('-password');
 
-    res.json({ message: "Email updated", user: updatedUser });
+    if (!updatedUser) return res.status(404).json({ message: 'User not found' });
+
+    res.json({ message: 'Email updated', user: updatedUser });
   } catch (err) {
     console.error("Error updating email:", err);
     res.status(500).json({ message: "Update failed" });
   }
 };
-
