@@ -1,30 +1,45 @@
-import React from "react";
-import { useLocation } from 'react-router-dom';
+import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext"; // ✅ Your context provider
+import { AuthProvider } from "./context/AuthContext";
 import AuthForm from "./components/AuthForm";
 import ForgotPassword from "./components/ForgotPassword";
 import Navbar from "./components/Navbar";
 import Dashboard from "./components/Dashboard";
-import Posts from "./components/Posts"; 
+import Posts from "./components/Posts";
 import Account from "./components/Account";
 import Client from "./components/Client";
 import EventCalendar from "./components/EventCalendar";
 import UserProfile from "./components/UserProfile";
-import UserSettings from "./components/UserSettings"; 
+import UserSettings from "./components/UserSettings";
 import HelpSupport from "./components/HelpSupport";
 import FacebookPreview from "./components/FacebookPreview";
 import InstagramPreview from "./components/InstagramPreview";
 import TwitterPreview from "./components/TwitterPreview";
-import SocialMediaDashboard from './components/SocialMediaDashboard';
-import AssignClients from './components/AssignClients';
+import SocialMediaDashboard from "./components/SocialMediaDashboard";
+import AssignClients from "./components/AssignClients";
 import "./styles.css";
 
+// 🧠 Global theme sync helper
+const applyTheme = () => {
+  const savedMode = localStorage.getItem("darkMode") === "true";
+  document.body.classList.toggle("dark-theme", savedMode);
+  if (savedMode) {
+    document.body.setAttribute("data-selected-theme", "dark");
+  } else {
+    document.body.removeAttribute("data-selected-theme");
+  }
+};
 
-// 🧠 Create a sub-component inside Router
+// 🧠 Sub-component for routes and navbar
 const AppContent = () => {
   const location = useLocation();
   const hideNavbarOn = ["/client-login", "/", "/authform", "/forgotpassword"];
+
+  // ✅ Apply dark mode theme on every route change
+  useEffect(() => {
+    applyTheme();
+  }, [location.pathname]);
 
   return (
     <>
@@ -51,17 +66,13 @@ const AppContent = () => {
   );
 };
 
-// 👇 Final exported App wrapped in Router
+// 🚀 Final exported App
 const App = () => (
   <AuthProvider>
     <Router>
       <AppContent />
     </Router>
   </AuthProvider>
-  //   <Router>
-    //   <AppContent />
-   // </Router>
-
 );
 
 export default App;
