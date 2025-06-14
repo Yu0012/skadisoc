@@ -2673,11 +2673,11 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   transition: background-color 0.2s;
+
+  width: 100%;               /* ✅ Full width inside day cell */
+  box-sizing: border-box;    /* ✅ Include padding inside width */
 }
 
-.custom-event-box:hover {
-  background-color: #d6ecff;         
-}
 
 .custom-event-time {
   margin-right: 6px;
@@ -3777,4 +3777,75 @@ body {
 .platform-toggle-btn.active {
   background-color: var(--button-hover);
   color: white;
+}
+
+/* Hide scrollbar by default */
+.fc-daygrid-day-events {
+  max-height: 65px;
+  overflow-y: hidden;        /* default: hide scroll */
+  padding-right: 4px;
+  transition: all 0.2s ease;
+}
+
+/* Show scrollbar only when hovering over the full date cell */
+.fc-daygrid-day:hover .fc-daygrid-day-events {
+  overflow-y: auto;          /* on hover: show scroll */
+}
+
+/* Optional: prettier scroll styling */
+.fc-daygrid-day-events::-webkit-scrollbar {
+  width: 6px;
+}
+
+.fc-daygrid-day-events::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+.fc-daygrid-body td {
+  min-width: 120px;  /* adjust this value as needed */
+}
+.fc .fc-daygrid-day-frame {
+  min-height: 120px; /* adjust height as needed */
+}
+
+[data-selected-theme="dark"] .fc .fc-col-header-cell {
+  background-color: #444653 !important;  /* lighter dark gray */
+  color: #f5f5f5 !important;             /* light gray text */
+  border-bottom: 1px solid #666 !important;  /* subtle border */
+  font-weight: bold;
+}
+
+[data-selected-theme="dark"] .fc .fc-daygrid-day-frame {
+  background-color: #3b3c44; /* softer dark gray for contrast */
+  color: #f0f0f0;            /* readable light gray text */
+  border-color: #555;        /* match grid lines */
+}
+
+[data-selected-theme="dark"] .posts-table th {
+  background-color: #444653;
+  color: #f5f5f5;
+  font-weight: bold;
+  border-bottom: 1px solid #666;
+  padding: 12px;
+}
+
+[data-selected-theme="dark"] .posts-table td {
+  background-color: #3b3c44;
+  color: #f0f0f0;
+  border: none;
+  padding: 12px;
+}
+
+body:not([data-selected-theme="dark"]) .posts-table td {
+  background-color: #fdfdfd;
+  color: #111827;
+  border: none;
+  padding: 12px;
+}
+
+body:not([data-selected-theme="dark"]) .fc .fc-daygrid-day-frame {
+  background-color: #fdfdfd;
+  color: #111827;
+  border-color: #ddd; /* subtle grid line */
 }
