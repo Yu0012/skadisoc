@@ -371,7 +371,7 @@ const Accounts = () => {
               <th>Email</th>
               <th>RoleType</th>
               <th>Role</th>
-              <th>Assigned Clients</th>
+
               <th>Actions</th>
             </tr>
           </thead>
@@ -382,7 +382,6 @@ const Accounts = () => {
                 <td>{account.email}</td>
                 <td>{account.roleType}</td>
                 <td>{account.role}</td>
-                <td>{Array.isArray(account.facebookClients) ? account.facebookClients.join(', ') : account.facebookClients}</td>
                 <td>
                   <FaEllipsisV 
                     className="popup-icon" 

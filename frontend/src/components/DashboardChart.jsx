@@ -1,77 +1,120 @@
-// components/DashboardCharts.jsx
-import React from "react";
-import { Bar, Doughnut } from "react-chartjs-2";
+import React, { useEffect, useState } from "react";
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
-  ArcElement,
   Tooltip,
   Legend,
 } from "chart.js";
+import { motion } from "framer-motion"; // ✅ 动画容器导入
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
+// Register chart.js components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 const DashboardCharts = ({ posts }) => {
-  const labels = posts.map(p => p.title || "Untitled");
-  const likes = posts.map(p => p.insights?.likes || 0);
-  const comments = posts.map(p => p.insights?.comments || 0);
-  const shares = posts.map(p => p.insights?.shares || 0);
+  const [bgColor, setBgColor] = useState("#ffffff");
+  const [textColor, setTextColor] = useState("#333");
+  const [gridColor, setGridColor] = useState("rgba(0, 0, 0, 0.05)");
+
+  useEffect(() => {
+    const applyThemeColors = () => {
+      const rootStyle = getComputedStyle(document.documentElement);
+      setBgColor(rootStyle.getPropertyValue('--chart-bg-color')?.trim() || "#1e1e2f");
+      setTextColor(rootStyle.getPropertyValue('--chart-text-color')?.trim() || "#f0f0f0");
+      setGridColor(rootStyle.getPropertyValue('--chart-grid-color')?.trim() || "rgba(255,255,255,0.1)");
+    };
+
+    applyThemeColors();
+
+    const observer = new MutationObserver(applyThemeColors);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-selected-theme"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const labels = posts.map((p) => p.title || "Untitled");
+  const likes = posts.map((p) => p.insights?.likes || 0);
+  const comments = posts.map((p) => p.insights?.comments || 0);
+  const shares = posts.map((p) => p.insights?.shares || 0);
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "30px" }}>
-      <div style={{width: "100%", maxWidth: "1000px", margin: "2rem auto", padding: "1rem", background: "#fff", borderRadius: "8px",boxShadow: "0 2px 8px rgba(0,0,0,0.06)"}}>
-        <Bar
-          data={{
-            labels,
-            datasets: [
-              {
-                label: "Likes",
-                data: likes,
-                backgroundColor: "#4267B2",
+    <motion.div
+      className="dashboard-bar-chart"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      style={{
+        background: bgColor,
+        borderRadius: "8px",
+        padding: "1rem",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+        maxWidth: "1000px",
+        margin: "2rem auto",
+      }}
+    >
+      <Bar
+        data={{
+          labels,
+          datasets: [
+            {
+              label: "Likes",
+              data: likes,
+              backgroundColor: "#4267B2",
+            },
+            {
+              label: "Comments",
+              data: comments,
+              backgroundColor: "#00aced",
+            },
+            {
+              label: "Shares",
+              data: shares,
+              backgroundColor: "#8b9dc3",
+            },
+          ],
+        }}
+        options={{
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            duration: 800,
+            easing: "easeOutCubic",
+            delay: (ctx) => ctx.dataIndex * 100,
+          },
+          plugins: {
+            legend: {
+              labels: {
+                color: textColor,
               },
-              {
-                label: "Comments",
-                data: comments,
-                backgroundColor: "#00aced",
-              },
-              {
-                label: "Shares",
-                data: shares,
-                backgroundColor: "#8b9dc3",
-              },
-            ],
-          }}
-          options={{
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: "top" } }
-          }}
-          height={400}
-        />
-      </div>
-
-      <div style={{ width: "300px", margin: "2rem auto" }}>
-        <Doughnut
-          data={{
-            labels: ["Likes", "Comments", "Shares"],
-            datasets: [
-              {
-                data: [
-                  likes.reduce((a, b) => a + b, 0),
-                  comments.reduce((a, b) => a + b, 0),
-                  shares.reduce((a, b) => a + b, 0),
-                ],
-                backgroundColor: ["#4267B2", "#00aced", "#8b9dc3"],
-              },
-            ],
-          }}
-        />
-      </div>
-    </div>
+              position: "top",
+            },
+            tooltip: {
+              enabled: true,
+              backgroundColor: "#222",
+              titleColor: "#fff",
+              bodyColor: "#eee",
+            },
+          },
+          scales: {
+            x: {
+              ticks: { color: textColor },
+              grid: { color: gridColor },
+            },
+            y: {
+              ticks: { color: textColor },
+              grid: { color: gridColor },
+            },
+          },
+        }}
+        height={400}
+      />
+    </motion.div>
   );
 };
 
 export default DashboardCharts;
-

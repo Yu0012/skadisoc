@@ -4,7 +4,7 @@ import { AuthContext } from "../context/AuthContext";
 import Lottie from "lottie-react";
 import "../styles.css";
 import logo from "../assets/skadiLogo.png";
-import logo_light from "../assets/skadiLogo_light_cut.png";
+import logo_light from "../assets/skadiLogo_light.png";
 import bellAnimation from "../assets/bellring.json";
 import bellAnimation_light from "../assets/bellring_light.json";
 import bellStatic from "../assets/bellring-no.png";

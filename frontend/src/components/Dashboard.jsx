@@ -4,12 +4,10 @@ import "../styles.css";
 import SummaryCards from "./SummaryCards";
 import DashboardCharts from "./DashboardChart";
 import TopPostsWidget from "./TopPostsWidget";
-import config from "../config";
+import DashboardChartSection from "./DashboardChartSection";
+import config from '../config'; 
 
 const Dashboard = () => {
-  // Get username from localStorage
-  const [username, setUsername] = useState("");
-
   // State management for selected platform and client
   const [selectedPlatform, setSelectedPlatform] = useState("");
   const [selectedClient, setSelectedClient] = useState("");
@@ -33,7 +31,7 @@ const Dashboard = () => {
       try {
         const token = localStorage.getItem("token");
 
-        // Fetch both posts and clients data in parallel
+        // Fetch both posts and clients data in parallel for better performance
         const [postsRes, clientsRes] = await Promise.all([
           fetch(`${config.API_BASE}/api/posts`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -52,24 +50,24 @@ const Dashboard = () => {
 
         const allClients = clientData.clients;
         
-        // Filter posts by selected platform
+        // Filter posts by selected platform (case-insensitive)
         const platformFiltered = postData.posts.filter(post =>
           post.selectedPlatforms.includes(selectedPlatform.toLowerCase())
         );
 
-        // Get unique client IDs from filtered posts
+        // Get unique client IDs from filtered posts using Set
         const clientsWithPosts = [...new Set(platformFiltered.map(post => post.client))];
 
-        // Match client objects with posts
+        // Match client objects with posts and filter out any undefined values
         const matchedClientObjs = clientsWithPosts
           .map(id => allClients.find(c => c._id === id))
           .filter(Boolean);
 
-        // Update state
+        // Update state with filtered data
         setAllPosts(platformFiltered);
         setFilteredClients(matchedClientObjs);
-        setSelectedClient("");
-        setFilteredPosts([]);
+        setSelectedClient(""); // Reset client selection when platform changes
+        setFilteredPosts([]);  // Clear filtered posts
       } catch (err) {
         console.error("Failed to fetch posts:", err.message);
       }
@@ -78,11 +76,7 @@ const Dashboard = () => {
     fetchPosts();
   }, [selectedPlatform]);
 
-  /**
-   * Fetch user info to get username
-   */
-
-  useEffect(() => {
+    useEffect(() => {
     const fetchUserInfo = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
@@ -105,21 +99,10 @@ const Dashboard = () => {
 
     fetchUserInfo();
   }, []);
-  
-
-  useEffect(() => {
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('loggedIn') === 'true') {
-    urlParams.delete('loggedIn'); // remove flag from URL
-    window.history.replaceState({}, '', window.location.pathname); // clean up URL
-    window.location.reload(); // reload just once
-  }
-}, []);
-
 
   /**
    * Fetch total post counts for each platform
-   * Runs once when component mounts
+   * Runs once when component mounts to show platform statistics
    */
   useEffect(() => {
     const fetchAllPostCounts = async () => {
@@ -132,7 +115,7 @@ const Dashboard = () => {
         const data = await res.json();
         const posts = data.posts;
 
-        // Count posts per platform
+        // Count posts per platform for the summary cards
         const counts = {
           facebook: posts.filter(p => p.selectedPlatforms.includes("facebook")).length,
           instagram: posts.filter(p => p.selectedPlatforms.includes("instagram")).length,
@@ -152,6 +135,7 @@ const Dashboard = () => {
   /**
    * Filter posts by selected client and enrich with platform insights
    * Runs when selectedClient or selectedPlatform changes
+   * This is where we fetch engagement metrics from platform APIs
    */
   useEffect(() => {
     const enrichPostsWithStats = async () => {
@@ -166,7 +150,7 @@ const Dashboard = () => {
 
       let accessToken = null;
 
-      // Get access token for the selected platform
+      // Get access token for the selected platform from our backend
       try {
         const token = localStorage.getItem("token");
         const platform = selectedPlatform.toLowerCase();
@@ -177,6 +161,7 @@ const Dashboard = () => {
         const { clients } = await res.json();
         const matched = clients.find(c => c._id === selectedClient);
 
+        // Different platforms might store the token in different fields
         accessToken = matched?.pageAccessToken || matched?.accessToken || null;
 
         if (!accessToken) {
@@ -186,7 +171,7 @@ const Dashboard = () => {
         console.warn("⚠️ Failed to fetch access token:", err.message);
       }
 
-      // Enrich posts with platform-specific insights
+      // Enrich posts with platform-specific insights by calling platform APIs
       const enriched = await Promise.all(
         matchingPosts.map(async (post) => {
           // Facebook insights
@@ -237,7 +222,7 @@ const Dashboard = () => {
             }
           }
 
-          // Default return if no platform-specific insights
+          // Default return if no platform-specific insights are available
           return { ...post, insights: { likes: "-", shares: "-", comments: "-" } };
         })
       );
@@ -248,60 +233,16 @@ const Dashboard = () => {
     enrichPostsWithStats();
   }, [selectedClient, selectedPlatform, allPosts]);
 
-  /**
-   * Fetch platform insights when both platform and client are selected
-   */
-  const fetchInsights = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const platform = selectedPlatform.toLowerCase();
-
-      // Fetch all clients for the selected platform
-      const res = await fetch(`${config.API_BASE}/api/clients/${platform}/all`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const { clients } = await res.json();
-
-      // Match selected client by _id
-      const matched = clients.find(c => c._id === selectedClient);
-
-      // Get appropriate access token based on platform
-      const accessToken = matched?.pageAccessToken || matched?.accessToken || null;
-
-      if (!accessToken) {
-        console.warn("⚠️ No access token found for selected client.");
-        return;
-      }
-
-      console.log(`✅ Access token ready for ${selectedPlatform}:`, accessToken);
-      
-    } catch (err) {
-      console.error("❌ Error fetching platform client or token:", err);
-    }
-  };
-
-  // Trigger insights fetch when platform and client are selected
-  useEffect(() => {
-    if (selectedPlatform && selectedClient) {
-      fetchInsights();
-    }
-  }, [selectedPlatform, selectedClient]);
-
   return (
-    <div className="dashboard-container" style={{ padding: "2rem" }}>
-          {/* Dashboard Header */}
-          <div className="posts-header">
-            <div className="welcome-message">
-              <p>Welcome back,</p>
-              <h2 className="user-name">{username || "Loading..."}</h2>
-            </div>
-          </div>
-
-
+    <div className="dashboard-container">
+      {/* Dashboard Header */}
+      <h2 className="dashboard-header">
+        📊 Dashboard
+      </h2>
 
       {/* Platform and Client Selectors */}
       <div className="dashboard-selectors">
+        {/* Platform dropdown selector */}
         <select
           onChange={(e) => setSelectedPlatform(e.target.value)}
           value={selectedPlatform}
@@ -314,6 +255,7 @@ const Dashboard = () => {
           <option value="LinkedIn">LinkedIn</option>
         </select>
 
+        {/* Client dropdown selector (only shown when platform is selected) */}
         {selectedPlatform && (
           <select
             onChange={(e) => setSelectedClient(e.target.value)}
@@ -336,35 +278,14 @@ const Dashboard = () => {
       {/* Display filtered posts data when available */}
       {filteredPosts.length > 0 && (
         <>
+          {/* Summary cards with engagement metrics */}
           <SummaryCards posts={filteredPosts} />
-          <DashboardCharts posts={filteredPosts} />
           
-          {/* Top Posts Widgets Section */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem", marginTop: "2rem" }}>
-            {/* Likes Widget */}
-            <div className="widget-container">
-              <h4 className="dashboard-section-title">
-                <span className="icon">❤️</span> Top 5 Posts by Likes
-              </h4>
-              <TopPostsWidget posts={filteredPosts} metric="likes" />
-            </div>
-
-            {/* Comments Widget */}
-            <div className="widget-container">
-              <h4 className="dashboard-section-title">
-                <span className="icon">💬</span> Top 5 Posts by Comments
-              </h4>
-              <TopPostsWidget posts={filteredPosts} metric="comments" />
-            </div>
-
-            {/* Shares Widget */}
-            <div className="widget-container">
-              <h4 className="dashboard-section-title">
-                <span className="icon">🔄</span> Top 5 Posts by Shares
-              </h4>
-              <TopPostsWidget posts={filteredPosts} metric="shares" />
-            </div>
-          </div>
+          {/* New Dashboard Chart Section - Replaces the old charts and carousel */}
+          <DashboardChartSection posts={filteredPosts} />
+          
+          
+         
         </>
       )}
     </div>
