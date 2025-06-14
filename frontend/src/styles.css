@@ -3341,17 +3341,14 @@ body {
 [data-selected-theme="dark"] {
 
 --background-color: #10141c;
-  --text-color: #f0f0f0;
   --card-bg: #1e1e2f;
   --dropdown-bg: #252c3a;
 
   --textarea-placeholder: #a1a1a1;
   --logo-filter: brightness(150%);
-  --login-bg: #33333f; /* 原来是 #1f2937，颜色太深 */
   --bg-color: #1f2027;
   --bg-color-secondary:#272831;
   --text-color: white;
-  --login-card-bg: #2c2d35; /* or something slightly lighter than #1f2027 */
 
 
   --button-bg: #3177b0;
@@ -4520,16 +4517,6 @@ body {
   background-color: #f6f8fc;
 }
 
-.login-wrapper {
-  background-color: var(--bg-color-secondary);
-  color: var(--text-color);
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
 
 .theme-toggle-global {
   position: absolute;
@@ -4545,75 +4532,7 @@ body {
   transform: scale(1.2);
 }
 
-/* Force white label and subtext in dark mode */
-[data-selected-theme="dark"] .login-form label,
-[data-selected-theme="dark"] .login-form .password-label-wrapper label,
-[data-selected-theme="dark"] .login-card p {
-  color: white !important;
-}
 
-
-.login-card {
-  background-color: var(--login-bg);
-  color: var(--text-color);
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 420px;
-  text-align: center;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  background-color: var(--login-card-bg);
-}
-
-
-.login-card h2 {
-  margin-bottom: 6px;
-}
-
-.login-card p {
-  font-size: 14px;
-  color: var(--text-subtle, #666);
-  margin-bottom: 20px;
-}
-
-.login-form .form-group {
-  text-align: left;
-  margin-bottom: 20px;
-}
-
-.login-form label {
-  color: var(--text-color); /* Use theme-driven color */
-  font-weight: 600;
-  margin-bottom: 6px;
-  display: block;
-  transition: color 0.3s ease;
-}
-
-
-.login-form {
-  text-align: left;
-  
-}
-
-.login-form input {
-  background-color: var(--input-bg);
-  color: var(--text-color);
-  border: 1px solid #ccc;
-  padding: 10px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  width: 100%;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-
-.login-logo {
-  width: 100px;
-  margin-bottom: 10px;
-    filter: var(--logo-filter);
-
-}
 
 .form-group {
   margin-bottom: 1.25rem;
@@ -4697,22 +4616,6 @@ input[type="email"]:focus {
 }
 
 
-
-.login-btn {
-  width: 100%;
-  padding: 10px;
-  background-color: #0a57f5;
-  color: white;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  margin-top: 20px;
-  cursor: pointer;
-}
-
-.login-btn:hover {
-  background-color: #004de1;
-}
 
 .divider {
   display: flex;
