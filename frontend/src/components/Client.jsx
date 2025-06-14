@@ -339,7 +339,7 @@ const Client = () => {
             
             {/* Platform Toggle Group */}
             <div className="platform-toggle-group">
-              {["Facebook", "Instagram", "Twitter", "LinkedIn"].map((platform) => (
+              {["Facebook", "Instagram", "Twitter"].map((platform) => (
                 <button
                   key={platform}
                   className={`platform-toggle-btn ${activePlatform === platform ? "active" : ""}`}

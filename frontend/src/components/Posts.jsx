@@ -517,7 +517,7 @@ useEffect(() => {
       {isPlatformSelectOpen && createPortal(
         <div className="platform-dropdown-wrapper">
           <div className="platform-dropdown-horizontal animate-slide-down">
-            {["Facebook", "Instagram", "Twitter", "LinkedIn"].map((platform) => (
+            {["Facebook", "Instagram", "Twitter"].map((platform) => (
               <button
                 key={platform}
                 onClick={() => {

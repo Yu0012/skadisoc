@@ -55,7 +55,7 @@ const EventCalendar = () => {
         const posts = Array.isArray(res.data.posts) ? res.data.posts : [];
 
         // Fetch clients from all platforms
-        const platforms = ["facebook", "instagram", "twitter", "linkedin"];
+        const platforms = ["facebook", "instagram", "twitter"];
         let allClients = [];
 
         for (let platform of platforms) {
@@ -317,7 +317,7 @@ const EventCalendar = () => {
           <div className="platform-popup-box modern-platform-box">
             <p className="platform-box-title">📌 Please select a platform</p>
             <div className="platform-button-group">
-              {["facebook", "instagram", "twitter", "linkedin"].map((plat) => (
+              {["facebook", "instagram", "twitter"].map((plat) => (
                 <button
                   key={plat}
                   className="platform-select-btn"

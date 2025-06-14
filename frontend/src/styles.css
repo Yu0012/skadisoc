@@ -4819,3 +4819,22 @@ body.dark-theme {
   padding: 0 !important;
   margin: 0 !important;
 }
+
+
+[data-selected-theme="dark"] .form-group label,
+[data-selected-theme="dark"] .form-group input,
+[data-selected-theme="dark"] .form-title,
+[data-selected-theme="dark"] .permission-section h5,
+[data-selected-theme="dark"] .permission-section p,
+[data-selected-theme="dark"] .permission-section ul li {
+  color: white !important;
+}
+
+[data-selected-theme="dark"] select {
+  background-color: #3177B0 !important;
+  color: white !important;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+}
+
