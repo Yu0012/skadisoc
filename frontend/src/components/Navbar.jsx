@@ -20,27 +20,22 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { permissions, user, logout } = useContext(AuthContext);
 
-  const themes = ["light", "dark"]; // Supported themes
-  const [currentTheme, setCurrentTheme] = useState(
-    localStorage.getItem("theme") || "light"
-  );
-
+  const [currentTheme, setCurrentTheme] = useState("light");
   const [hasNotifications, setHasNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
-  // Apply theme to HTML attribute and store it in localStorage
+  // Initialize theme from localStorage and apply to document
   useEffect(() => {
-    document.documentElement.setAttribute("data-selected-theme", currentTheme);
-    localStorage.setItem("theme", currentTheme);
-  }, [currentTheme]);
-
-  // Sync darkMode boolean with the selected theme
-  useEffect(() => {
-    setDarkMode(currentTheme === "dark");
-  }, [currentTheme]);
+    const storedTheme = localStorage.getItem("theme") || "light";
+    setCurrentTheme(storedTheme);
+    setDarkMode(storedTheme === "dark");
+    
+    document.documentElement.setAttribute("data-selected-theme", storedTheme);
+    document.body.setAttribute("data-selected-theme", storedTheme);
+  }, []);
 
   // Fake polling: updates notifications every 5s
   useEffect(() => {
@@ -72,7 +67,7 @@ const Navbar = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  // Improved theme toggle with smooth transition
+  // Theme toggle with smooth transition
   const toggleTheme = () => {
     // Add transition class to body
     document.body.classList.add("theme-transition");
@@ -80,12 +75,13 @@ const Navbar = () => {
     // Calculate next theme
     const nextTheme = currentTheme === "light" ? "dark" : "light";
     
-    // Update state
-    setDarkMode(nextTheme === "dark");
+    // Update state and localStorage
     setCurrentTheme(nextTheme);
+    localStorage.setItem("theme", nextTheme);
     
-    // Apply to HTML element
+    // Apply to HTML and body elements
     document.documentElement.setAttribute("data-selected-theme", nextTheme);
+    document.body.setAttribute("data-selected-theme", nextTheme);
     
     // Remove transition class after animation completes
     setTimeout(() => {
