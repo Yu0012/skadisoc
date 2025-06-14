@@ -374,9 +374,6 @@ body,
   flex-direction: column;
 }
 
-body.theme-transition {
-  transition: background-color 0.4s ease, color 0.4s ease;
-}
 
 /* 🏠 **Header Section (Welcome, Refresh, Create Post)** */
 .posts-header {
@@ -4433,6 +4430,7 @@ body.theme-transition,
 html.theme-transition {
   transition: all 0.4s ease !important;
 }
+<<<<<<< HEAD
 
 /* 📅 Limit each calendar date box to show max 3 events with vertical scrolling */
 .fc-daygrid-day-frame {
@@ -4747,3 +4745,5 @@ body.dark-theme {
   z-index: 1000;
 }
 
+=======
+>>>>>>> parent of 24fb92c (done calendar)
