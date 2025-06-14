@@ -2,11 +2,15 @@
 
 /* 🌍 Global Styling */
 body {
-  font-family: Arial, sans-serif;
-  background-color: var(--bg-color-secondary);
-  margin: 0;
-  padding: 0;
+  --background-color: #f3f4f6;  /* ✅ define this first */
+  --text-color: #111827;
+  --card-bg: #ffffff;
+  --dropdown-bg: #f1f5f9;
+  
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
+
 
 /* 📦 General Container */
 .container {
@@ -24,7 +28,8 @@ body {
 .title {
   font-size: 24px;
   font-weight: bold;
-  color: #333;
+  color: var(--text-color); /* Make sure this is NOT too light */
+  opacity: 1 !important; /* Add this if it's being overridden */
 }
 
 .welcome-message {
@@ -3334,6 +3339,12 @@ body {
 
 /* Dark Theme */
 [data-selected-theme="dark"] {
+
+--background-color: #10141c;
+  --text-color: #f0f0f0;
+  --card-bg: #1e1e2f;
+  --dropdown-bg: #252c3a;
+
   --textarea-placeholder: #a1a1a1;
   --logo-filter: brightness(150%);
   --login-bg: #33333f; /* 原来是 #1f2937，颜色太深 */
@@ -4183,13 +4194,11 @@ label {
 
 /*dashboard design*/
 .dashboard-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: bold;
-  color: var(--text-color);
+  color: var(--text-color); /* Ensure this is defined in light mode */
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .dashboard-selectors {
@@ -4430,7 +4439,6 @@ body.theme-transition,
 html.theme-transition {
   transition: all 0.4s ease !important;
 }
-<<<<<<< HEAD
 
 /* 📅 Limit each calendar date box to show max 3 events with vertical scrolling */
 .fc-daygrid-day-frame {
@@ -4638,11 +4646,47 @@ body {
   color: #374151;
 }
 
+/* Ensure the form group for password stacks its elements */
+.form-group.password-group {
+  display: flex;
+  flex-direction: column; /* Stacks label, input, and eye vertically */
+  margin-bottom: 1rem; /* Add some space below the group */
+}
+
+.password-input-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.password-input-wrapper input {
+  flex: 1;
+  padding-right: 40px; /* 给眼睛图标腾出空间 */
+}
+
 .eye-inline-toggle {
+  position: absolute;
+  right: 10px;
   cursor: pointer;
-  color: var(--icon-color);
+  color: var(--icon-color); /* 如果你使用变量的话 */
   font-size: 16px;
-  padding-left: 10px;
+}
+
+
+input[type="password"],
+input[type="email"] {
+  /* ... your existing input styles ... */
+  padding: 10px; /* Example padding */
+  border: 1px solid #ccc; /* Example border */
+  border-radius: 5px; /* Example border-radius */
+  outline: none;
+}
+
+/* Add hover/focus states if desired */
+input[type="password"]:focus,
+input[type="email"]:focus {
+  border-color: #3b82f6; /* Example focus color */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); /* Example focus shadow */
 }
 
 .password-input {
@@ -4652,15 +4696,7 @@ body {
   border-radius: 0.375rem;
 }
 
-.eye-toggle {
-  position: absolute;
-  top: 50%;
-  right: 1rem;
-  transform: translateY(-50%);
-  color: #6b7280;
-  cursor: pointer;
-  font-size: 1rem;
-}
+
 
 .login-btn {
   width: 100%;
@@ -4744,6 +4780,3 @@ body.dark-theme {
   color: #6b7280;
   z-index: 1000;
 }
-
-=======
->>>>>>> parent of 24fb92c (done calendar)
