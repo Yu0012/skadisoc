@@ -20,13 +20,19 @@ const AuthForm = () => {
 
   const toggleTheme = () => {
     const newMode = !isDarkMode;
+    const newTheme = newMode ? 'dark' : 'light';
     setIsDarkMode(newMode);
-    localStorage.setItem('darkMode', newMode);
+    localStorage.setItem('theme', newTheme); // ✅ Use 'theme', not 'darkMode'
+    document.documentElement.dataset.selectedTheme = newTheme;
+    document.body.dataset.selectedTheme = newTheme;
   };
 
   useEffect(() => {
-    const savedMode = localStorage.getItem('darkMode') === 'true';
-    setIsDarkMode(savedMode);
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    const dark = savedTheme === 'dark';
+    setIsDarkMode(dark);
+    document.documentElement.dataset.selectedTheme = savedTheme;
+    document.body.dataset.selectedTheme = savedTheme;
   }, []);
 
   useEffect(() => {
@@ -61,7 +67,7 @@ const AuthForm = () => {
   };
 
   const handleGuestLogin = () => {
-    navigate('/client-login'); // ✅ This matches your App.jsx route
+    navigate('/client-login');
   };
 
   return (
