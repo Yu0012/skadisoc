@@ -3079,6 +3079,11 @@ body {
   font-family: sans-serif;
 }
 
+.modal-body .left-column .input-field {
+  width: 93.5% !important;
+}
+
+
 .modal-box {
   display: flex;
   width: 95%;
