@@ -126,6 +126,19 @@ input:focus {
   background-color: #255e90;
 }
 
+.loginBtn,
+.guestBtn {
+  width: 100%;
+}
+
+.formGroup input {
+  width: 100%;
+  max-width: 366px;      /* ✅ shrink width */
+  margin-left: auto;     /* ✅ center the input */
+  margin-right: auto;
+  display: block;
+}
+
 .actions {
   margin-top: 1.5rem;
 }

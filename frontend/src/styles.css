@@ -321,49 +321,70 @@ html, body {
   position: absolute;
   top: 60px;
   right: 10px;
-  width: 180px;
-  background-color:var(--options);
-  border: 1px solid var(--options);
-  border-radius: 5px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   font-size: 14px;
-  padding: 5px;
   z-index: 999;
   overflow: hidden;
 }
 
-.user-dropdown button{
+.user-dropdown div {
   padding: 10px 16px;
-  font-size: 14px;
-  text-decoration: none;
-  text-align: left;
   cursor: pointer;
-  border: none;
-  border-radius: 5px;
-  background: none;
-  width: 100%;
-  color: var(--options-color) !important;
-  transition: background 0.2s ease;
- }
-
- .user-dropdown button:hover{
-  background: var(--options-highlight);
+  color: #111827;
+  transition: background-color 0.2s;
 }
 
-.logout:hover {
-  background-color: #fc3d47 !important;
-  color: white !important;
+.user-dropdown div:hover {
+  background-color: #f3f4f6;
+}
+
+
+.user-dropdown .logout {
+  color: #dc2626;
+}
+
+.user-dropdown .logout:hover {
+  background-color: #fee2e2;
 }
 
 .user-dropdown hr {
-  margin: 5px 0;
+  margin: 0;
   border: none;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #e5e7eb;
 }
 
-.user-dropdown .logout {
-  color: white;
+/* 🌙 Dark Mode Styling */
+[data-selected-theme="dark"] .user-dropdown {
+  background-color: #1f2937; /* dark gray */
+  border: 1px solid #374151;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
+
+[data-selected-theme="dark"] .user-dropdown div {
+  color: #f9fafb; /* light text */
+}
+
+[data-selected-theme="dark"] .user-dropdown div:hover {
+  background-color: #374151; /* slightly lighter on hover */
+}
+
+[data-selected-theme="dark"] .user-dropdown .logout {
+  color: #f87171; /* soft red */
+}
+
+[data-selected-theme="dark"] .user-dropdown .logout:hover {
+  background-color: #7f1d1d; /* dark red background */
+}
+
+[data-selected-theme="dark"] .user-dropdown hr {
+  border-top: 1px solid #4b5563;
+}
+
+
 
 /* 📂 Dropdown Menu */
 .dropdown-menu {
@@ -3403,6 +3424,12 @@ body {
   --modal-calendar-datepicker: #e0e0e0;
   --modal-calendar-datepicker-header: #f4f4f5;
   --modal-calendar-currentday: #3b82f6;
+
+  --table-header-bg: #e5e5e5;
+  --table-header-text: #0a0f5c;
+  --table-body-bg: #fdfdfd;
+  --table-body-text: #111827;
+  --table-border: #ccc;
 }
 
 /* Dark Theme */
@@ -3509,7 +3536,74 @@ body {
   --modal-calendar-datepicker: #3a3b45;
   --modal-calendar-datepicker-header: #272831;
   --modal-calendar-currentday: #3b82f6;
+
+  --table-header-bg: #444653;
+  --table-header-text: #f5f5f5;
+  --table-body-bg: #3b3c44;
+  --table-body-text: #f0f0f0;
+  --table-border: #666;
 }
+
+/* ========== POSTS TABLE STYLING ========== */
+.posts-table th {
+  background-color: var(--table-header-bg);
+  color: var(--table-header-text);
+  font-weight: bold;
+  border-bottom: 1px solid var(--table-border);
+  padding: 12px;
+}
+
+.posts-table td {
+  background-color: var(--table-body-bg);
+  color: var(--table-body-text);
+  padding: 12px;
+}
+
+/* Light Mode: calendar day cells and header background + text color */
+body:not([data-selected-theme="dark"]) .fc .fc-daygrid-day-frame {
+  background-color: var(--table-body-bg);
+  color: var(--table-body-text);
+}
+
+body:not([data-selected-theme="dark"]) .fc .fc-col-header-cell {
+  background-color: var(--table-header-bg);
+  color: var(--table-header-text);
+  font-weight: bold;
+  border: none;
+}
+
+/* Dark Mode: calendar day cells and header background + text color */
+[data-selected-theme="dark"] .fc .fc-daygrid-day-frame {
+  background-color: var(--table-body-bg);
+  color: var(--table-body-text);
+}
+
+[data-selected-theme="dark"] .fc .fc-col-header-cell {
+  background-color: var(--table-header-bg);
+  color: var(--table-header-text);
+  font-weight: bold;
+  border: none;
+}
+
+
+/* === CALENDAR HEADER & BODY MATCH POSTS TABLE === */
+
+/* Calendar header cells */
+.fc-theme-standard .fc-scrollgrid th,
+.fc-theme-standard td.fc-daygrid-day {
+  background-color: var(--table-header-bg);
+  color: var(--table-header-text);
+  border: 1px solid black; /* ✅ black border always */
+}
+
+
+
+/* Ensure event boxes inside cells don't change spacing */
+.fc .fc-daygrid-event {
+  margin: 1px 0;
+  padding: 2px 6px;
+}
+
 
 .calendar-sidebar {
   position: fixed;
@@ -3779,6 +3873,15 @@ body {
   color: white;
 }
 
+.platform-toggle-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-selected-theme="dark"] .platform-toggle-btn:hover {
+  background-color: #0c1b4d; /* deep blue on hover */
+}
+
+
 /* Hide scrollbar by default */
 .fc-daygrid-day-events {
   max-height: 65px;
@@ -3809,43 +3912,62 @@ body {
   min-height: 120px; /* adjust height as needed */
 }
 
-[data-selected-theme="dark"] .fc .fc-col-header-cell {
-  background-color: #444653 !important;  /* lighter dark gray */
-  color: #f5f5f5 !important;             /* light gray text */
-  border-bottom: 1px solid #666 !important;  /* subtle border */
-  font-weight: bold;
+
+
+.posts-table th:nth-child(1),
+.posts-table td:nth-child(1) {
+  min-width: 160px; /* Client */
 }
 
-[data-selected-theme="dark"] .fc .fc-daygrid-day-frame {
-  background-color: #3b3c44; /* softer dark gray for contrast */
-  color: #f0f0f0;            /* readable light gray text */
-  border-color: #555;        /* match grid lines */
+.posts-table th:nth-child(2),
+.posts-table td:nth-child(2) {
+  min-width: 140px; /* Title */
 }
 
-[data-selected-theme="dark"] .posts-table th {
-  background-color: #444653;
-  color: #f5f5f5;
-  font-weight: bold;
-  border-bottom: 1px solid #666;
-  padding: 12px;
+.posts-table th:nth-child(3),
+.posts-table td:nth-child(3) {
+  min-width: 200px; /* Content */
 }
 
-[data-selected-theme="dark"] .posts-table td {
-  background-color: #3b3c44;
-  color: #f0f0f0;
+.posts-table th:nth-child(4),
+.posts-table td:nth-child(4) {
+  min-width: 120px; /* Platforms */
+}
+
+.posts-table th:nth-child(5),
+.posts-table td:nth-child(5) {
+  min-width: 100px; /* Status */
+}
+
+.posts-table th:nth-child(6),
+.posts-table td:nth-child(6) {
+  min-width: 80px; /* Actions */
+  text-align: center;
+}
+
+/* Force dark blue hover for platform select buttons */
+.platform-select-btn {
+  background-color: #0a0f5c !important;
+  color: white !important;
   border: none;
-  padding: 12px;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-body:not([data-selected-theme="dark"]) .posts-table td {
-  background-color: #fdfdfd;
-  color: #111827;
-  border: none;
-  padding: 12px;
+.platform-select-btn:hover {
+  background-color: #051041 !important; /* force darker blue */
+  color: white !important;
 }
 
-body:not([data-selected-theme="dark"]) .fc .fc-daygrid-day-frame {
-  background-color: #fdfdfd;
-  color: #111827;
-  border-color: #ddd; /* subtle grid line */
+.platform-select-btn.cancel {
+  background-color: #cccccc !important;
+  color: #333 !important;
+}
+
+.platform-select-btn.cancel:hover {
+  background-color: #999 !important;
+  color: white !important;
 }
