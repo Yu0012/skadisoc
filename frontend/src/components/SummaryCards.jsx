@@ -40,7 +40,7 @@ const SummaryCards = ({ posts }) => {
         <p>{totalPosts}</p>
       </div>
       <div style={cardStyle}>
-        <h4>❤️ Total Likes</h4>
+        <h4>👍 Total Likes</h4>
         <p>{totalLikes}</p>
       </div>
       <div style={cardStyle}>
