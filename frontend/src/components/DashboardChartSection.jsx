@@ -5,7 +5,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
 const DashboardChartSection = ({ posts }) => {
-  const [view, setView] = useState("chart"); // 'chart' or 'top'
+  const [view, setView] = useState("chart");
 
   const handleToggle = () => {
     setView(prev => (prev === "chart" ? "top" : "chart"));
@@ -15,44 +15,37 @@ const DashboardChartSection = ({ posts }) => {
     <div
       style={{
         display: "flex",
-        alignItems: "center",       // ✅ 保证箭头垂直居中
         justifyContent: "center",
-        gap: "2rem",
-        padding: "0 1rem",
-        minHeight: "520px",         // ✅ 强制统一高度（建议比图表高一点）
+        alignItems: "center", // ✅ vertical center alignment
+        minHeight: "520px",
+        marginTop: "1rem",
+        gap: "1rem", // optional spacing between arrow and content
       }}
     >
-      {/* Left Arrow Button */}
+      {/* Left Arrow */}
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
+        onClick={handleToggle}
         style={{
           fontSize: "2rem",
           background: "none",
           border: "none",
           color: "var(--chart-text-color)",
           cursor: "pointer",
-          alignSelf: "center",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
           padding: "0.5rem",
-          marginRight: "1rem",
         }}
-        onClick={handleToggle}
       >
         <FaChevronLeft />
       </motion.button>
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       <div
         style={{
-          flex: 1,
-          maxWidth: "1000px",
-          position: "relative",
-          minHeight: "480px",       // ✅ 统一内容容器高度，确保居中对齐
+          width: "100%",
+          maxWidth: "1100px",
           display: "flex",
-          alignItems: "center",     // ✅ 垂直居中图表或卡片
+          alignItems: "center",
           justifyContent: "center",
         }}
       >
@@ -64,7 +57,7 @@ const DashboardChartSection = ({ posts }) => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 40 }}
               transition={{ duration: 0.35 }}
-              style={{ width: "100%" }}
+              style={{ width: "100%", marginTop: "-40px" }}
             >
               <DashboardCharts posts={posts} />
             </motion.div>
@@ -75,14 +68,13 @@ const DashboardChartSection = ({ posts }) => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -40 }}
               transition={{ duration: 0.35 }}
-              className="top-posts-row"
               style={{
                 display: "flex",
                 gap: "1rem",
                 justifyContent: "space-between",
                 flexWrap: "wrap",
-                width: "100%",             // ✅ 填满容器
-                alignItems: "flex-start",
+                width: "100%",
+                marginTop: "-60px",
               }}
             >
               <TopPostsWidget posts={posts} metric="likes" />
@@ -93,24 +85,19 @@ const DashboardChartSection = ({ posts }) => {
         </AnimatePresence>
       </div>
 
-      {/* Right Arrow Button */}
+      {/* Right Arrow */}
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
+        onClick={handleToggle}
         style={{
           fontSize: "2rem",
           background: "none",
           border: "none",
           color: "var(--chart-text-color)",
           cursor: "pointer",
-          alignSelf: "center",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
           padding: "0.5rem",
-          marginLeft: "1rem",
         }}
-        onClick={handleToggle}
       >
         <FaChevronRight />
       </motion.button>

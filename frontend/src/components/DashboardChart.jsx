@@ -8,16 +8,18 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { motion } from "framer-motion"; // ✅ 动画容器导入
+import { motion } from "framer-motion";
 
 // Register chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 const DashboardCharts = ({ posts }) => {
+  // Theme-aware color states
   const [bgColor, setBgColor] = useState("#ffffff");
   const [textColor, setTextColor] = useState("#333");
   const [gridColor, setGridColor] = useState("rgba(0, 0, 0, 0.05)");
 
+  // Update colors based on current theme
   useEffect(() => {
     const applyThemeColors = () => {
       const rootStyle = getComputedStyle(document.documentElement);
@@ -37,6 +39,7 @@ const DashboardCharts = ({ posts }) => {
     return () => observer.disconnect();
   }, []);
 
+  // Extract labels and metric data from posts
   const labels = posts.map((p) => p.title || "Untitled");
   const likes = posts.map((p) => p.insights?.likes || 0);
   const comments = posts.map((p) => p.insights?.comments || 0);
@@ -50,11 +53,12 @@ const DashboardCharts = ({ posts }) => {
       transition={{ duration: 0.4 }}
       style={{
         background: bgColor,
-        borderRadius: "8px",
-        padding: "1rem",
-        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+        borderRadius: "16px",                     // Rounded corners to match cards
+        padding: "1.5rem",                        // More padding like widgets
+        boxShadow: "0 6px 16px rgba(0, 0, 0, 0.08)", // Deeper shadow to match cards
         maxWidth: "1000px",
-        margin: "2rem auto",
+        margin: "1.5rem auto",                    // Bottom margin to float above next section
+        height: "400px",                          // Fixed height to match TopPostsWidget
       }}
     >
       <Bar
@@ -111,7 +115,6 @@ const DashboardCharts = ({ posts }) => {
             },
           },
         }}
-        height={400}
       />
     </motion.div>
   );
