@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { BsMoon, BsSun } from 'react-icons/bs';
-import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import { login } from '../utils/auth'; // 🔐 Your login API
 import logoLight from '../assets/skadiLogo_light.png';
 import logoDark from '../assets/skadiLogo.png';
 import '../styles.css';
@@ -14,7 +11,6 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [logoSrc, setLogoSrc] = useState(logoLight);
-  const navigate = useNavigate();
 
   const togglePassword = () => setShowPassword(!showPassword);
 
@@ -43,45 +39,9 @@ const LoginForm = () => {
     setLogoSrc(isDarkMode ? logoDark : logoLight);
   }, [isDarkMode]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    try {
-      const result = await login(email, password);
-      console.log('✅ Login successful:', result);
-
-      // ✅ SweetAlert2 Success Popup
-      Swal.fire({
-        title: 'Login Successful!',
-        text: 'Welcome back 🎉',
-        icon: 'success',
-        showConfirmButton: false,
-        timer: 1500,
-        timerProgressBar: true,
-        background: isDarkMode ? '#1e1e1e' : '#fff',
-        color: isDarkMode ? '#fff' : '#000',
-      });
-
-      // ⏳ Delay navigation for animation
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 1600);
-    } catch (error) {
-      console.error('❌ Login failed:', error.message);
-      Swal.fire({
-        title: 'Login Failed',
-        text: error.message || 'Login failed. Please try again.',
-        icon: 'error',
-        confirmButtonColor: '#d33',
-        background: isDarkMode ? '#1e1e1e' : '#fff',
-        color: isDarkMode ? '#fff' : '#000',
-      });
-    }
-  };
-
-  const handleGuestLogin = () => {
-    navigate('/client-login');
-    window.open('/client-login', '_blank');
+    console.log('Logging in with:', { email, password });
   };
 
   return (
@@ -124,15 +84,14 @@ const LoginForm = () => {
           <button type="submit" className="login-btn">Login</button>
         </form>
 
+        {/* 👇 包裹分割线 + guest login 按钮 */}
         <div className="login-actions">
           <div className="divider">
             <hr />
             <span>Or continue with</span>
             <hr />
           </div>
-          <button type="button" className="guest-btn" onClick={handleGuestLogin}>
-            Guest Login
-          </button>
+          <button className="guest-btn">Guest Login</button>
         </div>
       </div>
     </div>

@@ -2,68 +2,25 @@
     background-color: #aaaaaa;
     padding: 20px;
     margin: 0;
-    min-height: 100vh;
-    transition: background-color 0.3s ease;
-}
-
-.pageWrapper.darkMode {
-    background-color: #1a1a1a;
-}
-
-.CenteredContainer {
+    min-height: 100vh;           /* FULL viewport height */
+  }
+  
+  .CenteredContainer {
     background-color: white;
     border-radius: 8px;
     width: 90%;
-    max-width: 400px;
+    max-width: 400px; /* Limit width for large screens */
     padding: 30px 20px;
     margin: auto;
     margin-top: 10%;
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1), 0 0 20px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    transition: all 0.3s ease;
-}
-
-.darkMode .CenteredContainer {
-    background-color: #2d2d2d;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 0, 0, 0.4);
-    color: #ffffff;
-}
-
-.textContainer {
-    text-align: center;
-    color: #666;
-    margin: 8px 0;
-    transition: color 0.3s ease;
-}
-
-.darkMode .textContainer {
-    color: #cccccc;
-}
-
-.themeToggle {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-}
-
-.darkMode .themeToggle {
-    background: rgba(0, 0, 0, 0.2);
-    color: white;
-}
-
-/* Rest of your existing CSS remains the same */
-.facebook-button,
-.twitter-button,
-.linkedIn-button {
+  }
+  
+  .facebook-button,
+  .twitter-button,
+  .linkedIn-button {
     width: 100%;
     padding: 12px 16px;
     margin: 8px 0 -1%;
@@ -77,58 +34,65 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-}
-
-.facebook-button {
+  }
+  
+  .facebook-button {
     background-color: #3b5998;
-}
-
-.twitter-button {
+  }
+  
+  .twitter-button {
     background-color: black;
-}
-
-.linkedIn-button {
+  }
+  
+  .linkedIn-button {
     background-color: #0077b5;
-}
-
-.facebook-button:hover {
+  }
+  
+  .facebook-button:hover {
     background-color: #2d4373;
-}
-
-.twitter-button:hover {
+  }
+  
+  .twitter-button:hover {
     background-color: #333;
-}
-
-.linkedIn-button:hover {
+  }
+  
+  .linkedIn-button:hover {
     background-color: #005582;
-}
-
-.clientLogo {
+  }
+  
+  .clientLogo {
     width: 100%;
     height: auto;
     margin: 0 auto;
     display: block;
-}
-
-.icon {
+  }
+  
+  .textContainer {
+    text-align: center;
+    color: #666;
+    margin: 8px 0;
+  }
+  
+  .icon {
     width: 24px;
     height: 24px;
-}
-
-.buttongroup {
+  }
+  
+  .buttongroup {
     width: 100%;
     display: flex;
     flex-direction: column;
     margin-top: 20%;
-}
-
-@media (max-width: 480px) {
+  }
+  
+  @media (max-width: 480px) {
     h1 {
-        font-size: 1.8rem;
+      font-size: 1.8rem;
     }
-
+  
     .CenteredContainer {
-        margin-top: 10%;
-        padding: 20px 15px;
+      margin-top: 10%;
+      padding: 20px 15px;
     }
-}
+  }
+  

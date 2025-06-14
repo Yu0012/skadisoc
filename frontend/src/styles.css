@@ -2194,6 +2194,12 @@ input::-webkit-inner-spin-button {
   overflow-x: hidden;
 }
 
+body {
+  background-color: var(--bg-color-secondary);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
 
 .post-actions-dropdown button {
   padding: 6px 10px;
@@ -4502,6 +4508,11 @@ html.theme-transition {
   transform: scale(1.2);
 }
 
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f6f8fc;
+}
 
 .login-wrapper {
   background-color: var(--bg-color-secondary);
@@ -4709,10 +4720,10 @@ html.theme-transition {
 }
 
 
-/* Global dark mode */
+/* Optional: dark theme body */
 body.dark-theme {
-  --bg-color: #121212;   /* or #0d1117 */
-  --text-color: #f5f5f5;
+  background-color: #1a1a1a;
+  color: white;
 }
 
 
