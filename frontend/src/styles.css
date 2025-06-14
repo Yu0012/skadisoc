@@ -3743,3 +3743,38 @@ body {
   transform: scale(1.02);
   transition: transform 0.2s;
 }
+
+.platform-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.platform-toggle-group {
+  display: flex;
+  border: 1px solid var(--button-border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: -5px;
+}
+
+.platform-toggle-btn {
+  background-color: var(--button-bg);
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  
+}
+
+.platform-toggle-btn:not(:last-child) {
+  border-right: 1px solid var(--button-border);
+}
+
+.platform-toggle-btn.active {
+  background-color: var(--button-hover);
+  color: white;
+}
