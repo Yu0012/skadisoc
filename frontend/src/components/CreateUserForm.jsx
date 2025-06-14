@@ -35,6 +35,8 @@ const CreateUserForm = ({
     instagram: [],
     twitter: []
   });
+  const isRoleAutoAssigned = roleType === 'superadmin' || roleType === 'admin';
+
 
   // 🔒 Check if the user is a superadmin + admin before allowing creation
   useEffect(() => {
@@ -61,6 +63,17 @@ const CreateUserForm = ({
       setAvailableActions(rolePermissions[role]?.actions || []);
     }
   }, [role, roleType]);
+
+
+  // 🎯 Auto-assign role based on roleType selection
+  useEffect(() => {
+    if (roleType === 'superadmin') {
+      setRole('admin');
+    } else if (roleType === 'admin') {
+      setRole('editor');
+    }
+  }, [roleType]);
+
 
   // 🌐 Load unassigned clients for the selected platform
   const handlePlatformChange = async (platform) => {
@@ -139,18 +152,16 @@ const CreateUserForm = ({
                 <option value="">Select Role Type</option>
                 <option value="superadmin">Superadmin</option>
                 <option value="admin">Admin</option>
-                <option value="user">User</option>
               </select>
             </div>
 
             {/* 🔽 Styled Role dropdown */}
             <div className="role-select-wrapper">
               <label>Role:</label>
-              <select value={role} onChange={(e) => setRole(e.target.value)} required>
+              <select value={role} onChange={(e) => setRole(e.target.value)} required disabled={isRoleAutoAssigned}>
                 <option value="">Select Role</option>
                 <option value="admin">Admin</option>
                 <option value="editor">Editor</option>
-                <option value="viewer">Viewer</option>
               </select>
             </div>
           </div>

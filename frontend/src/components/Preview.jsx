@@ -1,6 +1,6 @@
 import React from "react";
 import "../styles.css";
-const Preview = ({ platform, content, client, attachedFile, imageURL }) => {
+const Preview = ({ platform, content, client, attachedFile, imageURL,compact = false }) => {
   const renderPreview = () => {
     const renderImagePreview = () => {
       if (!attachedFile && !imageURL) return null;
@@ -22,7 +22,7 @@ const Preview = ({ platform, content, client, attachedFile, imageURL }) => {
     switch (platform?.toLowerCase()) {
       case "facebook":
         return (
-          <div className="post-preview">
+          <div className={`post-preview ${compact ? "compact-preview" : ""}`}>
             <div className="post-header">
               <div className="avatar"></div>
               <div>
@@ -44,7 +44,7 @@ const Preview = ({ platform, content, client, attachedFile, imageURL }) => {
         );
       case "instagram":
         return (
-          <div className="post-preview">
+          <div className={`post-preview ${compact ? "compact-preview" : ""}`}>
             <div className="post-header">
               <div className="avatar"></div>
               <div>
@@ -66,7 +66,7 @@ const Preview = ({ platform, content, client, attachedFile, imageURL }) => {
         );
       case "twitter":
         return (
-          <div className="post-preview">
+          <div className={`post-preview ${compact ? "compact-preview" : ""}`}>
             <div className="post-header">
               <div className="avatar"></div>
               <div>
@@ -88,7 +88,7 @@ const Preview = ({ platform, content, client, attachedFile, imageURL }) => {
         );
       case "linkedin":
         return (
-          <div className="post-preview">
+          <div className={`post-preview ${compact ? "compact-preview" : ""}`}>
             <div className="post-header">
               <div className="avatar"></div>
               <div>
@@ -113,7 +113,7 @@ const Preview = ({ platform, content, client, attachedFile, imageURL }) => {
     }
   };
 
-  return <div className="preview-section">{renderPreview()}</div>;
+  return <div className={`preview-section ${compact ? "compact-preview" : ""}`}>{renderPreview()}</div>;
 };
 
 export default Preview;

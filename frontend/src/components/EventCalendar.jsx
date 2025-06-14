@@ -7,6 +7,8 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "../styles.css";
 import config from '../config'; 
+import Preview from "./Preview";
+
 
 // FullCalendar plugins
 import FullCalendar from "@fullcalendar/react";
@@ -124,6 +126,7 @@ const EventCalendar = () => {
       start: post.scheduledDate,
       extendedProps: {
         client: post.client,
+        clientName: post.clientName || "",
         content: post.content,
         hashtags: post.hashtags,
         platforms: post.selectedPlatforms?.join(", "),
@@ -343,40 +346,22 @@ const EventCalendar = () => {
           <div className="event-modal vertical-detail-modal">
             <button className="close-btn" onClick={() => setIsModalOpen(false)}>×</button>
             <h2 className="modal-title">{selectedEvent.title}</h2>
-            <div className="modal-field"><strong>Client:</strong> {selectedEvent.client || '-'}</div>
-            <div className="modal-field"><strong>Content:</strong> {selectedEvent.content || '-'}</div>
-            <div className="modal-field">
-              <strong>Platforms:</strong>{" "}
-              {selectedEvent.platforms ? (
-                selectedEvent.platforms.split(",").map((platform, index) => {
-                  const trimmed = platform.trim().toLowerCase();
-                  const previewLinks = {
-                    facebook: `/facebook-preview/${selectedEvent.id}`,
-                    instagram: `/instagram-preview/${selectedEvent.id}`,
-                    twitter: `/twitter-preview/${selectedEvent.id}`,
-                  };
-                  return (
-                    <span key={index} style={{ marginRight: "6px" }}>
-                      {previewLinks[trimmed] ? (
-                        <a href={previewLinks[trimmed]} target="_blank" rel="noreferrer" className="platform-link">
-                          {platform.trim()}
-                        </a>
-                      ) : (
-                        platform.trim()
-                      )}
-                    </span>
-                  );
-                })
-              ) : (
-                "-"
-              )}
-            </div>
-            <div className="modal-note">
-              This post was scheduled on {new Date(selectedEvent.scheduledDate).toLocaleString()}.
+
+            <Preview
+              compact
+              platform={(selectedEvent.platforms?.split(",")[0] || "").trim().toLowerCase()}
+              content={selectedEvent.content}
+              client={selectedEvent.clientName}
+              imageURL={selectedEvent.link}
+            />
+
+            <div className="modal-note" style={{ marginTop: "1rem" }}>
+              Scheduled for: {new Date(selectedEvent.scheduledDate).toLocaleString()}
             </div>
           </div>
         </div>
       )}
+
 
       {/* Create Post Modal */}
       {isCreateModalOpen && (
