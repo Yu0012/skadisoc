@@ -137,7 +137,7 @@ html, body {
 
 /* Stylish round dropdown */
 .pill-dropdown {
-  background-color: #0a0f5c;
+  background-color: #0D286E;
   color: white;
   border: none;
   border-radius: 999px;
@@ -161,7 +161,48 @@ html, body {
   background-color: #051041;
 }
 
+[data-selected-theme="dark"] .pill-dropdown {
+  background-color: #3177B0;
+  color: white;
+}
 
+[data-selected-theme="dark"] .pill-dropdown:hover {
+  background-color: #255d92;
+}
+
+[data-selected-theme="dark"] .pill-dropdown:hover {
+  background-color: #051041;
+}
+
+.profile-avatar-initial {
+  background-color: #0a105c;
+  color: white;
+  font-size: 40px;       /* ⬅️ Make the letter bigger */
+  font-weight: bold;
+  width: 80px;           /* ⬅️ Circle size */
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin: 0 auto 20px auto; /* center with spacing below */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+[data-selected-theme="dark"] .profile-avatar-initial {
+  background-color: #3177B0;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin: 0 auto 20px auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
 
 
 .title {
