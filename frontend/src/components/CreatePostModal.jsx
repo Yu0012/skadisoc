@@ -29,6 +29,18 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
   const fileInputRef = useRef(null);
 
   useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add("modal-open");
+    } else {
+      document.body.classList.remove("modal-open");
+    }
+
+    // Cleanup in case the modal is unmounted
+    return () => document.body.classList.remove("modal-open");
+  }, [isOpen]);
+
+
+  useEffect(() => {
     if (initialData) {
       setTitle(initialData.title || "");
       setContent(initialData.content || "");
@@ -257,9 +269,10 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                           setShowDatePicker(false);
                         }}
                         showTimeSelect
-                        timeIntervals={30}
+                        timeIntervals={10}
                         dateFormat="MMMM d, yyyy h:mm aa"
                         inline
+                        onClickOutside={() => setShowDatePicker(false)}
                       />
                     </div>
                   )}
