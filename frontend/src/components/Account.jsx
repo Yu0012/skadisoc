@@ -25,7 +25,7 @@ const Accounts = () => {
   
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1); // Current pagination page
-  const [accountsPerPage] = useState(10); // Number of accounts per page
+  const [accountsPerPage] = useState(8); // Number of accounts per page
   
   // Modal states
   const [createUserDropdown, setCreateUserDropdown] = useState(false); // Create user modal

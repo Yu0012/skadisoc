@@ -17,7 +17,7 @@ const Posts = () => {
   const [category, setCategory] = useState("All Categories"); // Category filter
   const [searchQuery, setSearchQuery] = useState("");//search input
   const [currentPage, setCurrentPage] = useState(1);// current pagination page
-  const [postsPerPage] = useState(7); //number of post per page
+  const [postsPerPage] = useState(8); //number of post per page
   const [postMenuDropdown, setPostMenuDropdown] = useState(null);//current opened dropdown
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 }) //positon for dorpdown menu
   const [selectedPosts, setSelectedPosts] = useState([]);// selected post IDs
