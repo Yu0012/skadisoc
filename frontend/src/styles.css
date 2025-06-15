@@ -1,5 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
 /* 🌍 Global Styling */
+
+html, body, #root {
+  height: auto;
+  min-height: 100vh;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.page-wrapper,
+.dashboard-wrapper,
+.posts-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-section {
+  flex: 1 0 auto;
+}
+
+
 body {
   font-family: Arial, sans-serif;
   background-color: var(--bg-color-secondary);
@@ -596,15 +618,16 @@ body.theme-transition {
   border-radius: 8px !important;
   background-color: var(--table-bg) !important;
   max-width: 1500px;
-  height: calc(95vh - 200px); /* ⬅️ 自动根据视窗高度计算 */
+  height: auto !important;
+  max-height: none !important;
   font-size: 14px;
   margin: auto;
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 
 
 .fc-scroller {
-  overflow-y: hidden !important;
+  overflow-y: auto !important;
 }
 
 .fc-scrollgrid th {
@@ -796,7 +819,6 @@ body.theme-transition {
 
 .fc-scrollgrid {
   border-radius: 8px !important;
-  overflow: hidden !important;
 }
 
 .fc-scrollgrid thead tr th:last-child {
@@ -1458,9 +1480,9 @@ input:checked + .slider:before {
 .posts-container {
   display: flex;
   flex-direction: column;
-  height: 100%;   /* ✅ 使用父容器的 100% 高度 */
-  overflow: hidden; /* ✅ 禁止滚动 */
-  padding-bottom: 80px; /* ⬅ 给底部分页器预留空间 */
+  min-height: 100vh;
+  overflow-y: auto; /* ✅ enable vertical scroll */
+  padding: 20px;
 }
 
 .posts-table-container {
@@ -4847,5 +4869,28 @@ body.modal-open {
 .react-datepicker__time-container {
   max-height: 100px;
   
+}
+
+.page-wrapper,
+.calendar-wrapper,
+.dashboard-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* ✅ Make scrollable */
+  flex: 1 0 auto;
+}
+
+.app-scroll-wrapper {
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-page-scroll {
+  flex: 1 0 auto;
+  overflow-y: auto;
+  min-height: 100vh;
 }
 

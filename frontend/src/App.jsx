@@ -55,15 +55,13 @@ const AppContent = () => {
 
 // 👇 Final exported App wrapped in Router
 const App = () => (
-  <AuthProvider>
-    <Router>
-      <AppContent />
-    </Router>
-  </AuthProvider>
-  //   <Router>
-    //   <AppContent />
-   // </Router>
-
+  <div className="app-scroll-wrapper">
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
+  </div>
 );
 
 export default App;

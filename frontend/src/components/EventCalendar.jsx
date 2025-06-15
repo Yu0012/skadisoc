@@ -190,7 +190,7 @@ const EventCalendar = () => {
   };
 
   return (
-    <div className="posts-container">
+    <div className="posts-container calendar-page-scroll">
       {/* Header Section */}
       <div className="posts-header">
         <div className="welcome-message">
