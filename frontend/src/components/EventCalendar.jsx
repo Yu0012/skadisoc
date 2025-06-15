@@ -132,6 +132,7 @@ const EventCalendar = () => {
         platforms: post.selectedPlatforms?.join(", "),
         link: post.filePath ? `${config.API_BASE}${post.filePath}` : null,
         scheduledDate: post.scheduledDate,
+        status: post.status || "scheduled",
       },
     }));
   };
@@ -298,9 +299,23 @@ const EventCalendar = () => {
                       ...info.event.extendedProps,
                       id: info.event.id
                     };
-                    setSelectedEvent(eventProps);
-                    setIsModalOpen(true);
+
+                    if (eventProps.status === "posted") {
+                      setSelectedEvent(eventProps);
+                      setIsModalOpen(true);
+                    } else {
+                      // Scheduled post - open edit modal
+                      setCreateInitialData({
+                        ...eventProps,
+                        filePath: eventProps.link, // required for file preview
+                      });
+
+                      const primaryPlatform = eventProps.platforms?.split(",")[0].toLowerCase();
+                      setSelectedPlatform(primaryPlatform || ""); // set platform for modal
+                      setIsCreateModalOpen(true);
+                    }
                   }}
+
                   dateClick={(info) => {
                     const clickedDate = new Date(info.dateStr);
                     setCreateInitialData({ scheduledDate: clickedDate });
@@ -379,22 +394,30 @@ const EventCalendar = () => {
           }}
           platform={selectedPlatform.charAt(0).toUpperCase() + selectedPlatform.slice(1)}
           onSave={(newPost) => {
-            setEvents((prev) => [
-              ...prev,
-              {
-                id: newPost._id,
-                title: newPost.client || "Untitled Post",
-                start: newPost.scheduledDate,
-                extendedProps: {
-                  client: newPost.client,
-                  content: newPost.content,
-                  hashtags: newPost.hashtags,
-                  platforms: newPost.selectedPlatforms?.join(", "),
-                  link: newPost.filePath ? `${config.API_BASE}${newPost.filePath}` : null,
-                  scheduledDate: newPost.scheduledDate,
-                },
-              },
-            ]);
+            setEvents((prev) => {
+              const updated = prev.map(ev => ev.id === newPost._id
+                ? {
+                    id: newPost._id,
+                    title: newPost.client || "Untitled Post",
+                    start: newPost.scheduledDate,
+                    extendedProps: {
+                      client: newPost.client,
+                      content: newPost.content,
+                      hashtags: newPost.hashtags,
+                      platforms: newPost.selectedPlatforms?.join(", "),
+                      link: newPost.filePath ? `${config.API_BASE}${newPost.filePath}` : null,
+                      scheduledDate: newPost.scheduledDate,
+                      status: newPost.status || "scheduled",
+                    }
+                  }
+                : ev
+              );
+
+              // If not found, assume it's new
+              const exists = prev.some(ev => ev.id === newPost._id);
+              return exists ? updated : [...updated, newPost];
+            });
+
             setIsCreateModalOpen(false);
             setCreateInitialData({});
             setSelectedPlatform("");
