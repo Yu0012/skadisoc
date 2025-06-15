@@ -3,6 +3,7 @@ import "../styles.css";
 import SummaryCards from "./SummaryCards";
 import DashboardChartSection from "./DashboardChartSection";
 
+// Base API URL and platform options
 const API_BASE_URL = "http://localhost:5000/api";
 const PLATFORMS = [
   { value: "Facebook", label: "Facebook" },
@@ -12,6 +13,7 @@ const PLATFORMS = [
 ];
 
 const Dashboard = () => {
+  // State management for the dashboard
   const [selectedPlatform, setSelectedPlatform] = useState("");
   const [selectedClient, setSelectedClient] = useState("");
   const [allPosts, setAllPosts] = useState([]);
@@ -20,7 +22,13 @@ const Dashboard = () => {
   const [platformCounts, setPlatformCounts] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isModalOpen] = useState(false); // Added missing state
 
+  /**
+   * Generic fetch function with authentication
+   * @param {string} endpoint - API endpoint to call
+   * @param {object} options - Additional fetch options
+   */
   const fetchData = useCallback(async (endpoint, options = {}) => {
     const token = localStorage.getItem("token");
     try {
@@ -40,26 +48,35 @@ const Dashboard = () => {
     }
   }, []);
 
+  /**
+   * Fetches posts for the selected platform and corresponding clients
+   */
   const fetchPlatformPosts = useCallback(async () => {
     if (!selectedPlatform) return;
     setIsLoading(true);
     setError(null);
 
     try {
+      // Fetch both posts and clients data in parallel
       const [postsData, clientsData] = await Promise.all([
         fetchData("/posts"),
         fetchData(`/clients/${selectedPlatform.toLowerCase()}/all`)
       ]);
 
+      // Filter posts for the selected platform
       const platformFiltered = postsData.posts.filter(post =>
         post.selectedPlatforms.includes(selectedPlatform.toLowerCase())
       );
 
+      // Get unique client IDs from filtered posts
       const clientsWithPosts = [...new Set(platformFiltered.map(post => post.client))];
+      
+      // Match client IDs with full client objects
       const matchedClientObjs = clientsWithPosts
         .map(id => clientsData.clients.find(c => c._id === id))
         .filter(Boolean);
 
+      // Update state
       setAllPosts(platformFiltered);
       setFilteredClients(matchedClientObjs);
       setSelectedClient("");
@@ -71,10 +88,14 @@ const Dashboard = () => {
     }
   }, [selectedPlatform, fetchData]);
 
+  /**
+   * Fetches post counts for each platform
+   */
   const fetchPlatformCounts = useCallback(async () => {
     setIsLoading(true);
     try {
       const { posts } = await fetchData("/posts");
+      // Count posts per platform
       const counts = PLATFORMS.reduce((acc, platform) => ({
         ...acc,
         [platform.value.toLowerCase()]: posts.filter(p => 
@@ -89,6 +110,9 @@ const Dashboard = () => {
     }
   }, [fetchData]);
 
+  /**
+   * Fetches insights for posts of the selected client
+   */
   const fetchPostInsights = useCallback(async () => {
     if (!selectedClient || !selectedPlatform) return;
     setIsLoading(true);
@@ -105,11 +129,13 @@ const Dashboard = () => {
         return;
       }
 
+      // Filter posts for selected client and platform
       const matchingPosts = allPosts.filter(
         post => post.client === selectedClient &&
           post.selectedPlatforms.includes(platform)
       );
 
+      // Enrich each post with insights data
       const enriched = await Promise.all(
         matchingPosts.map(post => enrichPostWithInsights(post, platform, accessToken))
       );
@@ -121,11 +147,15 @@ const Dashboard = () => {
     }
   }, [selectedClient, selectedPlatform, allPosts, fetchData]);
 
+  /**
+   * Adds insights data to a post object
+   */
   const enrichPostWithInsights = async (post, platform, accessToken) => {
     const platformId = post.platformPostIds?.[platform.toLowerCase()];
     if (!platformId) return { ...post, insights: { likes: "-", shares: "-", comments: "-" } };
 
     try {
+      // Platform-specific insight fetching
       switch (platform) {
         case "facebook":
           return await fetchFacebookInsights(post, platformId, accessToken);
@@ -140,6 +170,7 @@ const Dashboard = () => {
     }
   };
 
+  // Facebook insights fetcher
   const fetchFacebookInsights = async (post, postId, token) => {
     const res = await fetch(
       `https://graph.facebook.com/v22.0/${postId}?fields=likes.summary(true),shares,comments.summary(true)&access_token=${token}`
@@ -155,6 +186,7 @@ const Dashboard = () => {
     };
   };
 
+  // Instagram insights fetcher
   const fetchInstagramInsights = async (post, postId, token) => {
     const res = await fetch(
       `https://graph.facebook.com/v22.0/${postId}?fields=like_count,comments_count&access_token=${token}`
@@ -170,6 +202,7 @@ const Dashboard = () => {
     };
   };
 
+  // Effect hooks for data fetching
   useEffect(() => {
     fetchPlatformCounts();
   }, [fetchPlatformCounts]);
@@ -182,55 +215,70 @@ const Dashboard = () => {
     fetchPostInsights();
   }, [selectedClient, fetchPostInsights]);
 
+  // Main render
   return (
-    <div className="dashboard-container">
-      {/* Unified Header with Dropdowns */}
-      <div className="dashboard-header-center">
-        <h2 className="dashboard-header">Dashboard</h2>
-        <div className="platform-select-group">
-          <select
-            onChange={(e) => setSelectedPlatform(e.target.value)}
-            value={selectedPlatform}
-            className="pill-dropdown"
-            disabled={isLoading}
-          >
-            <option value="">Select Platform</option>
-            {PLATFORMS.map((platform) => (
-              <option key={platform.value} value={platform.value}>
-                {platform.label}
-              </option>
-            ))}
-          </select>
-
-          <select
-            onChange={(e) => setSelectedClient(e.target.value)}
-            value={selectedClient}
-            className="pill-dropdown"
-            disabled={!selectedPlatform || isLoading || !filteredClients.length}
-          >
-            <option value="">Select Client</option>
-            {filteredClients.map((client) => (
-              <option key={client._id} value={client._id}>
-                {client.pageName || client.username || client.name || client._id}
-              </option>
-            ))}
-          </select>
+    <div className="posts-page-wrapper">
+      {/* Main content container */}
+      <div className={`posts-container ${isModalOpen ? "blurred" : ""}`}>
+        {/* Header section */}
+        <div className="posts-header">
+          <div className="welcome-message">
+            <p>Welcome,</p>
+            <h2 className="user-name">Amber Broos</h2>
+          </div>
         </div>
-      </div>
 
-      {/* Status Indicators */}
-      {error && <div className="error-message">{error}</div>}
-      {isLoading && <div className="loading-indicator">Loading...</div>}
+        {/* Dashboard content */}
+        <div className="dashboard-container">
+          {/* Unified Header with Dropdowns */}
+          <div className="dashboard-header-center">
+            <h2 className="dashboard-header">Dashboard</h2>
+            <div className="platform-select-group">
+              <select
+                onChange={(e) => setSelectedPlatform(e.target.value)}
+                value={selectedPlatform}
+                className="pill-dropdown"
+                disabled={isLoading}
+              >
+                <option value="">Select Platform</option>
+                {PLATFORMS.map((platform) => (
+                  <option key={platform.value} value={platform.value}>
+                    {platform.label}
+                  </option>
+                ))}
+              </select>
 
-      {/* Dashboard Content */}
-      <div className="dashboard-content">
-        <SummaryCards stats={platformCounts} />
-        {filteredPosts.length > 0 && (
-          <>
-            <SummaryCards posts={filteredPosts} />
-            <DashboardChartSection posts={filteredPosts} />
-          </>
-        )}
+              <select
+                onChange={(e) => setSelectedClient(e.target.value)}
+                value={selectedClient}
+                className="pill-dropdown"
+                disabled={!selectedPlatform || isLoading || !filteredClients.length}
+              >
+                <option value="">Select Client</option>
+                {filteredClients.map((client) => (
+                  <option key={client._id} value={client._id}>
+                    {client.pageName || client.username || client.name || client._id}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Status Indicators */}
+          {error && <div className="error-message">{error}</div>}
+          {isLoading && <div className="loading-indicator">Loading...</div>}
+
+          {/* Dashboard Content Sections */}
+          <div className="dashboard-content">
+            <SummaryCards stats={platformCounts} />
+            {filteredPosts.length > 0 && (
+              <>
+                <SummaryCards posts={filteredPosts} />
+                <DashboardChartSection posts={filteredPosts} />
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
