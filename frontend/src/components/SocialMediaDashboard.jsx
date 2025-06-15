@@ -36,10 +36,6 @@ const SocialMediaDashboard = () => {
                     <FaXTwitter className={styles.icon} size={25} color="white" />
                     Login with X
                   </button>
-                  <button onClick={handleLinkedInLogin} className={styles['linkedIn-button']}>
-                    <FaLinkedin className={styles.icon} size={25} color="white" />
-                    Login with LinkedIn
-                  </button>
                 </div>
             </div>
         </div>

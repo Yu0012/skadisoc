@@ -19,16 +19,39 @@ const cloudinary = require('../utils/cloudinary');
 
 
 // GET all posts (accessible to all authenticated users)
+// GET all posts (customized access control)
 exports.getAllPosts = async (req, res) => {
   try {
-    console.log('🟢 Fetching all posts');
-    
-    const posts = await Post.find().sort({ createdAt: -1 }); // Sort by newest first
-    
-    res.json({
+    console.log('🟢 Fetching posts based on user role & assignments');
+
+    const requestingUser = req.user;
+
+    // Case 1: Superadmin with admin role – get all posts
+    if (requestingUser.roleType === 'superadmin' && requestingUser.role === 'admin') {
+      const posts = await Post.find().sort({ createdAt: -1 });
+      return res.json({
+        count: posts.length,
+        posts
+      });
+    }
+
+    // Case 2: Editor or admin (not superadmin) – get own posts for assigned clients
+    const assignedClients = [
+      ...requestingUser.assignedFacebookClients || [],
+      ...requestingUser.assignedInstagramClients || [],
+      ...requestingUser.assignedTwitterClients || [],
+      ...requestingUser.assignedLinkedInClients || []
+    ].map(id => id.toString());
+
+    const posts = await Post.find({
+      client: { $in: assignedClients }
+    }).sort({ createdAt: -1 });
+
+    return res.json({
       count: posts.length,
       posts
     });
+
   } catch (err) {
     console.error('❌ Error fetching posts:', err);
     res.status(500).json({ message: 'Failed to fetch posts' });
