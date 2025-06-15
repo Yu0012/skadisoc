@@ -9,8 +9,14 @@ import config from '../config';
 
 const Dashboard = () => {
   // State management for selected platform and client
-  const [selectedPlatform, setSelectedPlatform] = useState("");
-  const [selectedClient, setSelectedClient] = useState("");
+  const [selectedPlatform, setSelectedPlatform] = useState(() => {
+    return localStorage.getItem("selectedPlatform") || "";
+  });
+
+  const [selectedClient, setSelectedClient] = useState(() => {
+    return localStorage.getItem("selectedClient") || "";
+  });
+
   
   // State for storing posts data
   const [allPosts, setAllPosts] = useState([]);
@@ -19,6 +25,9 @@ const Dashboard = () => {
   
   // State for platform statistics
   const [platformCounts, setPlatformCounts] = useState({});
+
+
+  
 
   /**
    * Fetch all posts and filter by selected platform
@@ -63,10 +72,25 @@ const Dashboard = () => {
           .map(id => allClients.find(c => c._id === id))
           .filter(Boolean);
 
+        // 🔁 STEP 3: Random default selection on first load
+        if (!localStorage.getItem("selectedPlatform")) {
+          const platforms = ["Facebook", "Instagram", "Twitter", "LinkedIn"];
+          const randomPlatform = platforms[Math.floor(Math.random() * platforms.length)];
+          setSelectedPlatform(randomPlatform);
+          localStorage.setItem("selectedPlatform", randomPlatform);
+        }
+
+        if (!localStorage.getItem("selectedClient") && matchedClientObjs.length > 0) {
+          const randomClient = matchedClientObjs[Math.floor(Math.random() * matchedClientObjs.length)]._id;
+          setSelectedClient(randomClient);
+          localStorage.setItem("selectedClient", randomClient);
+        }
+
+
         // Update state with filtered data
         setAllPosts(platformFiltered);
         setFilteredClients(matchedClientObjs);
-        setSelectedClient(""); // Reset client selection when platform changes
+        
         setFilteredPosts([]);  // Clear filtered posts
       } catch (err) {
         console.error("Failed to fetch posts:", err.message);
@@ -244,7 +268,11 @@ const Dashboard = () => {
       <div className="dashboard-selectors">
         {/* Platform dropdown selector */}
         <select
-          onChange={(e) => setSelectedPlatform(e.target.value)}
+          onChange={(e) => {
+            const platform = e.target.value;
+            setSelectedPlatform(platform);
+            localStorage.setItem("selectedPlatform", platform);
+          }}
           value={selectedPlatform}
           className="dashboard-dropdown"
         >
@@ -258,7 +286,11 @@ const Dashboard = () => {
         {/* Client dropdown selector (only shown when platform is selected) */}
         {selectedPlatform && (
           <select
-            onChange={(e) => setSelectedClient(e.target.value)}
+            onChange={(e) => {
+              const client = e.target.value;
+              setSelectedClient(client);
+              localStorage.setItem("selectedClient", client);
+            }}
             value={selectedClient}
             className="dashboard-dropdown"
           >

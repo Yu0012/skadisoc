@@ -271,43 +271,44 @@ const EventCalendar = () => {
                 <FaSyncAlt className="refresh-icon" onClick={handleRefresh} title="Refresh Data" />
               </div>
             </div>
-
-            {/* FullCalendar Component */}
-            <div className="calendar-toolbar">
-              <FullCalendar
-                ref={calendarRef}
-                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                initialView="dayGridMonth"
-                headerToolbar={false}
-                events={events}
-                dayHeaderFormat={{ weekday: "long" }}
-                showNonCurrentDates={true}
-                contentHeight="auto"
-                expandRows={true}
-                fixedWeekCount={false}
-                dayMaxEventRows={true}
-                height="auto"
-                eventTimeFormat={{ hour: "2-digit", minute: "2-digit", hour12: true }}
-                datesSet={(info) => {
-                  updateTitle(info.view.currentStart);
-                  setIsSidebarOpen(false);
-                }}
-                eventClick={(info) => {
-                  const eventProps = {
-                    title: info.event.title,
-                    ...info.event.extendedProps,
-                    id: info.event.id
-                  };
-                  setSelectedEvent(eventProps);
-                  setIsModalOpen(true);
-                }}
-                dateClick={(info) => {
-                  const clickedDate = new Date(info.dateStr);
-                  setCreateInitialData({ scheduledDate: clickedDate });
-                  setSelectedPlatform("");
-                }}
-                eventContent={renderEventContent}
-              />
+            <div className="calendar-scroll-wrapper">
+              {/* FullCalendar Component */}
+              <div className="calendar-toolbar">
+                <FullCalendar
+                  ref={calendarRef}
+                  plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                  initialView="dayGridMonth"
+                  headerToolbar={false}
+                  events={events}
+                  dayHeaderFormat={{ weekday: "long" }}
+                  showNonCurrentDates={true}
+                  contentHeight="auto"
+                  expandRows={true}
+                  fixedWeekCount={false}
+                  dayMaxEventRows={true}
+                  height="auto"
+                  eventTimeFormat={{ hour: "2-digit", minute: "2-digit", hour12: true }}
+                  datesSet={(info) => {
+                    updateTitle(info.view.currentStart);
+                    setIsSidebarOpen(false);
+                  }}
+                  eventClick={(info) => {
+                    const eventProps = {
+                      title: info.event.title,
+                      ...info.event.extendedProps,
+                      id: info.event.id
+                    };
+                    setSelectedEvent(eventProps);
+                    setIsModalOpen(true);
+                  }}
+                  dateClick={(info) => {
+                    const clickedDate = new Date(info.dateStr);
+                    setCreateInitialData({ scheduledDate: clickedDate });
+                    setSelectedPlatform("");
+                  }}
+                  eventContent={renderEventContent}
+                />
+              </div>
             </div>
           </div>
         </div>
