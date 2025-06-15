@@ -3,24 +3,6 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const FacebookClient = require('../models/FacebookClientSchema');
 
-router.post('/', async (req, res) => {
-  try {
-    const newClient = new FacebookClient({
-      pageName: req.body.pageName,
-      pageId: req.body.pageId,
-      pageAccessToken: req.body.companyToken,
-      assignedAdmins: req.body.assignedAdmins || []
-    });
-
-    await newClient.save();
-    res.json({ message: "Client created", client: newClient });
-  } catch (err) {
-    console.error("Error creating Facebook client:", err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-
 router.get('/', async (req, res) => {
   try {
     const clients = await FacebookClient.find({});
