@@ -130,7 +130,9 @@ const EventCalendar = () => {
         content: post.content,
         hashtags: post.hashtags,
         platforms: post.selectedPlatforms?.join(", "),
-        link: post.filePath ? `${config.API_BASE}${post.filePath}` : null,
+        link: post.filePath?.startsWith("http")
+          ? post.filePath
+          : `${config.API_BASE}${post.filePath}`,
         scheduledDate: post.scheduledDate,
         status: post.status || "scheduled",
       },

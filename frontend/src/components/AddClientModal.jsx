@@ -15,6 +15,27 @@ const AddClientModal = ({
 
   const [allUsers, setAllUsers] = useState([]);
   const [assignedAdmins, setAssignedAdmins] = useState([]);
+  const [socialMedia, setSocialMedia] = useState("Facebook");
+  const [socialMediaAccounts, setSocialMediaAccounts] = useState({
+    Facebook: { 
+      companyToken: "", 
+      pageId: "" 
+    },
+    Twitter: {
+      apiKey: "",
+      apiKeySecret: "",
+      accessToken: "",
+      accessTokenSecret: "",
+    },
+    LinkedIn: {
+      accessToken: "",
+      urn: ""
+    },
+    Instagram: { 
+      companyToken: "", 
+      pageId: "" 
+    },
+  });
 
 //prefill form fields when editing an existing client
   useEffect(() => {
@@ -38,31 +59,45 @@ const AddClientModal = ({
     }
   }, [clientData]);
 
-  // Fetch all users for the dropdown
-  // This will be used to assign admins to the client
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch(`${config.API_BASE}/api/users/simple`);
-        const data = await res.json();
-        setAllUsers(data);
-      } catch (err) {
-        console.error('Failed to fetch users:', err);
+  const handleInputChange = (platform, field, value) => {
+    setSocialMediaAccounts(prev => ({
+      ...prev,
+      [platform]: {
+        ...prev[platform],
+        [field]: value
       }
-    };
-    fetchUsers();
-  }, []);
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    onSubmit({
-      _id: clientData?._id, // ensure this is passed!
-      pageName: companyName,
-      pageId: companyDetail.replace("Page ID: ", "").trim(),
-      assignedAdmins: assignedAdmins.length ? assignedAdmins : [],
-    });
+    const payload = {
+      _id: clientData?._id,
+      platform: socialMedia,
+      assignedAdmins,
+    };
+
+    // Platform-specific fields
+    if (socialMedia === "Facebook" || socialMedia === "Instagram") {
+      payload.pageName = companyName;
+      payload.pageId = companyDetail.replace("Page ID: ", "").trim();
+      payload.companyToken = socialMediaAccounts[socialMedia]?.companyToken || "";
+    }
+
+    if (socialMedia === "Twitter") {
+      payload.username = companyName;
+      payload.name = companyDetail;
+      payload.appKey = socialMediaAccounts.Twitter.apiKey;
+      payload.appSecret = socialMediaAccounts.Twitter.apiKeySecret;
+      payload.accessToken = socialMediaAccounts.Twitter.accessToken;
+      payload.accessTokenSecret = socialMediaAccounts.Twitter.accessTokenSecret;
+      payload.bearerToken = "YOUR_TWITTER_BEARER_TOKEN"; // Replace if needed
+    }
+
+    onSubmit(payload);
   };
+
   
   return createPortal(
     <div className="newUserMenu" ref={modalRef}>
@@ -80,27 +115,24 @@ const AddClientModal = ({
           <input type="text" value={companyDetail} onChange={(e) => setCompanyDetail(e.target.value)} />
         </label>
 
-        <label>Assign to Users:</label>
-        <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px', maxHeight: '150px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px', borderRadius: '4px' }}>
-          {allUsers.map((user) => (
-            <label key={user._id} style={{ width: '30%' }}>
+        {(socialMedia === "Facebook" || socialMedia === "Instagram") && (
+          <>
+            <label>Access Token
               <input
-                type="checkbox"
-                value={user._id}
-                checked={assignedAdmins.includes(user._id)}
-                onChange={(e) => {
-                  const checked = e.target.checked;
-                  setAssignedAdmins(prev =>
-                    checked
-                      ? [...prev, user._id]
-                      : prev.filter(id => id !== user._id)
-                  );
-                }}
+                type="text"
+                value={socialMediaAccounts[socialMedia]?.companyToken || ""}
+                onChange={(e) => handleInputChange(socialMedia, "companyToken", e.target.value)}
               />
-              {user.username} ({user.email})
             </label>
-          ))}
-        </div>
+            <label>Page ID
+              <input
+                type="text"
+                value={socialMediaAccounts[socialMedia]?.pageId || ""}
+                onChange={(e) => handleInputChange(socialMedia, "pageId", e.target.value)}
+              />
+            </label>
+          </>
+        )}
 
         <input className="create-post-btn" type="submit" value={clientData ? "Update" : "Save"} />
       </form>

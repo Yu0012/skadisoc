@@ -246,14 +246,14 @@ const Client = () => {
    */
   const handleSaveClient = async (clientData) => {
     try {
-      // Determine endpoint and method based on whether we're editing
-      const url = editClient ? `${baseUrl}/${clientData._id}` : `${baseUrl}`;
-      const method = editClient ? "PUT" : "POST";
+      const platform = (clientData.platform || activePlatform).toLowerCase();
+      const baseUrl = `${config.API_BASE}/api/clients/${platform}`;
+      const url = clientData._id ? `${baseUrl}/${clientData._id}` : baseUrl;
+      const method = clientData._id ? "PUT" : "POST";
 
-      // Send request to API
       const res = await fetch(url, {
         method,
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`
         },
@@ -262,27 +262,25 @@ const Client = () => {
 
       if (!res.ok) throw new Error("Save failed");
 
-      // Refresh client list after successful save
+      // Refresh the list
       const fetchRes = await fetch(`${baseUrl}/all`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
       const data = await fetchRes.json();
       setClients(data.clients || []);
 
-      // Close modal and reset edit state
       setShowClientModal(false);
       setEditClient(null);
     } catch (err) {
       console.error("Error saving client:", err);
-      // Show error message
       MySwal.fire({
         icon: 'error',
         title: 'Save Failed',
-        text: 'Failed to save client data',
-        showClass: { popup: 'animate__animated animate__headShake' }
+        text: 'Failed to save client data'
       });
     }
   };
+
 
   // Refresh the page
   const handleRefresh = () => {
