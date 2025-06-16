@@ -4799,3 +4799,24 @@ body.modal-open {
   background-color: #0a0f5c; 
 }
 
+.react-datepicker__day.past-date {
+  background-color: #f8d7da;
+  color: #721c24;
+  text-decoration: line-through;
+  pointer-events: none; /* optional: prevent interaction */
+}
+
+.client-checkbox-scroll {
+  max-height: 160px; /* About 5 items tall */
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-top: 0.5rem;
+}
+
+.square-highlight {
+  background-color: #ffefc2 !important;
+  border-radius: 50%;
+  font-weight: bold;
+  color: #222 !important;
+}
+
