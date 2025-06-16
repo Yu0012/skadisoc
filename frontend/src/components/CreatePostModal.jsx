@@ -277,6 +277,12 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                         showTimeSelect
                         timeIntervals={10} // ⏱️ Allows flexible 10-minute steps
                         dateFormat="MMMM d, yyyy h:mm aa"
+                        minTime={
+                          scheduledDate && new Date().toDateString() === scheduledDate.toDateString()
+                            ? new Date()
+                            : new Date().setHours(0, 0, 0, 0)
+                        }
+                        maxTime={new Date().setHours(23, 59, 59, 999)}
                         minDate={new Date()} // 🚫 Disables past dates
                         inline
                         onClickOutside={() => setShowDatePicker(false)}
