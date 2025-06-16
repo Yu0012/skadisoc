@@ -24,7 +24,11 @@ exports.getAllPosts = async (req, res) => {
   try {
     console.log('🟢 Fetching posts based on user role & assignments');
 
-    const requestingUser = req.user;
+    const requestingUser = await User.findById(req.user._id).lean(); // ✅ fetch fresh data
+
+    if (!requestingUser) {
+      return res.status(401).json({ message: "User not found" });
+    }
 
     // Case 1: Superadmin with admin role – get all posts
     if (requestingUser.roleType === 'superadmin' && requestingUser.role === 'admin') {
@@ -37,10 +41,10 @@ exports.getAllPosts = async (req, res) => {
 
     // Case 2: Editor or admin (not superadmin) – get own posts for assigned clients
     const assignedClients = [
-      ...requestingUser.assignedFacebookClients || [],
-      ...requestingUser.assignedInstagramClients || [],
-      ...requestingUser.assignedTwitterClients || [],
-      ...requestingUser.assignedLinkedInClients || []
+      ...(requestingUser.assignedFacebookClients || []),
+      ...(requestingUser.assignedInstagramClients || []),
+      ...(requestingUser.assignedTwitterClients || []),
+      ...(requestingUser.assignedLinkedInClients || [])
     ].map(id => id.toString());
 
     const posts = await Post.find({
@@ -57,6 +61,7 @@ exports.getAllPosts = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch posts' });
   }
 };
+
 
 // GET a single post by ID (accessible to all authenticated users)
 exports.getPostById = async (req, res) => {
