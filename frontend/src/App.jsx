@@ -34,6 +34,7 @@ const AppContent = () => {
         <Route path="/" element={<AuthForm />} />
         <Route path="/authform" element={<AuthForm />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/login" element={<AuthForm />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/posts" element={<Posts />} />
         <Route path="/account" element={<Account />} />
