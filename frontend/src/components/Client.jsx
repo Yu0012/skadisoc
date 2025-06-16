@@ -2,13 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaSearch, FaSyncAlt, FaPlus, FaEllipsisV } from "react-icons/fa";
 import AddClientModal from "./AddClientModal";
 import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 import "../styles.css";
 import { FaAngleLeft, FaAnglesLeft, FaAngleRight, FaAnglesRight } from "react-icons/fa6";
 import config from '../config';
-
-
-const MySwal = withReactContent(Swal);
 
 const Client = () => {
   // ========== STATE MANAGEMENT ==========
@@ -123,64 +119,29 @@ const Client = () => {
    * @param {string} clientId - ID of the client to delete
    */
   const handleDeleteClient = async (clientId) => {
-    // setPopupOpen(null);
-    // setClientMenuDropdown(null);
+    setPopupOpen(null);
+    setClientMenuDropdown(null);
 
     // Find client to get their name for confirmation message
     const client = clients.find(c => c._id === clientId);
     const clientName = client?.pageName || client?.username || client?.name || "this client";
-
+    
     // Show confirmation dialog
-    const result = await MySwal.fire({
+    const result = await Swal.fire({
+      title: `Delete ${clientName}?`,
+      text: "This action cannot be undone.",
       icon: 'warning',
-      title: 'Confirm Deletion',
-      html: `You're about to delete <strong>${clientName}</strong>. This action cannot be undone.`,
+      showCancelButton: true,
       confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Delete',
-      cancelButtonText: 'Cancel',
-      reverseButtons: true,
-      backdrop: `rgba(0,0,0,0.7) left top no-repeat`,
-      showClass: {
-        popup: 'animate__animated animate__fadeInDown',
-        backdrop: 'animate__animated animate__fadeIn'
-      },
-      hideClass: {
-        popup: 'animate__animated animate__fadeOutUp',
-      },
-      customClass: {
-        popup: 'swal-popup',
-        title: 'swal-title',
-        htmlContainer: 'swal-html',
-        confirmButton: 'swal-confirm-btn',
-        cancelButton: 'swal-cancel-btn'
-      },
-      willOpen: () => {
-        document.body.classList.add('swal-blur');
-        document.querySelector('.posts-container')?.classList.add('swal-blur-container');
-      },
-      preConfirm: () => true,  // ensures fire() resolves correctly on confirm
-      willClose: () => {
-        document.body.classList.remove('swal-blur');
-        document.querySelector('.posts-container')?.classList.remove('swal-blur-container');
-      },
-      didClose: () => {
-        setPopupOpen(null);
-        setClientMenuDropdown(null);
-      }
-
+      cancelButtonColor: '#aaa',
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel'
     });
 
     // If user confirms deletion
     if (result.isConfirmed) {
       try {
         // Show loading indicator
-        MySwal.fire({
-          title: 'Deleting...',
-          html: 'Please wait while we remove the client',
-          allowOutsideClick: false,
-          didOpen: () => { MySwal.showLoading(); }
-        });
 
         // Send DELETE request to API
         const res = await fetch(`${baseUrl}/${clientId}`, {
@@ -190,27 +151,25 @@ const Client = () => {
 
         if (!res.ok) throw new Error(res.statusText || "Delete failed");
 
-        // Show success message
-        await MySwal.fire({
-          icon: 'success',
-          title: 'Deleted!',
-          html: `<strong>${clientName}</strong> has been removed.`,
-          showConfirmButton: false,
-          timer: 2000,
-          showClass: { popup: 'animate__animated animate__zoomIn' },
-          hideClass: { popup: 'animate__animated animate__zoomOut' }
-        });
         await fetchClients();
         // Update client list
         setClients(prev => prev.filter(c => c._id !== clientId));
+        Swal.fire({
+          icon: 'success',
+          title: 'Deleted!',
+          text: `${clientName} has been removed.`,
+          confirmButtonText: 'OK'
+        }).then(() => {
+          // ✅ Clean up dropdowns after confirmation
+          setPopupOpen(null);
+          setClientMenuDropdown(null);
+        });
       } catch (err) {
         console.error("Delete error:", err);
-        // Show error message
-        await MySwal.fire({
+        Swal.fire({
           icon: 'error',
-          title: 'Failed to Delete',
-          text: err.message || 'Could not delete client. Please try again.',
-          showClass: { popup: 'animate__animated animate__headShake' }
+          title: 'Error',
+          text: err.message || 'Failed to delete client.'
         });
       }
     }else if (result.isDismissed) {
@@ -304,22 +263,17 @@ const Client = () => {
       setEditClient(null);
     } catch (err) {
       console.error("Error saving client:", err);
-      MySwal.fire({
-        icon: 'error',
-        title: 'Save Failed',
-        text: 'Failed to save client data'
-      });
     }
   };
 
 
   // Refresh the page
   const handleRefresh = () => {
-    MySwal.fire({
+    Swal.fire({
       title: 'Refreshing...',
       timer: 1000,
       timerProgressBar: true,
-      didOpen: () => { MySwal.showLoading(); },
+      didOpen: () => { Swal.showLoading(); },
       willClose: () => { window.location.reload(); }
     });
   };

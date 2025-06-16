@@ -72,7 +72,7 @@ const Dashboard = () => {
 
         // 🔁 STEP 3: Random default selection on first load
         if (!localStorage.getItem("selectedPlatform")) {
-          const platforms = ["Facebook", "Instagram", "Twitter", "LinkedIn"];
+          const platforms = ["Facebook", "Instagram", "Twitter"];
           const randomPlatform = platforms[Math.floor(Math.random() * platforms.length)];
           setSelectedPlatform(randomPlatform);
           localStorage.setItem("selectedPlatform", randomPlatform);
@@ -142,7 +142,6 @@ const Dashboard = () => {
           facebook: posts.filter(p => p.selectedPlatforms.includes("facebook")).length,
           instagram: posts.filter(p => p.selectedPlatforms.includes("instagram")).length,
           twitter: posts.filter(p => p.selectedPlatforms.includes("twitter")).length,
-          linkedin: posts.filter(p => p.selectedPlatforms.includes("linkedin")).length,
         };
 
         setPlatformCounts(counts);
@@ -281,7 +280,6 @@ const Dashboard = () => {
           <option value="Facebook">Facebook</option>
           <option value="Instagram">Instagram</option>
           <option value="Twitter">Twitter</option>
-          <option value="LinkedIn">LinkedIn</option>
         </select>
 
         {/* Client dropdown selector (only shown when platform is selected) */}

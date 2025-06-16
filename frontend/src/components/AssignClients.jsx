@@ -72,16 +72,15 @@ const AssignClients = ({ userId, onClose }) => {
 
       if (!res.ok) throw new Error(result.message);
         Swal.fire({
-        icon: 'success',
-        title: 'Assigned',
-        text: 'Clients assigned successfully.',
-        timer: 2000,
-        showConfirmButton: false
-      });
+          icon: 'success',
+          title: 'Assigned',
+          text: 'Clients assigned successfully.',
+          confirmButtonText: 'OK'
+        });
 
-      fetchClients();
-      setSelectedAssignIds([]);
-    } catch (err) {
+        fetchClients();
+        setSelectedAssignIds([]);
+      } catch (err) {
       Swal.fire({
         icon: 'error',
         title: 'Assign Failed',
@@ -94,10 +93,11 @@ const AssignClients = ({ userId, onClose }) => {
   // Unassign selected clients from the user
   const handleUnassign = async () => {
     if (selectedUnassignIds.length === 0) {
-      return Swal.fire({
-        icon: 'warning',
-        title: 'No clients selected',
-        text: 'Please select clients to unassign.'
+      Swal.fire({
+        icon: 'success',
+        title: 'Unassigned',
+        text: 'Clients unassigned successfully.',
+        confirmButtonText: 'OK'
       });
     }
 
@@ -118,8 +118,7 @@ const AssignClients = ({ userId, onClose }) => {
         icon: 'success',
         title: 'Unassigned',
         text: 'Clients unassigned successfully.',
-        timer: 2000,
-        showConfirmButton: false
+        confirmButtonText: 'OK'
       });
       
       fetchClients();

@@ -59,7 +59,7 @@ const EventCalendar = () => {
 
       for (let platform of platforms) {
         try {
-          const response = await axios.get(`${config.API_BASE}/api/clients/${platform}/assigned`, {
+          const response = await axios.get(`${config.API_BASE}/api/clients/${platform}/all`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           const platformClients = response.data.clients.map(client => ({
