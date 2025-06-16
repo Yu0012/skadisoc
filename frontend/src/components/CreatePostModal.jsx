@@ -161,6 +161,15 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     };
 
     console.log("🛰️ Submitting with formValues:", formValues);
+    const now = new Date();
+    if (scheduledDate && scheduledDate < now) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Date',
+        text: 'Scheduled date must be in the future.',
+      });
+      return;
+    }
 
     onSave?.(formValues);
     onClose();
@@ -264,15 +273,18 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                     <div className="modal-calendar">
                       <DatePicker
                         selected={scheduledDate}
-                        onChange={(date) => {
-                          setScheduledDate(date);
-                          setShowDatePicker(false);
-                        }}
+                        onChange={(date) => setScheduledDate(date)}
                         showTimeSelect
-                        timeIntervals={10}
+                        timeIntervals={10} // ⏱️ Allows flexible 10-minute steps
                         dateFormat="MMMM d, yyyy h:mm aa"
+                        minDate={new Date()} // 🚫 Disables past dates
                         inline
                         onClickOutside={() => setShowDatePicker(false)}
+                        dayClassName={(date) => {
+                          const now = new Date();
+                          now.setHours(0, 0, 0, 0); // Midnight today
+                          return date < now ? 'past-date' : undefined;
+                        }}
                       />
                     </div>
                   )}
