@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ImCross } from "react-icons/im";
 import "../styles.css"; // Assuming you have a styles.css file for basic styles
 import "./CreateUserForm.css";
+import Swal from 'sweetalert2';
 import config from '../config';
 
 // Component to assign/unassign clients to a user
@@ -49,8 +50,14 @@ const AssignClients = ({ userId, onClose }) => {
 
   // Assign selected clients to the user
   const handleAssign = async () => {
-    if (selectedAssignIds.length === 0) return alert('Select clients to assign');
-
+    if (selectedAssignIds.length === 0) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'No clients selected',
+        text: 'Please select clients to assign.'
+      });
+    }
+    
     try {
       const res = await fetch(`${config.API_BASE}/api/clients/${platform}/assign-multiple/${userId}`, {
         method: 'POST',
@@ -62,19 +69,37 @@ const AssignClients = ({ userId, onClose }) => {
       });
 
       const result = await res.json();
+
       if (!res.ok) throw new Error(result.message);
-      alert('Clients assigned successfully');
+        Swal.fire({
+        icon: 'success',
+        title: 'Assigned',
+        text: 'Clients assigned successfully.',
+        timer: 2000,
+        showConfirmButton: false
+      });
+
       fetchClients();
       setSelectedAssignIds([]);
     } catch (err) {
-      alert('Error assigning clients');
+      Swal.fire({
+        icon: 'error',
+        title: 'Assign Failed',
+        text: err.message || 'Error assigning clients.'
+      });
       console.error(err);
     }
   };
 
   // Unassign selected clients from the user
   const handleUnassign = async () => {
-    if (selectedUnassignIds.length === 0) return alert('Select clients to unassign');
+    if (selectedUnassignIds.length === 0) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'No clients selected',
+        text: 'Please select clients to unassign.'
+      });
+    }
 
     try {
       const res = await fetch(`${config.API_BASE}/api/clients/${platform}/unassign-multiple/${userId}`, {
@@ -88,11 +113,23 @@ const AssignClients = ({ userId, onClose }) => {
 
       const result = await res.json();
       if (!res.ok) throw new Error(result.message);
-      alert('Clients unassigned successfully');
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Unassigned',
+        text: 'Clients unassigned successfully.',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      
       fetchClients();
       setSelectedUnassignIds([]);
     } catch (err) {
-      alert('Error unassigning clients');
+      Swal.fire({
+        icon: 'error',
+        title: 'Unassign Failed',
+        text: err.message || 'Error unassigning clients.'
+      });
       console.error(err);
     }
   };

@@ -25,9 +25,7 @@ const Dashboard = () => {
   
   // State for platform statistics
   const [platformCounts, setPlatformCounts] = useState({});
-
-
-  
+  const [username, setUsername] = useState("");
 
   /**
    * Fetch all posts and filter by selected platform
@@ -260,9 +258,12 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       {/* Dashboard Header */}
-      <h2 className="dashboard-header">
-        📊 Dashboard
-      </h2>
+      <div className="posts-header">
+        <div className="welcome-message">
+          <p>Welcome back,</p>
+          <h2 className="user-name">{username || "Loading..."}</h2>
+        </div>
+      </div>
 
       {/* Platform and Client Selectors */}
       <div className="dashboard-selectors">
