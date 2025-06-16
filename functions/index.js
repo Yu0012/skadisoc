@@ -11,6 +11,7 @@ const mime = require("mime-types");
 const axios = require("axios");
 const FacebookClient = require('./models/FacebookClientSchema');
 const InstagramClient = require('./models/InstagramClientSchema');
+const TwitterClient = require('./models/TwitterClientSchema'); // ✅ Required
 const {TwitterApi} = require("twitter-api-v2");
 const FormData = require("form-data");
 const passport = require('passport');
@@ -190,7 +191,7 @@ passport.deserializeUser((obj, done) => {done(null, obj);});
 passport.use(new TwitterStrategy({
   consumerKey: process.env.TWITTER_CONSUMER_KEY,
   consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
-  callbackURL: `${BASE_URL}/auth/twitter/callback`
+  callbackURL: process.env.TWITTER_CALLBACK_URL,
 },
 function(token, tokenSecret, profile, done) {
   // Save tokens to DB for future requests
