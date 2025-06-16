@@ -17,7 +17,6 @@ const Dashboard = () => {
     return localStorage.getItem("selectedClient") || "";
   });
 
-  
   // State for storing posts data
   const [allPosts, setAllPosts] = useState([]);
   const [filteredClients, setFilteredClients] = useState([]);
@@ -77,7 +76,6 @@ const Dashboard = () => {
           localStorage.setItem("selectedClient", randomClient);
         }
 
-
         // Update state with filtered data
         setAllPosts(postData.posts || []);
         setFilteredClients(matchedClientObjs);
@@ -91,7 +89,7 @@ const Dashboard = () => {
     fetchPosts();
   }, [selectedPlatform]);
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchUserInfo = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
@@ -249,51 +247,52 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      {/* Dashboard Header */}
-      <div className="posts-header">
-        <div className="welcome-message">
+      {/* Updated Dashboard Header with Split Layout */}
+      <div className="posts-header-split">
+        <div className="welcome-left">
           <p>Welcome back,</p>
           <h2 className="user-name">{username || "Loading..."}</h2>
         </div>
-      </div>
 
-      {/* Platform and Client Selectors */}
-      <div className="dashboard-selectors">
-        {/* Platform dropdown selector */}
-        <select
-          onChange={(e) => {
-            const platform = e.target.value;
-            setSelectedPlatform(platform);
-            localStorage.setItem("selectedPlatform", platform);
-          }}
-          value={selectedPlatform}
-          className="dashboard-dropdown"
-        >
-          <option value="">Select Platform</option>
-          <option value="Facebook">Facebook</option>
-          <option value="Instagram">Instagram</option>
-          <option value="Twitter">Twitter</option>
-        </select>
+        <div className="dropdowns-center">
+          <div className="dashboard-selectors">
+            {/* Platform dropdown selector */}
+            <select
+              onChange={(e) => {
+                const platform = e.target.value;
+                setSelectedPlatform(platform);
+                localStorage.setItem("selectedPlatform", platform);
+              }}
+              value={selectedPlatform}
+              className="dashboard-dropdown"
+            >
+              <option value="">Select Platform</option>
+              <option value="Facebook">Facebook</option>
+              <option value="Instagram">Instagram</option>
+              <option value="Twitter">Twitter</option>
+            </select>
 
-        {/* Client dropdown selector (only shown when platform is selected) */}
-        {selectedPlatform && (
-          <select
-            onChange={(e) => {
-              const client = e.target.value;
-              setSelectedClient(client);
-              localStorage.setItem("selectedClient", client);
-            }}
-            value={selectedClient}
-            className="dashboard-dropdown"
-          >
-            <option value="">Select Client</option>
-            {(filteredClients || []).map((client) => (
-              <option key={client._id} value={client._id}>
-                {client.pageName || client.username || client.name || client._id}
-              </option>
-            ))}
-          </select>
-        )}
+            {/* Client dropdown selector (only shown when platform is selected) */}
+            {selectedPlatform && (
+              <select
+                onChange={(e) => {
+                  const client = e.target.value;
+                  setSelectedClient(client);
+                  localStorage.setItem("selectedClient", client);
+                }}
+                value={selectedClient}
+                className="dashboard-dropdown"
+              >
+                <option value="">Select Client</option>
+                {(filteredClients || []).map((client) => (
+                  <option key={client._id} value={client._id}>
+                    {client.pageName || client.username || client.name || client._id}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Summary Cards showing platform statistics */}
@@ -307,9 +306,6 @@ const Dashboard = () => {
           
           {/* New Dashboard Chart Section - Replaces the old charts and carousel */}
           <DashboardChartSection posts={filteredPosts} />
-          
-          
-         
         </>
       )}
     </div>

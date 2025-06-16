@@ -267,13 +267,13 @@ const EventCalendar = () => {
           <div className="search-toolbar-container">
             <div className="search-container calendar-controls-row calendar-nav-bar" style={{ justifyContent: "flex-end" }}>
               <div className="calendar-nav-group" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <FaSyncAlt className="refresh-icon" onClick={handleRefresh} title="Refresh Data" />
                 <button className="fc-today-button" onClick={goToToday}>Today</button>
                 <FaAnglesLeft className="fc-nav-button" onClick={goToPrevDouble} />
                 <FaAngleLeft className="fc-nav-button" onClick={goToPrev} />
                 <p className="fc-current-date">{currentMonth}, {currentYear}</p>
                 <FaAngleRight className="fc-nav-button" onClick={goToNext} />
                 <FaAnglesRight className="fc-nav-button" onClick={goToNextDouble} />
-                <FaSyncAlt className="refresh-icon" onClick={handleRefresh} title="Refresh Data" />
               </div>
             </div>
             <div className="calendar-scroll-wrapper">
