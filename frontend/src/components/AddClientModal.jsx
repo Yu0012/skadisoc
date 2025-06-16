@@ -41,25 +41,51 @@ const AddClientModal = ({
 
 //prefill form fields when editing an existing client
   useEffect(() => {
-    if (clientData) {
-      const name = clientData.pageName || clientData.username || "";
-      const detail = clientData.pageId
-        ? `Page ID: ${clientData.pageId}`
-        : clientData.instagramBusinessId
-          ? `Business ID: ${clientData.instagramBusinessId}`
-            : clientData.name
-            ? `Twitter user: ${clientData.name}`
-            : "";
+  if (clientData) {
+    const platform = selectedPlatform;
 
-      setCompanyName(name);
-      setCompanyDetail(detail);
-      setAssignedAdmins(
-        Array.isArray(clientData.assignedAdmins)
-          ? clientData.assignedAdmins.map(a => (typeof a === 'object' ? a._id : a))
-          : []
-      );
-    }
-  }, [clientData]);
+    // Company Name
+    const name = clientData.pageName || clientData.username || clientData.name || "";
+    setCompanyName(name);
+
+    // Raw value only (no label like "Page ID:")
+    const detail = clientData.pageId || clientData.instagramBusinessId || clientData.userId || clientData.name || "";
+    setCompanyDetail(detail);
+
+    // Assigned admins
+    setAssignedAdmins(
+      Array.isArray(clientData.assignedAdmins)
+        ? clientData.assignedAdmins.map(a => (typeof a === 'object' ? a._id : a))
+        : []
+    );
+
+    // Load platform-specific values
+    const updatedAccounts = {
+      Facebook: {
+        pageId: clientData.pageId || "",
+        companyToken: clientData.pageAccessToken || ""
+      },
+      Instagram: {
+        pageId: clientData.instagramBusinessId || "",
+        companyToken: clientData.accessToken || ""
+      },
+      Twitter: {
+        apiKey: clientData.appKey || "",
+        apiKeySecret: clientData.appSecret || "",
+        accessToken: clientData.accessToken || "",
+        accessTokenSecret: clientData.accessTokenSecret || "",
+        bearerToken: clientData.bearerToken || ""
+      },
+      LinkedIn: {
+        accessToken: clientData.accessToken || "",
+        urn: clientData.urn || ""
+      }
+    };
+
+    setSocialMediaAccounts(updatedAccounts);
+  }
+}, [clientData, selectedPlatform]);
+
 
   const handleInputChange = (platform, field, value) => {
     setSocialMediaAccounts(prev => ({
@@ -121,11 +147,6 @@ const AddClientModal = ({
         <label>
           Company Name
           <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} required />
-        </label>
-
-        <label>
-          Company Details
-          <input type="text" value={companyDetail} onChange={(e) => setCompanyDetail(e.target.value)} />
         </label>
 
         {(socialMedia === "Facebook" || socialMedia === "Instagram") && (

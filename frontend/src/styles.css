@@ -1473,7 +1473,7 @@ input:checked + .slider:before {
   justify-content: space-between;
   align-items: center;
   padding: 10px 80px;
-  background-color: var(--bg-color-secondary); 
+  background-color: transparent; 
   border-top: none;
 }
 

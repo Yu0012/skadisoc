@@ -567,3 +567,57 @@ exports.getUserUnassignedClients = async (req, res) => {
     res.status(500).json({ message: `Error fetching unassigned ${platform} clients for the user` });
   }
 };
+
+
+exports.updateClient = async (req, res) => {
+  const { platform, clientId } = req.params;
+
+  if (!platformModels[platform]) {
+    return res.status(400).json({ message: 'Invalid platform' });
+  }
+
+  const ClientModel = platformModels[platform];
+
+  try {
+    const updatedClient = await ClientModel.findByIdAndUpdate(
+      clientId,
+      req.body,
+      { new: true }
+    );
+
+    if (!updatedClient) {
+      return res.status(404).json({ message: 'Client not found' });
+    }
+
+    res.json({
+      message: `${platform} client updated successfully`,
+      client: updatedClient,
+    });
+  } catch (err) {
+    console.error(`❌ Error updating ${platform} client:`, err);
+    res.status(500).json({ message: `Error updating ${platform} client` });
+  }
+};
+
+exports.getOneClient = async (req, res) => {
+  const { platform, clientId } = req.params;
+
+  if (!platformModels[platform]) {
+    return res.status(400).json({ message: 'Invalid platform' });
+  }
+
+  const ClientModel = platformModels[platform];
+
+  try {
+    const client = await ClientModel.findById(clientId).populate('assignedAdmins', 'username email role');
+
+    if (!client) {
+      return res.status(404).json({ message: 'Client not found' });
+    }
+
+    res.json(client);
+  } catch (err) {
+    console.error(`❌ Error fetching ${platform} client by ID:`, err);
+    res.status(500).json({ message: `Error fetching ${platform} client` });
+  }
+};

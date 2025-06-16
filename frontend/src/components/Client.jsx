@@ -33,8 +33,9 @@ const Client = () => {
   const popupRef = useRef(null); // Reference for popup container
   const platformSlug = activePlatform.toLowerCase(); // Platform name in lowercase for API URLs
   const baseUrl = `${config.API_BASE}/api/clients/${platformSlug}`; // Base API endpoint
-  const clientsPerPage = 7; // Number of clients to show per page (if implementing pagination)
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const clientsPerPage = 17;
 
 
   const fetchClients = async () => {
@@ -240,6 +241,7 @@ const Client = () => {
       const baseUrl = `${config.API_BASE}/api/clients/${platform}`;
       const url = clientData._id ? `${baseUrl}/${clientData._id}` : baseUrl;
       const method = clientData._id ? "PUT" : "POST";
+      const isEdit = !!clientData._id;
 
       const res = await fetch(url, {
         method,
@@ -251,6 +253,11 @@ const Client = () => {
       });
 
       if (!res.ok) throw new Error("Save failed");
+      Swal.fire(
+        "Success",
+        isEdit ? "Client updated successfully" : "Client created successfully",
+        "success"
+      );
 
       // Refresh the list
       const fetchRes = await fetch(`${baseUrl}/all`, {
@@ -328,6 +335,7 @@ const Client = () => {
                   className={`platform-toggle-btn ${activePlatform === platform ? "active" : ""}`}
                   onClick={() => {
                     setActivePlatform(platform);
+                    setCurrentPage(1);
                     localStorage.setItem("selectedPlatform", platform);
                   }}
                 >
@@ -340,7 +348,7 @@ const Client = () => {
       </div>
 
       {/* Client List */}
-      <div className="client-list">
+      <div className="client-list ">
         {/* Add Client Button */}
         <button className="add-client-btn" onClick={handleAddClient}>
           <FaPlus />
@@ -348,7 +356,7 @@ const Client = () => {
         </button>
 
         {/* Client Cards */}
-        {filteredClients.map((client) => (
+        {filteredClients.slice((currentPage - 1) * clientsPerPage, currentPage * clientsPerPage).map((client) => (
           <div key={client._id} className="client-object">
             {/* Client Actions Dropdown */}
             <div className="popup-container">
@@ -379,6 +387,45 @@ const Client = () => {
           </div>
         ))}
       </div>
+      {filteredClients.length > clientsPerPage && (
+      <div className="pagination-container">
+        <p>
+          Showing {(currentPage - 1) * clientsPerPage + 1} to{" "}
+          {Math.min(currentPage * clientsPerPage, filteredClients.length)} of{" "}
+          {filteredClients.length} entries
+        </p>
+        <div className="pagination">
+          <FaAnglesLeft
+            className={`pagination-navigation ${currentPage === 1 ? "disabled" : ""}`}
+            onClick={() => setCurrentPage(1)}
+          />
+          <FaAngleLeft
+            className={`pagination-navigation ${currentPage === 1 ? "disabled" : ""}`}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          />
+          {Array.from({ length: Math.ceil(filteredClients.length / clientsPerPage) }, (_, i) => i + 1)
+            .filter(page => page === 1 || page === Math.ceil(filteredClients.length / clientsPerPage) || Math.abs(page - currentPage) <= 2)
+            .map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={currentPage === page ? "active" : ""}
+              >
+                {page}
+              </button>
+            ))}
+          <FaAngleRight
+            className={`pagination-navigation ${currentPage === Math.ceil(filteredClients.length / clientsPerPage) ? "disabled" : ""}`}
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, Math.ceil(filteredClients.length / clientsPerPage)))}
+          />
+          <FaAnglesRight
+            className={`pagination-navigation ${currentPage === Math.ceil(filteredClients.length / clientsPerPage) ? "disabled" : ""}`}
+            onClick={() => setCurrentPage(Math.ceil(filteredClients.length / clientsPerPage))}
+          />
+        </div>
+      </div>
+    )}
+
       
       {/* Add/Edit Client Modal */}
       {showClientModal && (

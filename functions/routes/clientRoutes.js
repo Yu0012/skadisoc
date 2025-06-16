@@ -39,5 +39,9 @@ router.get('/unassigned/:platform/:userId', authenticateJWT, clientController.ge
 
 router.post('/:platform', authenticateJWT, clientController.createOneClient);
 
+router.put('/:platform/:clientId', authenticateJWT, clientController.updateClient);
+
+router.get('/:platform/:clientId', authenticateJWT, clientController.getOneClient);
+
 
 module.exports = router;
