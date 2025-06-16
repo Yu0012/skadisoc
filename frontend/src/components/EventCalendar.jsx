@@ -8,6 +8,7 @@ import "react-calendar/dist/Calendar.css";
 import "../styles.css";
 import config from '../config'; 
 import Preview from "./Preview";
+import Swal from 'sweetalert2';
 
 
 // FullCalendar plugins
@@ -44,52 +45,53 @@ const EventCalendar = () => {
 
   const [username, setUsername] = useState("");
 
+  const fetchPostsAndClients = async () => {
+    try {
+      // Fetch posts
+      const res = await axios.get(`${config.API_BASE}/api/posts`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const posts = Array.isArray(res.data.posts) ? res.data.posts : [];
+
+      // Fetch clients from all platforms
+      const platforms = ["facebook", "instagram", "twitter"];
+      let allClients = [];
+
+      for (let platform of platforms) {
+        try {
+          const response = await axios.get(`${config.API_BASE}/api/clients/${platform}/assigned`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const platformClients = response.data.clients.map(client => ({
+            id: client._id,
+            name: client.pageName || client.username || client.name,
+          }));
+          allClients.push(...platformClients);
+        } catch (err) {
+          console.error(`❌ Failed to fetch ${platform} clients`, err);
+        }
+      }
+
+      // Set client lists
+      const uniqueNames = [...new Set(allClients.map(c => c.name))];
+      setAvailableClients(uniqueNames);
+      setActiveClients(new Set(uniqueNames));
+
+      // Format and set events
+      if (Array.isArray(posts)) {
+        setEvents(formatEvents(posts));
+      } else {
+        console.warn("🛑 Unexpected post data format:", posts);
+        setEvents([]);
+      }
+
+    } catch (err) {
+      console.error("Failed to fetch posts:", err);
+    }
+  };
+
   // Initial fetch of all posts and clients
   useEffect(() => {
-    const fetchPostsAndClients = async () => {
-      try {
-        // Fetch posts
-        const res = await axios.get(`${config.API_BASE}/api/posts`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const posts = Array.isArray(res.data.posts) ? res.data.posts : [];
-
-        // Fetch clients from all platforms
-        const platforms = ["facebook", "instagram", "twitter"];
-        let allClients = [];
-
-        for (let platform of platforms) {
-          try {
-            const response = await axios.get(`${config.API_BASE}/api/clients/${platform}/assigned`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            const platformClients = response.data.clients.map(client => ({
-              id: client._id,
-              name: client.pageName || client.username || client.name,
-            }));
-            allClients.push(...platformClients);
-          } catch (err) {
-            console.error(`❌ Failed to fetch ${platform} clients`, err);
-          }
-        }
-
-        // Set client lists
-        const uniqueNames = [...new Set(allClients.map(c => c.name))];
-        setAvailableClients(uniqueNames);
-        setActiveClients(new Set(uniqueNames));
-
-        // Format and set events
-        if (Array.isArray(posts)) {
-          setEvents(formatEvents(posts));
-        } else {
-          console.warn("🛑 Unexpected post data format:", posts);
-          setEvents([]);
-        }
-
-      } catch (err) {
-        console.error("Failed to fetch posts:", err);
-      }
-    };
     fetchPostsAndClients();
   }, []);
 
@@ -122,7 +124,7 @@ const EventCalendar = () => {
   const formatEvents = (posts) => {
     return posts.map(post => ({
       id: post._id,
-      title: post.clientName || "Untitled Post",
+      title: post.title || "Untitled Post",
       start: post.scheduledDate,
       extendedProps: {
         client: post.client,
@@ -181,7 +183,7 @@ const EventCalendar = () => {
     return (
       <div className="custom-event-box">
         <span className="custom-event-time">{eventInfo.timeText}</span>
-        <span className="custom-event-title">{eventInfo.event.title}</span>
+        <span className="custom-event-title">{eventInfo.event.extendedProps.clientName}</span>
       </div>
     );
   };
@@ -282,7 +284,7 @@ const EventCalendar = () => {
                   plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                   initialView="dayGridMonth"
                   headerToolbar={false}
-                  events={events}
+                  events={events.filter(event => activeClients.has(event.extendedProps.clientName))}
                   dayHeaderFormat={{ weekday: "long" }}
                   showNonCurrentDates={true}
                   contentHeight="auto"
@@ -299,23 +301,27 @@ const EventCalendar = () => {
                     const eventProps = {
                       title: info.event.title,
                       ...info.event.extendedProps,
-                      id: info.event.id
+                      _id: info.event.id, // ✅ this is the fix
                     };
 
                     if (eventProps.status === "posted") {
                       setSelectedEvent(eventProps);
                       setIsModalOpen(true);
                     } else {
-                      // Scheduled post - open edit modal
                       setCreateInitialData({
                         ...eventProps,
-                        filePath: eventProps.link, // required for file preview
+                        filePath: eventProps.link,
                       });
 
                       const primaryPlatform = eventProps.platforms?.split(",")[0].toLowerCase();
-                      setSelectedPlatform(primaryPlatform || ""); // set platform for modal
+                      setSelectedPlatform(primaryPlatform || "");
                       setIsCreateModalOpen(true);
                     }
+                  }}
+
+                  eventClassNames={(arg) => {
+                    const status = arg.event.extendedProps.status;
+                    return status === 'posted' ? ['event-posted'] : ['event-scheduled'];
                   }}
 
                   dateClick={(info) => {
@@ -363,8 +369,6 @@ const EventCalendar = () => {
         <div className="modal-overlay">
           <div className="event-modal vertical-detail-modal">
             <button className="close-btn" onClick={() => setIsModalOpen(false)}>×</button>
-            <h2 className="modal-title">{selectedEvent.title}</h2>
-
             <Preview
               compact
               platform={(selectedEvent.platforms?.split(",")[0] || "").trim().toLowerCase()}
@@ -395,34 +399,93 @@ const EventCalendar = () => {
             selectedPlatforms: [selectedPlatform],
           }}
           platform={selectedPlatform.charAt(0).toUpperCase() + selectedPlatform.slice(1)}
-          onSave={(newPost) => {
-            setEvents((prev) => {
-              const updated = prev.map(ev => ev.id === newPost._id
-                ? {
-                    id: newPost._id,
-                    title: newPost.client || "Untitled Post",
-                    start: newPost.scheduledDate,
-                    extendedProps: {
-                      client: newPost.client,
-                      content: newPost.content,
-                      hashtags: newPost.hashtags,
-                      platforms: newPost.selectedPlatforms?.join(", "),
-                      link: newPost.filePath ? `${config.API_BASE}${newPost.filePath}` : null,
-                      scheduledDate: newPost.scheduledDate,
-                      status: newPost.status || "scheduled",
-                    }
-                  }
-                : ev
-              );
+          onSave={async (formValues) => {
+            try {
+              const token = localStorage.getItem("token");
 
-              // If not found, assume it's new
-              const exists = prev.some(ev => ev.id === newPost._id);
-              return exists ? updated : [...updated, newPost];
-            });
+              const payload = {
+                title: formValues.title,
+                content: formValues.content,
+                client: formValues.client,
+                clientName: formValues.clientName,
+                scheduledDate: formValues.scheduledDate,
+                selectedPlatforms: formValues.selectedPlatforms,
+                filePath: formValues.filePath || null,
+              };
 
-            setIsCreateModalOpen(false);
-            setCreateInitialData({});
-            setSelectedPlatform("");
+              const isEdit = !!formValues._id;
+              const url = isEdit
+                ? `${config.API_BASE}/api/posts/${formValues._id}`
+                : `${config.API_BASE}/api/posts`;
+              const method = isEdit ? "PUT" : "POST";
+
+              const response = await fetch(url, {
+                method,
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+              });
+
+              const resultText = await response.text();
+              let result;
+              try {
+                result = JSON.parse(resultText);
+              } catch {
+                throw new Error("Invalid JSON from server");
+              }
+
+              if (!response.ok) {
+                throw new Error(result.message || "Failed to save post");
+              }
+
+              // Update calendar events
+              setEvents((prev) => {
+                const newEvent = {
+                  id: result._id,
+                  title: result.clientName || "Untitled Post",
+                  start: result.scheduledDate,
+                  extendedProps: {
+                    client: result.client,
+                    clientName: result.clientName,
+                    content: result.content,
+                    hashtags: result.hashtags,
+                    platforms: result.selectedPlatforms?.join(", "),
+                    link: result.filePath?.startsWith("http")
+                      ? result.filePath
+                      : `${config.API_BASE}${result.filePath}`,
+                    scheduledDate: result.scheduledDate,
+                    status: result.status || "scheduled",
+                  },
+                };
+
+                const exists = prev.some((e) => e.id === result._id);
+                return exists
+                  ? prev.map((e) => (e.id === result._id ? newEvent : e))
+                  : [...prev, newEvent];
+              });
+
+              setIsCreateModalOpen(false);
+              setCreateInitialData({});
+              setSelectedPlatform("");
+              Swal.fire({
+                icon: 'success',
+                title: isEdit ? 'Post Updated' : 'Post Created',
+                text: `The post has been ${isEdit ? 'updated' : 'created'} successfully.`,
+                timer: 2000,
+                showConfirmButton: false
+              });
+
+              await fetchPostsAndClients(); // 👈 Refresh after saving
+            } catch (err) {
+              console.error("❌ Failed to save post from calendar:", err);
+              Swal.fire({
+                icon: 'error',
+                title: 'Save Failed',
+                text: err.message || 'Unable to save post. Please try again.'
+              });
+            }
           }}
         />
       )}
