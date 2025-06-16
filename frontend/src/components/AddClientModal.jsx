@@ -7,15 +7,17 @@ import axios from 'axios';
 const AddClientModal = ({
   onClose,
   onSubmit,
-  clientData
+  clientData,
+  selectedPlatform
 }) => {
+  
   const modalRef = useRef(null);
   const [companyName, setCompanyName] = useState("");
   const [companyDetail, setCompanyDetail] = useState("");
 
   const [allUsers, setAllUsers] = useState([]);
   const [assignedAdmins, setAssignedAdmins] = useState([]);
-  const [socialMedia, setSocialMedia] = useState("Facebook");
+  const [socialMedia, setSocialMedia] = useState(selectedPlatform || "Facebook");
   const [socialMediaAccounts, setSocialMediaAccounts] = useState({
     Facebook: { 
       companyToken: "", 
@@ -73,21 +75,32 @@ const AddClientModal = ({
     e.preventDefault();
 
     const payload = {
-      _id: clientData?._id,
       platform: socialMedia,
       assignedAdmins,
     };
 
+    if (clientData?._id) {
+      payload._id = clientData._id;
+    }
+
     // Platform-specific fields
-    if (socialMedia === "Facebook" || socialMedia === "Instagram") {
+    if (socialMedia === "Facebook") {
       payload.pageName = companyName;
-      payload.pageId = companyDetail.replace("Page ID: ", "").trim();
-      payload.companyToken = socialMediaAccounts[socialMedia]?.companyToken || "";
+      payload.pageId = socialMediaAccounts.Facebook.pageId;
+      payload.pageAccessToken = socialMediaAccounts.Facebook.companyToken;
+    }
+
+    if (socialMedia === "Instagram") {
+      payload.username = companyName;
+      payload.instagramBusinessId = socialMediaAccounts.Instagram.pageId?.trim() || "";
+      payload.accessToken = socialMediaAccounts.Instagram.companyToken?.trim() || "";
+      payload.userId = companyName.trim(); // or replace with actual user ID if it's a separate input
     }
 
     if (socialMedia === "Twitter") {
       payload.username = companyName;
       payload.name = companyDetail;
+      payload.userId = companyName.trim();
       payload.appKey = socialMediaAccounts.Twitter.apiKey;
       payload.appSecret = socialMediaAccounts.Twitter.apiKeySecret;
       payload.accessToken = socialMediaAccounts.Twitter.accessToken;
@@ -133,6 +146,40 @@ const AddClientModal = ({
             </label>
           </>
         )}
+
+        {socialMedia === "Twitter" && (
+          <>
+            <label>API Key
+              <input
+                type="text"
+                value={socialMediaAccounts.Twitter.apiKey}
+                onChange={(e) => handleInputChange("Twitter", "apiKey", e.target.value)}
+              />
+            </label>
+            <label>API Secret
+              <input
+                type="text"
+                value={socialMediaAccounts.Twitter.apiKeySecret}
+                onChange={(e) => handleInputChange("Twitter", "apiKeySecret", e.target.value)}
+              />
+            </label>
+            <label>Access Token
+              <input
+                type="text"
+                value={socialMediaAccounts.Twitter.accessToken}
+                onChange={(e) => handleInputChange("Twitter", "accessToken", e.target.value)}
+              />
+            </label>
+            <label>Access Token Secret
+              <input
+                type="text"
+                value={socialMediaAccounts.Twitter.accessTokenSecret}
+                onChange={(e) => handleInputChange("Twitter", "accessTokenSecret", e.target.value)}
+              />
+            </label>
+          </>
+        )}
+
 
         <input className="create-post-btn" type="submit" value={clientData ? "Update" : "Save"} />
       </form>

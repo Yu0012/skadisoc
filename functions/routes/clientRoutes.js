@@ -37,5 +37,7 @@ router.get('/:platform/:clientId/assigned-users', authenticateJWT, clientControl
 // Get user unassigned clients
 router.get('/unassigned/:platform/:userId', authenticateJWT, clientController.getUserUnassignedClients);
 
+router.post('/:platform', authenticateJWT, clientController.createOneClient);
+
 
 module.exports = router;

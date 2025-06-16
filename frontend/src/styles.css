@@ -4894,3 +4894,7 @@ body.modal-open {
   min-height: 100vh;
 }
 
+.platform-toggle-btn:hover {
+  color: white;
+  background-color: #0a0f5c; 
+}

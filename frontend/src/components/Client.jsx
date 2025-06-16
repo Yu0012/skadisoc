@@ -374,7 +374,6 @@ const Client = () => {
               {popupOpen === client._id && (
                 <div className="post-actions-dropdown" ref={popupRef}>
                   <button onClick={() => handleEditClient(client)}>Edit</button>
-                  <button onClick={() => handleAssignAdmin(client)}>Assign Admin</button>
                   <button 
                     className="delete-btn" 
                     onClick={() => handleDeleteClient(client._id)}
@@ -403,6 +402,7 @@ const Client = () => {
             setShowClientModal(false);
             setEditClient(null);
           }}
+          selectedPlatform={activePlatform}
           onSubmit={handleSaveClient}
           clientData={editClient}
         />

@@ -450,6 +450,31 @@ exports.deleteOneClient = async (req, res) => {
   }
 };
 
+
+exports.createOneClient = async (req, res) => {
+  const { platform } = req.params;
+
+  if (!platformModels[platform]) {
+    return res.status(400).json({ message: 'Invalid platform' });
+  }
+
+  const ClientModel = platformModels[platform];
+
+  try {
+    const newClient = new ClientModel(req.body);
+    const savedClient = await newClient.save();
+
+    res.status(201).json({
+      message: `${platform} client created successfully`,
+      client: savedClient,
+    });
+  } catch (err) {
+    console.error(`❌ Error creating ${platform} client:`, err);
+    res.status(500).json({ message: `Error creating ${platform} client` });
+  }
+};
+
+
 // GET USERS ASSIGNED TO A CLIENT (ONLY SUPERADMIN WITH ADMIN ROLE CAN)
 exports.getAssignedUsers = async (req, res) => {
   const { platform, clientId } = req.params;
