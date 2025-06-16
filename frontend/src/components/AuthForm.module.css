@@ -184,3 +184,49 @@ input:focus {
   cursor: pointer;
   color: inherit;
 }
+
+/*Icons*/
+.bgIcons {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.bgIcon {
+  position: absolute;
+  opacity: 0.06;
+  width: 50px;
+  height: auto;
+  animation: float 12s ease-in-out infinite;
+  z-index: 0;
+}
+
+@keyframes float {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+
+/* Facebook icons */
+.facebook1 { top: 5%; left: 6%; animation-delay: 0s; }
+.facebook2 { bottom: 12%; right: 8%; animation-delay: 1.5s; }
+.facebook3 { top: 40%; left: 8%; animation-delay: 3s; }
+.facebook4 { bottom: 35%; left: 18%; animation-delay: 4.5s; }
+.facebook5 { top: 60%; right: 12%; animation-delay: 6s; }
+
+/* Instagram icons */
+.instagram1 { bottom: 10%; left: 10%; animation-delay: 2s; }
+.instagram2 { top: 60%; right: 10%; animation-delay: 1s; }
+.instagram3 { bottom: 30%; right: 20%; animation-delay: 4s; }
+.instagram4 { top: 25%; left: 15%; animation-delay: 5.5s; }
+.instagram5 { bottom: 5%; right: 5%; animation-delay: 6.5s; }
+
+/* Twitter icons */
+.twitter1 { top: 6%; right: 6%; animation-delay: 0.5s; }
+.twitter2 { bottom: 15%; left: 12%; animation-delay: 3.5s; }
+.twitter3 { top: 70%; right: 15%; animation-delay: 5s; }
+.twitter4 { top: 45%; right: 25%; animation-delay: 5.5s; }
+.twitter5 { bottom: 20%; left: 25%; animation-delay: 6.2s; }
