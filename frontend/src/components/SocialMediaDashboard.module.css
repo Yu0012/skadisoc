@@ -96,30 +96,3 @@
     }
   }
   
-  /* 🔙 Back to Login button styling */
-.backButton {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  font-size: 0.95rem;
-  color: #1f2937;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  font-weight: 500;
-  z-index: 10;
-  transition: color 0.2s ease;
-}
-
-.backButton:hover {
-  color: #3177b0;
-}
-
-/* Optional dark theme support */
-[data-selected-theme='dark'] .backButton {
-  color: #f0f0f0;
-}
-
-[data-selected-theme='dark'] .backButton:hover {
-  color: #60a5fa;
-}

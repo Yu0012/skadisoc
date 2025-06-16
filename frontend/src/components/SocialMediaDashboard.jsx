@@ -1,69 +1,49 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaXTwitter, FaMeta, FaLinkedin } from 'react-icons/fa6'; // Social icons
-import clientLogo from '../assets/skadilogo_light.png'; // Skadi logo
-import styles from "../components/SocialMediaDashboard.module.css"; // CSS module
+import React, { useState, useEffect } from 'react';
+import {FaXTwitter, FaMeta, FaLinkedin} from 'react-icons/fa6';
+import clientLogo from '../assets/skadilogo_light.png';
+import styles from "../components/SocialMediaDashboard.module.css"; // Import your CSS file for styling
 
-// ⬇️ Handlers to redirect to backend OAuth routes
 const handleFBLogin = () => {
-  window.location.href = "http://localhost:5000/auth/facebook"; // Replace with your backend live URL
-};
+    window.location.href = "http://localhost:5000/auth/facebook"; // Redirect to backend auth route
+  };
 
 const handleTWTLogin = () => {
-  window.location.href = "http://localhost:5000/auth/twitter";
+  window.location.href = "http://localhost:5000/auth/twitter"; // Redirect to backend auth route
 };
 
 const handleLinkedInLogin = () => {
-  window.location.href = "http://localhost:5000/auth/linkedin";
+  window.location.href = "http://localhost:5000/auth/linkedin"; // Redirect to backend auth route
 };
 
 const SocialMediaDashboard = () => {
-  const navigate = useNavigate(); // Enables programmatic navigation
 
-  return (
-    <div className={styles.pageWrapper}>
-      {/* 🔙 Top-left Back to Login Button */}
-      <div className={styles.backButton} onClick={() => navigate('/login')}>
-        <FaArrowLeft style={{ marginRight: '6px' }} />
-        Back to Login
-      </div>
-
-      {/* 📦 Centered Login Card */}
-      <div className={styles.CenteredContainer}>
-        <div>
-          {/* 🖼 Skadi Logo */}
-          <img src={clientLogo} alt="Skadi Logo" className={styles.clientLogo} />
-
-          {/* 📄 Intro Text */}
-          <div className={styles.textContainer}>
-            <p>Connect your Social Media to Skadi SoMed</p>
-            <p>Sign in using</p>
-          </div>
-
-          {/* 🔘 Social Login Buttons */}
-          <div className={styles.buttongroup}>
-            {/* Meta / Facebook Login */}
-            <button onClick={handleFBLogin} className={styles['facebook-button']}>
-              <FaMeta className={styles.icon} size={25} color="white" />
-              Login with Meta
-            </button>
-
-            {/* X (Twitter) Login */}
-            <button onClick={handleTWTLogin} className={styles['twitter-button']}>
-              <FaXTwitter className={styles.icon} size={25} color="white" />
-              Login with X
-            </button>
-
-            {/* LinkedIn Login */}
-            <button onClick={handleLinkedInLogin} className={styles['linkedIn-button']}>
-              <FaLinkedin className={styles.icon} size={25} color="white" />
-              Login with LinkedIn
-            </button>
-          </div>
+    return (
+      <div className={styles.pageWrapper}>
+        <div class={styles.CenteredContainer}>
+            <div>
+                <img src={clientLogo} alt="Skadi Logo" className={styles.clientLogo} />
+                <div className={styles.textContainer}>
+                  <p>Connect your Social Media to Skadi SoMed</p>
+                  <p>Sign in using</p>
+                </div>
+                <div className={styles.buttongroup}>
+                <button onClick={handleFBLogin} className={styles['facebook-button']}>
+                    <FaMeta className={styles.icon} size={25} color="white" />
+                    Login with Meta
+                  </button>
+                  <button onClick={handleTWTLogin} className={styles['twitter-button']}>
+                    <FaXTwitter className={styles.icon} size={25} color="white" />
+                    Login with X
+                  </button>
+                  <button onClick={handleLinkedInLogin} className={styles['linkedIn-button']}>
+                    <FaLinkedin className={styles.icon} size={25} color="white" />
+                    Login with LinkedIn
+                  </button>
+                </div>
+            </div>
         </div>
       </div>
-    </div>
-  );
+      );
 };
 
 export default SocialMediaDashboard;
