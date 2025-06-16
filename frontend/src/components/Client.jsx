@@ -11,6 +11,8 @@ const Client = () => {
 
   // User data states
   const [username, setUsername] = useState("");
+  const [roleType, setRoleType] = useState("");
+
   // Client data states
   const [clients, setClients] = useState([]); // Stores all client data
   const [searchQuery, setSearchQuery] = useState(""); // Search input value
@@ -71,7 +73,8 @@ const Client = () => {
         if (!res.ok) throw new Error("Failed to fetch user info");
 
         const data = await res.json();
-        setUsername(data.username); // username is sent from backend
+        setUsername(data.username); 
+        setRoleType(data.roleType);
       } catch (err) {
         console.error("User info fetch error:", err);
       }
@@ -360,19 +363,27 @@ const Client = () => {
           <div key={client._id} className="client-object">
             {/* Client Actions Dropdown */}
             <div className="popup-container">
-              <FaEllipsisV 
-                className="popup-icon" 
-                onClick={() => togglePopup(client._id)} 
-              />
+              {roleType === "superadmin" && (
+                <FaEllipsisV 
+                  className="popup-icon" 
+                  onClick={() => togglePopup(client._id)} 
+                />
+              )}
+
               {popupOpen === client._id && (
                 <div className="post-actions-dropdown" ref={popupRef}>
-                  <button onClick={() => handleEditClient(client)}>Edit</button>
-                  <button 
-                    className="delete-btn" 
-                    onClick={() => handleDeleteClient(client._id)}
-                  >
-                    Delete
-                  </button>
+                 {roleType === "superadmin" && (
+                    <>
+                      <button onClick={() => handleEditClient(client)}>Edit</button>
+                      <button 
+                        className="delete-btn" 
+                        onClick={() => handleDeleteClient(client._id)}
+                      >
+                        Delete
+                      </button>
+                    </>
+                  )}
+
                 </div>
               )}
             </div>

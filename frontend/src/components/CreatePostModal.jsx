@@ -97,6 +97,67 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     }
   }, [platform]);
 
+
+  const handleFileValidation = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const selectedPlatformName = platform; // Instagram / Facebook / Twitter
+
+    const fileType = file.type;
+    const fileSize = file.size;
+
+    let isValidType = false;
+    let maxSize = 5 * 1024 * 1024; // default 5MB for Twitter
+
+    // Validate by platform
+    switch (selectedPlatformName) {
+      case "Instagram":
+        isValidType = ["image/jpeg", "image/png"].includes(fileType);
+        maxSize = 8 * 1024 * 1024;
+        break;
+
+      case "Facebook":
+        isValidType = ["image/jpeg", "image/png", "image/gif"].includes(fileType);
+        maxSize = 25 * 1024 * 1024;
+        break;
+
+      case "Twitter":
+        isValidType = ["image/jpeg", "image/png", "image/gif"].includes(fileType);
+        maxSize = fileType === "image/gif" ? 15 * 1024 * 1024 : 5 * 1024 * 1024;
+        break;
+
+      default:
+        Swal.fire({
+          icon: "error",
+          title: "Platform Not Selected",
+          text: "Please select a platform before attaching a file.",
+        });
+        return;
+    }
+
+    if (!isValidType) {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid File Type",
+        text: `The selected file format is not allowed for ${platform}.`,
+      });
+      return;
+    }
+
+    if (fileSize > maxSize) {
+      Swal.fire({
+        icon: "error",
+        title: "File Too Large",
+        text: `The selected file exceeds the size limit for ${platform}.`,
+      });
+      return;
+    }
+
+    setAttachedFile(file);
+  };
+
+
   const toBase64 = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -208,11 +269,6 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     fileInputRef.current.click();
   };
 
-  // const handleFileChange = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) setAttachedFile(file);
-  // };
-
   if (!isOpen) return null;
 
   return (
@@ -255,8 +311,8 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                   type="file"
                   ref={fileInputRef}
                   className="file-input"
-                  onChange={(e) => setAttachedFile(e.target.files[0])}
-                  accept="image/*"
+                  onChange={handleFileValidation}
+                  accept=".jpg,.jpeg,.png,.gif"
                   style={{ display: "none" }}
                 /> 
 
