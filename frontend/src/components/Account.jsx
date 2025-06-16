@@ -52,6 +52,10 @@ const Accounts = () => {
   const [menus, setMenus] = useState([]); // Menu permissions
   const [actions, setActions] = useState([]); // Action permissions
   
+
+  //refresh state
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   // Edit state
   const [editAccount, setEditAccount] = useState(null); // Stores account being edited
 
@@ -319,7 +323,19 @@ const Accounts = () => {
   const goToNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
 
   // Refresh page
-  const handleRefresh = () => fetchAccounts();
+    const handleRefresh = () => {
+      setIsRefreshing(true);
+      Swal.fire({
+        title: 'Refreshing...',
+        timer: 1000,
+        timerProgressBar: true,
+        didOpen: () => Swal.showLoading(),
+        willClose: () => {
+          setIsRefreshing(false);
+          window.location.reload(); // or call fetchData() if you only want to re-fetch
+        }
+      });
+    };
 
   return (
     <div className="account-page-wrapper">

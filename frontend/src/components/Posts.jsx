@@ -109,7 +109,19 @@ useEffect(() => {
   };
   
   //handles for ui inputs
-  const handleRefresh = () => window.location.reload();
+    const handleRefresh = () => {
+      setIsRefreshing(true);
+      Swal.fire({
+        title: 'Refreshing...',
+        timer: 1000,
+        timerProgressBar: true,
+        didOpen: () => Swal.showLoading(),
+        willClose: () => {
+          setIsRefreshing(false);
+          window.location.reload(); // or call fetchData() if you only want to re-fetch
+        }
+      });
+    };
   
   const handleCreatePost = async (formValues) => {
   try {
@@ -323,6 +335,10 @@ useEffect(() => {
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+
+//refresh state
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
 
   //handle single checkbox change
   const handleCheckboxChange = (postID) => {

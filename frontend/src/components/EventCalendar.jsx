@@ -188,10 +188,24 @@ const EventCalendar = () => {
     );
   };
 
+  //refresh state
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
   // Reload the page
-  const handleRefresh = () => {
-    window.location.reload();
+    const handleRefresh = () => {
+    setIsRefreshing(true);
+    Swal.fire({
+      title: 'Refreshing...',
+      timer: 1000,
+      timerProgressBar: true,
+      didOpen: () => Swal.showLoading(),
+      willClose: () => {
+        setIsRefreshing(false);
+        window.location.reload(); // or call fetchData() if you only want to re-fetch
+      }
+    });
   };
+
 
   return (
     <div className="posts-container calendar-page-scroll">
