@@ -141,17 +141,16 @@ html, body {
   color: white;
   border: none;
   border-radius: 999px;
-  padding: 6px 14px;         /* ↓ smaller vertical/horizontal padding */
+  padding: 10px 20px;
   font-weight: bold;
-  font-size: 0.85rem;        /* ↓ smaller font */
+  font-size: 1rem;
   cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); /* ↓ softer shadow */
-  min-width: 120px;          /* ↓ narrower */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  min-width: 160px;
   text-align: center;
-  text-align-last: center;
+  text-align-last: center; /* ✅ center selected option */
   transition: background-color 0.3s ease;
 }
-
 
 .pill-dropdown:disabled {
   opacity: 0.6;
@@ -3821,22 +3820,22 @@ body:not([data-selected-theme="dark"]) .fc .fc-col-header-cell {
 
 /* 📊 Top Posts Widget – Light Mode Defaults */
 .top-posts-widget {
-  background: white; /* Sets the background color of the widget to white */
-  border-radius: 10px; /* Rounds the corners of the widget */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* Adds a soft shadow for depth */
-  padding: 20px; /* Adds spacing inside the widget on all sides */
-  width: 265px; /* Fixes the width of the card to 265 pixels */
-  min-height: 500px; /* Match with chart height */
-  display: flex; /* Enables Flexbox layout */
-  flex-direction: column; /* Stacks children vertically */
-  justify-content: flex-start; /* Aligns content to the top of the container */
-  color: #1f2937; /* Sets the text color to dark gray */
-  transition: background 0.3s, color 0.3s; /* Smoothly animates background and text color changes */
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  padding: 20px;
+  width: 280px; /* fixed width for all cards */
+  min-height: 320px; /* ensure equal height */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  color: #1f2937; /* dark text by default */
+  transition: background 0.3s, color 0.3s;
 }
 
 /* Title of each widget */
 .widget-title {
-  font-size: 1.0rem;
+  font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 1rem;
   text-align: left;
@@ -3846,15 +3845,13 @@ body:not([data-selected-theme="dark"]) .fc .fc-col-header-cell {
 /* List container */
 .top-posts-list {
   list-style: none;
-  margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px; /* space between items, not the bottom */
+  margin: 0;
 }
 
 /* Each list item */
 .top-post-item {
+  margin-bottom: 1rem;
   padding: 0.75rem 1rem;
   background-color: var(--top-item-bg, #f9fafb);
   color: var(--top-item-text, #1f2937);
