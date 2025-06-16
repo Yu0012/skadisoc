@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {FaXTwitter, FaMeta, FaLinkedin} from 'react-icons/fa6';
+import {FaXTwitter, FaMeta, FaLinkedin, FaArrowLeft} from 'react-icons/fa6';
 import clientLogo from '../assets/skadilogo_light.png';
 import styles from "../components/SocialMediaDashboard.module.css"; // Import your CSS file for styling
 import config from '../config';

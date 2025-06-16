@@ -97,7 +97,6 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     }
   }, [platform]);
 
-
   const handleFileValidation = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -156,7 +155,6 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
 
     setAttachedFile(file);
   };
-
 
   const toBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -269,6 +267,11 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     fileInputRef.current.click();
   };
 
+  // const handleFileChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) setAttachedFile(file);
+  // };
+
   if (!isOpen) return null;
 
   return (
@@ -312,7 +315,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                   ref={fileInputRef}
                   className="file-input"
                   onChange={handleFileValidation}
-                  accept=".jpg,.jpeg,.png,.gif"
+                  accept="image/*, .mp4" // 📂 Accepts various media types
                   style={{ display: "none" }}
                 /> 
 
@@ -334,11 +337,11 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                         timeIntervals={10} // ⏱️ Allows flexible 10-minute steps
                         dateFormat="MMMM d, yyyy h:mm aa"
                         minTime={
-                          scheduledDate && new Date().toDateString() === scheduledDate.toDateString()
+                          scheduledDate?.toDateString() === new Date().toDateString()
                             ? new Date()
-                            : new Date().setHours(0, 0, 0, 0)
+                            : new Date(new Date().setHours(0, 0, 0, 0)) // ✅ wrap back to Date
                         }
-                        maxTime={new Date().setHours(23, 59, 59, 999)}
+                        maxTime={new Date(new Date().setHours(23, 59, 59, 999))} // ✅ also wrap
                         minDate={new Date()} // 🚫 Disables past dates
                         inline
                         onClickOutside={() => setShowDatePicker(false)}
