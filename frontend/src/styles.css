@@ -4848,3 +4848,9 @@ body.modal-open {
   color: #222 !important;
 }
 
+
+.past-event-green {
+  background-color: #f7c5c5 !important;  /* Light green */
+  border: 1px solid #7d2e2e !important;  /* Deep green */
+  color: #5e1b1b !important;             /* Text color */
+}

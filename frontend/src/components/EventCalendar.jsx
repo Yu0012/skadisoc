@@ -178,15 +178,21 @@ const EventCalendar = () => {
     updateTitle(calendarApi.getDate());
   };
 
-  // Render custom content inside calendar events
-  const renderEventContent = (eventInfo) => {
-    return (
-      <div className="custom-event-box">
-        <span className="custom-event-time">{eventInfo.timeText}</span>
-        <span className="custom-event-title">{eventInfo.event.extendedProps.clientName}</span>
-      </div>
-    );
-  };
+
+  
+ const renderEventContent = (eventInfo) => {
+  const eventDate = new Date(eventInfo.event.start);
+  const now = new Date();
+  const isPast = eventDate < now;
+
+  return (
+    <div className={`custom-event-box ${isPast ? "past-event-green" : ""}`}>
+      <span className="custom-event-time">{eventInfo.timeText}</span>
+      <span className="custom-event-title">{eventInfo.event.extendedProps.clientName}</span>
+    </div>
+  );
+};
+
 
   //refresh state
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -361,6 +367,7 @@ const EventCalendar = () => {
                     setSelectedPlatform("");
                   }}
                   eventContent={renderEventContent}
+                  
                 />
               </div>
             </div>
