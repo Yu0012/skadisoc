@@ -3,30 +3,38 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { BsMoon, BsSun } from 'react-icons/bs';
 import logoLight from '../assets/skadiLogo_light.png';
 import logoDark from '../assets/skadiLogo.png';
+import facebookIcon from '../assets/facebook.png';     // ✅ Ensure these are imported
+import instagramIcon from '../assets/instagram.png';   // ✅ Required for icon usage
+import twitterIcon from '../assets/twitter.png';       // ✅ Required for icon usage
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../utils/auth';
 import styles from './AuthForm.module.css';
 
 const AuthForm = () => {
+  // State variables for form and theme
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [logoSrc, setLogoSrc] = useState(logoLight);
+
   const navigate = useNavigate();
 
+  // Toggle password visibility
   const togglePassword = () => setShowPassword(!showPassword);
 
+  // Toggle light/dark mode and store in localStorage
   const toggleTheme = () => {
     const newMode = !isDarkMode;
     const newTheme = newMode ? 'dark' : 'light';
     setIsDarkMode(newMode);
-    localStorage.setItem('theme', newTheme); // ✅ Use 'theme', not 'darkMode'
+    localStorage.setItem('theme', newTheme);
     document.documentElement.dataset.selectedTheme = newTheme;
     document.body.dataset.selectedTheme = newTheme;
   };
 
+  // Load theme preference from localStorage on mount
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'light';
     const dark = savedTheme === 'dark';
@@ -35,10 +43,12 @@ const AuthForm = () => {
     document.body.dataset.selectedTheme = savedTheme;
   }, []);
 
+  // Switch logo based on theme
   useEffect(() => {
     setLogoSrc(isDarkMode ? logoDark : logoLight);
   }, [isDarkMode]);
 
+  // Handle login form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -66,64 +76,95 @@ const AuthForm = () => {
     }
   };
 
+  // Navigate to guest login
   const handleGuestLogin = () => {
     navigate('/client-login');
   };
 
   return (
-    <div className={`${styles.wrapper} ${isDarkMode ? styles.dark : styles.light}`}>
-      <div className={styles.themeToggle} onClick={toggleTheme}>
-        {isDarkMode ? <BsSun /> : <BsMoon />}
+    <> {/* Fragment wrapper required for multiple root-level elements */}
+
+      {/* 🌟 Floating background icons */}
+      <div className={styles.bgIcons}>
+        {/* Facebook icons */}
+        <img src={facebookIcon} className={`${styles.bgIcon} ${styles.facebook1}`} alt="facebook" />
+        <img src={facebookIcon} className={`${styles.bgIcon} ${styles.facebook2}`} alt="facebook" />
+        <img src={facebookIcon} className={`${styles.bgIcon} ${styles.facebook3}`} alt="facebook" />
+        <img src={facebookIcon} className={`${styles.bgIcon} ${styles.facebook3}`} alt="facebook" />
+        <img src={facebookIcon} className={`${styles.bgIcon} ${styles.facebook3}`} alt="facebook" />
+
+        {/* Instagram icons */}
+        <img src={instagramIcon} className={`${styles.bgIcon} ${styles.instagram1}`} alt="instagram" />
+        <img src={instagramIcon} className={`${styles.bgIcon} ${styles.instagram2}`} alt="instagram" />
+        <img src={instagramIcon} className={`${styles.bgIcon} ${styles.instagram3}`} alt="instagram" />
+        <img src={instagramIcon} className={`${styles.bgIcon} ${styles.instagram3}`} alt="instagram" />
+        <img src={instagramIcon} className={`${styles.bgIcon} ${styles.instagram3}`} alt="instagram" />
+
+        {/* Twitter icons */}
+        <img src={twitterIcon} className={`${styles.bgIcon} ${styles.twitter1}`} alt="twitter" />
+        <img src={twitterIcon} className={`${styles.bgIcon} ${styles.twitter2}`} alt="twitter" />
+        <img src={twitterIcon} className={`${styles.bgIcon} ${styles.twitter3}`} alt="twitter" />
+        <img src={twitterIcon} className={`${styles.bgIcon} ${styles.twitter3}`} alt="twitter" />
+        <img src={twitterIcon} className={`${styles.bgIcon} ${styles.twitter3}`} alt="twitter" />
       </div>
 
-      <div className={styles.card}>
-        <img src={logoSrc} alt="Skadi Systems" className={styles.logo} />
-        <h2>Welcome Back</h2>
-        <p className={styles.subtitle}>Please enter your details to login</p>
+      {/* 🌗 Auth card with dark/light theme */}
+      <div className={`${styles.wrapper} ${isDarkMode ? styles.dark : styles.light}`}>
+        <div className={styles.themeToggle} onClick={toggleTheme}>
+          {isDarkMode ? <BsSun /> : <BsMoon />}
+        </div>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="your@email.com"
-            />
-          </div>
+        <div className={styles.card}>
+          <img src={logoSrc} alt="Skadi Systems" className={styles.logo} />
+          <h2>Welcome Back</h2>
+          <p className={styles.subtitle}>Please enter your details to login</p>
 
-          <div className={`${styles.formGroup} ${styles.passwordGroup}`}>
-            <label className={styles.label}>Password</label>
-            <div className={styles.passwordWrapper}>
+          {/* 📝 Login Form */}
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Email</label>
               <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
-                placeholder="your password"
+                placeholder="your@email.com"
               />
-              <div className={styles.eyeToggle} onClick={togglePassword}>
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </div>
+
+            <div className={`${styles.formGroup} ${styles.passwordGroup}`}>
+              <label className={styles.label}>Password</label>
+              <div className={styles.passwordWrapper}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="your password"
+                />
+                <div className={styles.eyeToggle} onClick={togglePassword}>
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </div>
               </div>
             </div>
-          </div>
 
-          <button type="submit" className={styles.loginBtn}>Login</button>
-        </form>
+            <button type="submit" className={styles.loginBtn}>Login</button>
+          </form>
 
-        <div className={styles.actions}>
-          <div className={styles.divider}>
-            <hr />
-            <span>Or continue with</span>
-            <hr />
+          {/* 🔁 Guest or alternative login */}
+          <div className={styles.actions}>
+            <div className={styles.divider}>
+              <hr />
+              <span>Or continue with</span>
+              <hr />
+            </div>
+            <button type="button" onClick={handleGuestLogin} className={styles.guestBtn}>
+              Guest Login
+            </button>
           </div>
-          <button type="button" onClick={handleGuestLogin} className={styles.guestBtn}>
-            Guest Login
-          </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
