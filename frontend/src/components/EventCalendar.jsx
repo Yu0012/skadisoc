@@ -226,35 +226,40 @@ const EventCalendar = () => {
                 />
                 <span>Select All</span>
               </label>
-              {availableClients.map((client, index) => (
-                <label key={index} className="client-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={activeClients.has(client)}
-                    onChange={() => {
-                      setActiveClients((prev) => {
-                        const updated = new Set(prev);
-                        updated.has(client) ? updated.delete(client) : updated.add(client);
-                        return updated;
-                      });
-                    }}
-                  />
-                  <span>{client}</span>
-                </label>
-              ))}
+              <div className="client-checkbox-scroll">
+                {availableClients.map((client, index) => (
+                  <label key={index} className="client-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={activeClients.has(client)}
+                      onChange={() => {
+                        setActiveClients((prev) => {
+                          const updated = new Set(prev);
+                          updated.has(client) ? updated.delete(client) : updated.add(client);
+                          return updated;
+                        });
+                      }}
+                    />
+                    <span>{client}</span>
+                  </label>
+                ))}
+              </div>
 
               {/* Mini calendar */}
               <Calendar
                 calendarType="gregory"
                 tileClassName={({ date, view }) => {
-                  if (view === "month") {
-                    const match = events.some(
-                      (e) =>
-                        activeClients.has(e.extendedProps.client) &&
-                        new Date(e.start).toDateString() === date.toDateString()
-                    );
-                    return match ? "square-highlight" : null;
-                  }
+                  if (view !== "month") return null;
+
+                  const dayString = date.toDateString();
+
+                  const match = events.some(
+                    (e) =>
+                      activeClients.has(e.extendedProps.clientName) && // ✅ use clientName (shown in checkbox)
+                      new Date(e.start).toDateString() === dayString
+                  );
+
+                  return match ? "square-highlight" : null;
                 }}
               />
             </>
@@ -326,6 +331,18 @@ const EventCalendar = () => {
 
                   dateClick={(info) => {
                     const clickedDate = new Date(info.dateStr);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // Normalize to midnight for accurate comparison
+
+                    if (clickedDate < today) {
+                      Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid Date',
+                        text: 'You cannot schedule a post in the past.',
+                      });
+                      return;
+                    }
+
                     setCreateInitialData({ scheduledDate: clickedDate });
                     setSelectedPlatform("");
                   }}

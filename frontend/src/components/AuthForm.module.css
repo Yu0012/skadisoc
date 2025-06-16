@@ -1,244 +1,233 @@
-:root {
-  --input-bg: #fff;
-  --input-border: #ccc;
-  --input-text: #111;
-  --icon-color: #666;
-  --form-bg: rgba(255, 255, 255, 0.9);
-  --form-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --primary-color: #2563eb;
-}
-
-.dark-theme {
-  --input-bg: #2b2b2b;
-  --input-border: #444;
-  --input-text: #f3f3f3;
-  --icon-color: #aaa;
-  --form-bg: rgba(20, 20, 20, 0.9);
-  --form-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
-  --primary-color: #3b82f6;
-}
-
-.authFormContainer {
+/* Wrapper mode toggle */
+.wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Full screen height */
-  background-color: var(--bg-color-secondary, #f4f6fa);
-  position: relative;
+  height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
+.light {
+  background-color: #f9fafb;
+  color: #1f2937;
+}
 
-.auth-form {
-  background-color: var(--form-bg);
-  backdrop-filter: blur(8px);
-  border-radius: 12px;
-  box-shadow: var(--form-shadow);
-  padding: 2rem;
-  max-width: 400px;
+.dark {
+  background-color: #22262c;
+  color: #f0f0f0;
+}
+
+.card {
+  background-color: #ffffff; /* default for light mode */
+  color: #1f2937;
+  padding: 3em;
+  border-radius: 16px;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.15);
   width: 100%;
-  z-index: 2;
-  margin: 0 auto;
-}
-
-.auth-header {
+  max-width: 400px;
   text-align: center;
+  transition: all 0.3s ease;
+}
+
+.dark .card {
+  background-color: #1b1e26; /* slightly grey background */
+  color: #f0f0f0;
+}
+
+.logo {
+  width: 140px;
   margin-bottom: 1rem;
+  transition: transform 0.3s ease;
 }
 
-.logo-container img {
-  width: 120px;
-  height: auto;
-  margin-bottom: 0.5rem;
+.logo:hover {
+  transform: scale(1.05);
 }
 
-.auth-header h1 {
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: var(--input-text);
+.subtitle {
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+  color: inherit;
 }
 
-.auth-header p {
-  color: var(--icon-color);
-  font-size: 0.9rem;
-}
-
-.form-fields {
+.form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
-.form-group label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--input-text);
-  margin-bottom: 0.3rem;
-}
-
-.input-container {
-  position: relative;
+.formGroup {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
   border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 0 12px;
-  transition: border-color 0.3s;
+  border-radius: 8px;
+  background-color: white;
+  color: inherit;
+  font-size: 0.95rem;
+  transition: border 0.3s ease, background-color 0.3s ease;
 }
 
-.input-icon {
-  position: absolute;
-  left: 0.75rem;
-  color: var(--icon-color);
-  display: flex;
-  align-items: center;
-}
-
-.input-container input {
-  flex: 1;
-  border: none;
+input:focus {
+  border-color: #3177b0;
   outline: none;
-  padding: 12px 8px;
-  font-size: 14px;
-  background-color: transparent;
-  color: #333;
+  box-shadow: 0 0 0 2px rgba(49, 119, 176, 0.3);
 }
 
-.password-toggle {
+.dark input {
+  background-color: #1e1e2f;
+  border-color: #444;
+  color: #f0f0f0;
+}
+
+/* Password eye toggle */
+.passwordWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.eyeToggle {
   position: absolute;
-  right: 0.75rem;
-  background: none;
-  border: none;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
   cursor: pointer;
-  color: var(--icon-color);
+  font-size: 1rem;
+  color: #6b7280;
 }
 
-.password-toggle svg {
-  width: 20px;
-  height: 20px;
-  fill: #333;
+/* Buttons */
+.loginBtn {
+  background-color: #3177b0;
+  color: #fff;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.loginBtn:hover {
+  background-color: #255e90;
+}
+
+.loginBtn,
+.guestBtn {
+  width: 100%;
+}
+
+.formGroup input {
+  width: 100%;
+  max-width: 366px;      /* ✅ shrink width */
+  margin-left: auto;     /* ✅ center the input */
+  margin-right: auto;
   display: block;
 }
 
-
-.label-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.actions {
+  margin-top: 1.5rem;
 }
 
-.label-container a {
-  color: var(--primary-color);
-  text-decoration: none;
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 0.85rem;
+  color: #6b7280;
+  margin: 1rem 0;
 }
 
-.remember-me {
-  display: flex;
-  align-items: center;
-  font-size: 0.875rem;
-  color: var(--input-text);
-  gap: 0.5rem;
-}
-
-.submit-button button {
-  width: 100%;
-  padding: 0.6rem;
-  background-color: var(--primary-color);
-  color: white;
-  font-weight: 500;
-  font-size: 0.9rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.submit-button button:hover {
-  background-color: #1d4ed8;
-}
-
-.divider-container {
-  display: flex;
-  align-items: center;
-  margin: 1.5rem 0;
-}
-
-.divider-line {
+.divider hr {
   flex: 1;
+  border: none;
   height: 1px;
-  background-color: var(--input-border);
+  background-color: #cbd5e1;
 }
 
-.divider-text {
-  padding: 0 0.5rem;
-  font-size: 0.85rem;
-  color: var(--icon-color);
-}
-
-.google-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  border: 1px solid var(--input-border);
-  background-color: var(--input-bg);
-  color: var(--input-text);
-  padding: 0.6rem;
-  width: 100%;
-  border-radius: 6px;
+.guestBtn {
+  background-color: transparent;
+  border: 2px solid #3177b0;
+  color: #3177b0;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
-.google-btn:hover {
-  background-color: rgba(59, 130, 246, 0.1);
-  border-color: var(--primary-color);
+.guestBtn:hover {
+  background-color: #3177b0;
+  color: white;
 }
 
-.theme-toggle {
+.themeToggle {
   position: absolute;
   top: 20px;
   right: 20px;
   font-size: 1.5rem;
   cursor: pointer;
-  z-index: 3;
-  background: none;
-  border: none;
-  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.3));
+  color: inherit;
 }
 
-/* Floating Icons (reuse your current animation styles) */
-.floating-icons {
+/*Icons*/
+.bgIcons {
   position: absolute;
-  top: 0;
-  left: 0;
+  z-index: 0; /* ✅ Make sure it's below the card */
+  pointer-events: none; /* ✅ Allow clicks to pass through */
   width: 100%;
   height: 100%;
-  z-index: 0;
-  pointer-events: none;
+  overflow: hidden;
 }
 
-.floating-icon {
+.bgIcon {
   position: absolute;
-  will-change: transform, opacity;
-  transition: all 0.3s ease;
+  opacity: 0.06;
+  width: 50px;
+  height: auto;
+  animation: float 12s ease-in-out infinite;
+  z-index: 0;
 }
 
-.floating-icon:hover {
-  transform: scale(var(--hover-scale));
-  filter: var(--hover-glow);
-  opacity: var(--hover-opacity);
+@keyframes float {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); }
 }
 
-input:-webkit-autofill {
-  background-color: transparent !important;
-  -webkit-box-shadow: 0 0 0 1000px white inset !important;
-  -webkit-text-fill-color: var(--text-color, #1f2937) !important;
-  transition: background-color 9999s ease-in-out 0s;
-}
 
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
+/* Facebook icons */
+.facebook1 { top: 5%; left: 6%; animation-delay: 0s; }
+.facebook2 { bottom: 12%; right: 8%; animation-delay: 1.5s; }
+.facebook3 { top: 40%; left: 8%; animation-delay: 3s; }
+.facebook4 { bottom: 35%; left: 18%; animation-delay: 4.5s; }
+.facebook5 { top: 60%; right: 12%; animation-delay: 6s; }
+
+/* Instagram icons */
+.instagram1 { bottom: 10%; left: 10%; animation-delay: 2s; }
+.instagram2 { top: 60%; right: 10%; animation-delay: 1s; }
+.instagram3 { bottom: 30%; right: 20%; animation-delay: 4s; }
+.instagram4 { top: 25%; left: 15%; animation-delay: 5.5s; }
+.instagram5 { bottom: 5%; right: 5%; animation-delay: 6.5s; }
+
+/* Twitter icons */
+.twitter1 { top: 6%; right: 6%; animation-delay: 0.5s; }
+.twitter2 { bottom: 15%; left: 12%; animation-delay: 3.5s; }
+.twitter3 { top: 70%; right: 15%; animation-delay: 5s; }
+.twitter4 { top: 45%; right: 25%; animation-delay: 5.5s; }
+.twitter5 { bottom: 20%; left: 25%; animation-delay: 6.2s; }

@@ -428,8 +428,8 @@ useEffect(() => {
                 </td>
                 <td>
                   {/* Highlights colours based on text */}
-                  <span className={`status-highlight ${post.status?.toLowerCase()}`}>
-                    {post.status || "-"}
+                  <span className={`status-highlight ${post.status?.toLowerCase()}`} style={{ fontSize: "14px" }}>
+                    {post.status.toUpperCase() || "-"}
                   </span>
                 </td>
                 <td>
@@ -483,7 +483,11 @@ useEffect(() => {
           />
           <FaAngleLeft
             className="pagination-navigation"
-            onClick={() => !(isModalOpen || postMenuDropdown) && setCurrentPage(currentPage - 1)}
+            onClick={() => {
+              if (currentPage > 1 && !isModalOpen && !postMenuDropdown) {
+                setCurrentPage(currentPage - 1);
+              }
+            }}
             disabled={currentPage === 1 || isModalOpen || postMenuDropdown}
           />
 
@@ -502,7 +506,11 @@ useEffect(() => {
           
           <FaAngleRight
             className="pagination-navigation"
-            onClick={() => !(isModalOpen || postMenuDropdown) && setCurrentPage(currentPage + 1)}
+            onClick={() => {
+              if (currentPage < totalPages && !isModalOpen && !postMenuDropdown) {
+                setCurrentPage(currentPage + 1);
+              }
+            }}
             disabled={currentPage === totalPages || isModalOpen || postMenuDropdown}
           />
           <FaAnglesRight

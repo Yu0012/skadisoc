@@ -3385,11 +3385,9 @@ input::-webkit-inner-spin-button {
 [data-selected-theme="dark"] {
   --textarea-placeholder: #a1a1a1;
   --logo-filter: brightness(150%);
-  --login-bg: #33333f; /* 原来是 #1f2937，颜色太深 */
   --bg-color: #1f2027;
   --bg-color-secondary:#272831;
   --text-color: white;
-  --login-card-bg: #2c2d35; /* or something slightly lighter than #1f2027 */
 
 
   --button-bg: #3177b0;
@@ -4039,7 +4037,6 @@ body.swal-blur .posts-container {
   background-color: var(--bg-color-secondary);
   z-index: 100;
   padding: 10px 20px;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* 📏 Pagination content */
@@ -4554,18 +4551,6 @@ html.theme-transition {
   transform: scale(1.2);
 }
 
-
-.login-wrapper {
-  background-color: var(--bg-color-secondary);
-  color: var(--text-color);
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-
 .theme-toggle-global {
   position: absolute;
   top: 20px;
@@ -4580,75 +4565,6 @@ html.theme-transition {
   transform: scale(1.2);
 }
 
-/* Force white label and subtext in dark mode */
-[data-selected-theme="dark"] .login-form label,
-[data-selected-theme="dark"] .login-form .password-label-wrapper label,
-[data-selected-theme="dark"] .login-card p {
-  color: white !important;
-}
-
-
-.login-card {
-  background-color: var(--login-bg);
-  color: var(--text-color);
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 420px;
-  text-align: center;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  background-color: var(--login-card-bg);
-}
-
-
-.login-card h2 {
-  margin-bottom: 6px;
-}
-
-.login-card p {
-  font-size: 14px;
-  color: var(--text-subtle, #666);
-  margin-bottom: 20px;
-}
-
-.login-form .form-group {
-  text-align: left;
-  margin-bottom: 20px;
-}
-
-.login-form label {
-  color: var(--text-color); /* Use theme-driven color */
-  font-weight: 600;
-  margin-bottom: 6px;
-  display: block;
-  transition: color 0.3s ease;
-}
-
-
-.login-form {
-  text-align: left;
-  
-}
-
-.login-form input {
-  background-color: var(--input-bg);
-  color: var(--text-color);
-  border: 1px solid #ccc;
-  padding: 10px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  width: 100%;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-
-.login-logo {
-  width: 100px;
-  margin-bottom: 10px;
-    filter: var(--logo-filter);
-
-}
 
 .form-group {
   margin-bottom: 1.25rem;
@@ -4703,22 +4619,6 @@ html.theme-transition {
   color: #6b7280;
   cursor: pointer;
   font-size: 1rem;
-}
-
-.login-btn {
-  width: 100%;
-  padding: 10px;
-  background-color: #0a57f5;
-  color: white;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  margin-top: 20px;
-  cursor: pointer;
-}
-
-.login-btn:hover {
-  background-color: #004de1;
 }
 
 .divider {
@@ -4925,4 +4825,29 @@ body.modal-open {
 .platform-toggle-btn:hover {
   color: white;
   background-color: #0a0f5c; 
+}
+
+.react-datepicker__day.past-date {
+  background-color: #f8d7da;
+  color: #721c24;
+  text-decoration: line-through;
+  pointer-events: none; /* optional: prevent interaction */
+}
+
+.client-checkbox-scroll {
+  max-height: 160px; /* About 5 items tall */
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-top: 0.5rem;
+}
+
+.square-highlight {
+  background-color: #ffefc2 !important;
+  border-radius: 50%;
+  font-weight: bold;
+  color: #222 !important;
+}
+
+.modal-body .left-column .input-field {
+  width: 93.5% !important;
 }
