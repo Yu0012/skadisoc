@@ -17,7 +17,6 @@ const Dashboard = () => {
     return localStorage.getItem("selectedClient") || "";
   });
 
-  
   // State for storing posts data
   const [allPosts, setAllPosts] = useState([]);
   const [filteredClients, setFilteredClients] = useState([]);
