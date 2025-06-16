@@ -62,13 +62,7 @@ const Dashboard = () => {
           post.selectedPlatforms.includes(selectedPlatform.toLowerCase())
         );
 
-        // Get unique client IDs from filtered posts using Set
-        const clientsWithPosts = [...new Set(platformFiltered.map(post => post.client))];
-
-        // Match client objects with posts and filter out any undefined values
-        const matchedClientObjs = clientsWithPosts
-          .map(id => allClients.find(c => c._id === id))
-          .filter(Boolean);
+        const matchedClientObjs = allClients; // Show all available clients
 
         // 🔁 STEP 3: Random default selection on first load
         if (!localStorage.getItem("selectedPlatform")) {
