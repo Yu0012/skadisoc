@@ -396,8 +396,8 @@ const Accounts = () => {
               <tr key={account._id}>
                 <td>{account.username}</td>
                 <td>{account.email}</td>
-                <td>{account.roleType}</td>
-                <td>{account.role}</td>
+                <td>{account.roleType.charAt(0).toUpperCase() + account.roleType.slice(1)}</td>
+                <td>{account.role.charAt(0).toUpperCase() + account.role.slice(1)}</td>
                 <td>
                   <FaEllipsisV 
                     className="popup-icon" 
