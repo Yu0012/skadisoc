@@ -51,17 +51,16 @@ const Dashboard = () => {
         if (!postsRes.ok || !clientsRes.ok) {
           throw new Error("❌ Failed to fetch posts or clients");
         }
-
+        
         const postData = await postsRes.json();
         const clientData = await clientsRes.json();
+        if (!clientData || !Array.isArray(clientData.clients)) {
+          setFilteredClients([]);
+          return;
+        }
 
         const allClients = clientData.clients;
         
-        // Filter posts by selected platform (case-insensitive)
-        const platformFiltered = postData.posts.filter(post =>
-          post.selectedPlatforms.includes(selectedPlatform.toLowerCase())
-        );
-
         const matchedClientObjs = allClients; // Show all available clients
 
         // 🔁 STEP 3: Random default selection on first load
@@ -80,7 +79,7 @@ const Dashboard = () => {
 
 
         // Update state with filtered data
-        setAllPosts(platformFiltered);
+        setAllPosts(postData.posts || []);
         setFilteredClients(matchedClientObjs);
         
         setFilteredPosts([]);  // Clear filtered posts
@@ -288,7 +287,7 @@ const Dashboard = () => {
             className="dashboard-dropdown"
           >
             <option value="">Select Client</option>
-            {filteredClients.map((client) => (
+            {(filteredClients || []).map((client) => (
               <option key={client._id} value={client._id}>
                 {client.pageName || client.username || client.name || client._id}
               </option>
