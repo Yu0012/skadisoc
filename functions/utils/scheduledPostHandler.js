@@ -49,6 +49,34 @@ const postToFacebook = async (post, client) => {
       }
     }
 
+    else if (hasFile && ['.mp4', '.avi', '.mkv', '.mov', '.gif'].includes(path.extname(imagePath).toLowerCase())) {
+      const url = `https://graph.facebook.com/${pageId}/videos`;
+      const formData = new FormData();
+      formData.append("access_token", pageAccessToken);
+      formData.append("file_url", post.filePath); // Use this line if you want to upload from a URL
+      // formData.append("source", fs.createReadStream(path.join(__dirname, '..', post.filePath))); // Use this line if you want to upload from local file system
+      formData.append("description", post.content);
+      formData.append("published", "false");
+      formData.append("title", post.content);
+
+      const response = await axios.post(url, formData, {
+        headers: formData.getHeaders(),
+      });
+      const mediaId = response.data.id;
+      console.log('✅ Facebook Video ID:', mediaId);
+      // Publish the video via feed
+      const publishUrl = `https://graph.facebook.com/${pageId}/feed`;
+      const publishResponse = await axios.post(publishUrl, {
+        message: post.content,
+        attached_media: JSON.stringify([{ media_fbid: mediaId }]),
+        access_token: pageAccessToken,
+      });
+      if (publishResponse.data.id) {
+        console.log('✅ Facebook Video Post ID:', publishResponse.data.id);
+        return publishResponse.data.id; // ⬅️ Return post ID
+      }
+    }
+
     // 📝 If no valid image, just post text
     const publishUrl = `https://graph.facebook.com/${pageId}/feed`;
     const publishResponse = await axios.post(publishUrl, {
