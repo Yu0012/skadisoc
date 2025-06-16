@@ -39,6 +39,23 @@ const Client = () => {
   const baseUrl = `${config.API_BASE}/api/clients/${platformSlug}`; // Base API endpoint
   const clientsPerPage = 7; // Number of clients to show per page (if implementing pagination)
 
+
+
+  const fetchClients = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch(`${baseUrl}/all`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error("Failed to fetch clients");
+    const data = await res.json();
+    setClients(data.clients || []);
+  } catch (err) {
+    console.error(`Error fetching clients:`, err);
+    setClients([]);
+  }
+};
+
   // ========== INITIALIZATION ==========
   // Fetch user info when component mounts
     useEffect(() => {
@@ -106,8 +123,8 @@ const Client = () => {
    * @param {string} clientId - ID of the client to delete
    */
   const handleDeleteClient = async (clientId) => {
-    setPopupOpen(null);
-    setClientMenuDropdown(null);
+    // setPopupOpen(null);
+    // setClientMenuDropdown(null);
 
     // Find client to get their name for confirmation message
     const client = clients.find(c => c._id === clientId);
@@ -116,9 +133,8 @@ const Client = () => {
     // Show confirmation dialog
     const result = await MySwal.fire({
       icon: 'warning',
-      title: <span style={{ fontSize: '1.5rem' }}>Confirm Deletion</span>,
-      html: `<p>You're about to delete <strong>${clientName}</strong>. This action cannot be undone.</p>`,
-      showCancelButton: true,
+      title: 'Confirm Deletion',
+      html: `You're about to delete <strong>${clientName}</strong>. This action cannot be undone.`,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Delete',
@@ -143,10 +159,16 @@ const Client = () => {
         document.body.classList.add('swal-blur');
         document.querySelector('.posts-container')?.classList.add('swal-blur-container');
       },
+      preConfirm: () => true,  // ensures fire() resolves correctly on confirm
       willClose: () => {
         document.body.classList.remove('swal-blur');
         document.querySelector('.posts-container')?.classList.remove('swal-blur-container');
+      },
+      didClose: () => {
+        setPopupOpen(null);
+        setClientMenuDropdown(null);
       }
+
     });
 
     // If user confirms deletion
@@ -178,7 +200,7 @@ const Client = () => {
           showClass: { popup: 'animate__animated animate__zoomIn' },
           hideClass: { popup: 'animate__animated animate__zoomOut' }
         });
-
+        await fetchClients();
         // Update client list
         setClients(prev => prev.filter(c => c._id !== clientId));
       } catch (err) {
@@ -191,7 +213,16 @@ const Client = () => {
           showClass: { popup: 'animate__animated animate__headShake' }
         });
       }
+    }else if (result.isDismissed) {
+      // Clean up blur and dropdown if user cancelled
+      document.body.classList.remove('swal-blur');
+      document.querySelector('.posts-container')?.classList.remove('swal-blur-container');
+      setPopupOpen(null);
+      setClientMenuDropdown(null);
     }
+
+
+
   };
 
   // Toggle client action popup

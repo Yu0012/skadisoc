@@ -408,45 +408,31 @@ exports.getAllAssignedClients = async (req, res) => {
 // DELETE SINGLE CLIENT (ONLY USER WITH ROLETYPE 'SUPERADMIN' & ROLE 'ADMIN' CAN) USED IN CLIENT.JSX
 exports.deleteOneClient = async (req, res) => {
   const { platform, clientId } = req.params;
-
-  // Check permissions - only superadmin with admin role can delete clients
-  if (!(req.user.roleType === 'superadmin' && req.user.role === 'admin')) {
-    return res.status(403).json({ message: 'Only superadmin with admin role can delete clients' });
-  }
-
-  if (!platformModels[platform]) {
-    return res.status(400).json({ message: 'Invalid platform' });
-  }
-
-  const ClientModel = platformModels[platform];
-  const userField = `assigned${capitalize(platform)}Clients`;
-
   try {
-    // Find the client first to verify it exists
-    const clientToDelete = await ClientModel.findById(clientId);
-    if (!clientToDelete) {
-      return res.status(404).json({ message: 'Client not found' });
+    let deletedClient;
+
+    switch (platform.toLowerCase()) {
+      case "facebook":
+        deletedClient = await FacebookClient.findByIdAndDelete(clientId);
+        break;
+      case "instagram":
+        deletedClient = await InstagramClient.findByIdAndDelete(clientId);
+        break;
+      case "twitter":
+        deletedClient = await TwitterClient.findByIdAndDelete(clientId);
+        break;
+      default:
+        return res.status(400).json({ error: "Unsupported platform" });
     }
 
-    // Delete the client
-    const deleteResult = await ClientModel.findByIdAndDelete(clientId);
+    if (!deletedClient) {
+      return res.status(404).json({ error: "Client not found" });
+    }
 
-    // Remove this client from all users' assigned clients arrays
-    await User.updateMany(
-      {},
-      { $pull: { [userField]: clientId } }
-    );
-
-    res.json({
-      message: `${capitalize(platform)} client deleted successfully`,
-      deletedClient: {
-        id: deleteResult._id,
-        name: deleteResult.pageName || deleteResult.username || deleteResult.name
-      }
-    });
+    res.status(200).json({ message: "Client deleted successfully" });
   } catch (err) {
-    console.error(`❌ Error deleting ${platform} client:`, err);
-    res.status(500).json({ message: `Error deleting ${platform} client` });
+    console.error("Error deleting client:", err);
+    res.status(500).json({ error: "Failed to delete client" });
   }
 };
 

@@ -105,7 +105,7 @@ const AddClientModal = ({
       payload.appSecret = socialMediaAccounts.Twitter.apiKeySecret;
       payload.accessToken = socialMediaAccounts.Twitter.accessToken;
       payload.accessTokenSecret = socialMediaAccounts.Twitter.accessTokenSecret;
-      payload.bearerToken = "YOUR_TWITTER_BEARER_TOKEN"; // Replace if needed
+      payload.bearerToken = socialMediaAccounts.Twitter.bearerToken?.trim() || "";
     }
 
     onSubmit(payload);
@@ -175,6 +175,13 @@ const AddClientModal = ({
                 type="text"
                 value={socialMediaAccounts.Twitter.accessTokenSecret}
                 onChange={(e) => handleInputChange("Twitter", "accessTokenSecret", e.target.value)}
+              />
+            </label>
+            <label>Bearer Token
+              <input
+                type="text"
+                value={socialMediaAccounts.Twitter.bearerToken || ""}
+                onChange={(e) => handleInputChange("Twitter", "bearerToken", e.target.value)}
               />
             </label>
           </>
