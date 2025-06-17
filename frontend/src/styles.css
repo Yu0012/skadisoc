@@ -4832,6 +4832,8 @@ body.dark-theme {
   padding: 0 !important;
   box-shadow: none;
   border-radius: 0;
+  background-color: #32323b;
+
 }
 
 .compact-preview .post-header {
