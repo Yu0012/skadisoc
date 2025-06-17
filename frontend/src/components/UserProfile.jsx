@@ -155,11 +155,11 @@ const UserProfile = () => {
   return (
     <div className="profile-container">
       <div className="profile-card">
-      <div className="avatar">
+      <div className="avatar-user-profile">
         {user?.username ? (
-          <span className="avatar-letter">{user.username.charAt(0).toUpperCase()}</span>
+          <span className="avatar-letter-user-profile">{user.username.charAt(0).toUpperCase()}</span>
         ) : (
-          <span className="avatar-letter">?</span>
+          <span className="avatar-letter-user-profile">?</span>
         )}
       </div>
 

@@ -246,13 +246,14 @@ const Dashboard = () => {
   }, [selectedClient, selectedPlatform, allPosts]);
 
   return (
+    
     <div className="dashboard-container">
-      {/* Updated Dashboard Header with Split Layout */}
-      <div className="posts-header-split">
-        <div className="welcome-left">
+      <div className="welcome-left">
           <p>Welcome back,</p>
           <h2 className="user-name">{username || "Loading..."}</h2>
         </div>
+      {/* Updated Dashboard Header with Split Layout */}
+      <div className="posts-header-split">
 
         <div className="dropdowns-center">
           <div className="dashboard-selectors">
@@ -302,12 +303,15 @@ const Dashboard = () => {
       {filteredPosts.length > 0 && (
         <>
           {/* Summary cards with engagement metrics */}
+          <div className="centered-cards">
           <SummaryCards posts={filteredPosts} />
+          </div>
           
           {/* New Dashboard Chart Section - Replaces the old charts and carousel */}
           <DashboardChartSection posts={filteredPosts} />
         </>
       )}
+
     </div>
   );
 };

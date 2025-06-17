@@ -167,19 +167,26 @@ const postToTwitter = async (post, client) => {
     let imagePath = null;
 
     if (hasFile) {
-      const downloadImageFromUrl = async (url, tempPath) => {
+      const downloadMediaFromUrl = async (url, ext) => {
+        const tempPath = path.join(__dirname, '..', `${post._id}${ext}`);
         const writer = fs.createWriteStream(tempPath);
         const response = await axios({ url, method: 'GET', responseType: 'stream' });
         response.data.pipe(writer);
-        return new Promise((resolve, reject) => {
+        await new Promise((resolve, reject) => {
           writer.on('finish', resolve);
           writer.on('error', reject);
         });
+        return tempPath;
       };
 
-      const tempImagePath = path.join(__dirname, '..', `${post._id}.jpg`);
-      await downloadImageFromUrl(post.filePath, tempImagePath);
-      imagePath = tempImagePath; // Use the downloaded image path
+      if (post.filePath.includes('cloudinary')) {
+          const ext = post.filePath.includes('.mp4') ? '.mp4' : '.jpg';
+          imagePath = await downloadMediaFromUrl(post.filePath, ext);
+      } else {
+        const tempImagePath = path.join(__dirname, '..', `${post._id}.jpg`);
+        await downloadImageFromUrl(post.filePath, tempImagePath);
+        imagePath = tempImagePath;
+      }
     }
 
     if (hasFile && ['.jpg', '.jpeg', '.png'].includes(path.extname(imagePath).toLowerCase())) {
@@ -188,11 +195,34 @@ const postToTwitter = async (post, client) => {
       console.log(`Post successful on Twitter`);
     }
 
-    else if (hasFile && ['.mp4', '.avi', '.mkv', '.mov', '.gif'].includes(path.extname(imagePath).toLowerCase())) {
-      const mediaData = await twitterClient.v1.uploadMedia(imagePath, { type: 'video' }); // Upload video
-      tweetResponse = await twitterClient.v2.tweet(post.content, { media: { media_ids: [mediaData] }}); // Post tweet with video
-      console.log(`Post successful on Twitter`);
+
+    else if (hasFile && ['.mp4'].includes(path.extname(imagePath).toLowerCase())) {
+      // Step 2: Check MIME type using HEAD request
+      const headResponse = await axios.head(post.filePath);
+      const contentType = headResponse.headers['content-type'];
+
+      if (!contentType.includes('video/mp4')) {
+        console.error('❌ Twitter only supports video/mp4 — this file is not supported:', contentType);
+        return false;
+      }
+
+      // Upload video to Twitter
+      const mediaData = await twitterClient.v1.uploadMedia(imagePath, {
+        mimeType: 'video/mp4',
+        target: 'tweet',
+      });
+
+      tweetResponse = await twitterClient.v2.tweet(post.content, {
+        media: { media_ids: [mediaData] },
+      });
     }
+
+
+    else if (hasFile) {
+      console.error("❌ Unsupported media type for Twitter video upload.");
+      return false;
+    }
+
     
     else {
       tweetResponse = await twitterClient.v2.tweet(post.content); // Post tweet without media
