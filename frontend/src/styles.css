@@ -3590,7 +3590,6 @@ input::-webkit-inner-spin-button {
   left: 4px;
   width: calc(100% - 8px);
   height: calc(100% - 8px);
-  border: 2px solid black;
   box-sizing: border-box;
   z-index: -1;
 }
