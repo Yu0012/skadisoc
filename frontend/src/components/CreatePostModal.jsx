@@ -6,6 +6,8 @@ import { FaTimes, FaCalendarAlt, FaPaperclip } from "react-icons/fa";
 import Preview from "./Preview";
 import Swal from "sweetalert2";
 import config from '../config';
+import 'animate.css';
+
 
 const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onSave, platform }) => {
   const [content, setContent] = useState(initialData?.content || "");
@@ -204,9 +206,37 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     }
 
     if (!client || client === "" || client === "No Client Selected") {
-      alert("Please select a client before creating a post.");
-      return;
-    }
+    onClose(); // Optional: close modal first for better flow
+
+    setTimeout(() => {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Client Not Selected',
+        text: 'Please select a client before creating a post.',
+        confirmButtonColor: '#6A5ACD',
+        backdrop: `
+          rgba(0, 0, 0, 0.4)
+          left top
+          no-repeat
+          fixed
+        `,
+        showClass: {
+          popup: 'swal2-show animate__animated animate__fadeInDown',
+        },
+        hideClass: {
+          popup: 'swal2-hide animate__animated animate__fadeOutUp',
+        },
+      }).then(() => {
+        // Reopen modal after confirming
+        if (typeof window.reopenCreatePostModal === "function") {
+          window.reopenCreatePostModal();
+        }
+      });
+    }, 300);
+
+    return;
+  }
+
 
     if (
       selectedPlatforms.includes("instagram") &&
