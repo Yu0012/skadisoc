@@ -412,7 +412,7 @@ const EventCalendar = () => {
               platform={(selectedEvent.platforms?.split(",")[0] || "").trim().toLowerCase()}
               content={selectedEvent.content}
               client={selectedEvent.clientName}
-              imageURL={selectedEvent.link}
+              imageURL={selectedEvent.link && selectedEvent.link !== `${config.API_BASE}null` ? selectedEvent.link : null}
             />
 
             <div className="modal-note" style={{ marginTop: "1rem" }}>

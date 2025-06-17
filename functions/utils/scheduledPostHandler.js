@@ -195,7 +195,6 @@ const postToTwitter = async (post, client) => {
       console.log(`Post successful on Twitter`);
     }
 
-
     else if (hasFile && ['.mp4'].includes(path.extname(imagePath).toLowerCase())) {
       // Step 2: Check MIME type using HEAD request
       const headResponse = await axios.head(post.filePath);
@@ -217,13 +216,11 @@ const postToTwitter = async (post, client) => {
       });
     }
 
-
     else if (hasFile) {
       console.error("❌ Unsupported media type for Twitter video upload.");
       return false;
     }
 
-    
     else {
       tweetResponse = await twitterClient.v2.tweet(post.content); // Post tweet without media
     }
@@ -272,7 +269,7 @@ const checkAndPostScheduledPosts = async () => {
         }
       }
 
-      else if (platforms.includes("instagram"))
+      if (platforms.includes("instagram"))
       {
         const client = await InstagramClient.findOne ({ username: post.clientName });
         if (!client) 
@@ -288,7 +285,7 @@ const checkAndPostScheduledPosts = async () => {
         }
       }
 
-      else if (platforms.includes("twitter"))
+      if (platforms.includes("twitter"))
       {
         const client = await TwitterClient.findOne({ username: post.clientName });
         if (!client) 
