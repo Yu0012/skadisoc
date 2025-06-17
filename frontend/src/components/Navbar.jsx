@@ -153,33 +153,36 @@ const Navbar = () => {
         </div>
 
         {/* 🔔 Notification Bell */}
-        <div className="notification-menu">
-          <div onClick={() => setNotifDropdownOpen(!notifDropdownOpen)} className="bell-container">
-            {hasNotifications ? (
-              <Lottie animationData={darkMode ? bellAnimation_light : bellAnimation} className="bell-icon" />
-            ) : (
-              <img src={darkMode ? bellStatic_light : bellStatic } alt="No Notifications" className="bell-icon" />
+        {user?.roleType === "superadmin" && (
+          <div className="notification-menu">
+            <div onClick={() => setNotifDropdownOpen(!notifDropdownOpen)} className="bell-container">
+              {hasNotifications ? (
+                <Lottie animationData={darkMode ? bellAnimation_light : bellAnimation} className="bell-icon" />
+              ) : (
+                <img src={darkMode ? bellStatic_light : bellStatic } alt="No Notifications" className="bell-icon" />
+              )}
+            </div>
+
+            {notifDropdownOpen && (
+              <div className="dropdown-menu notifications-dropdown">
+                <h4>Notifications</h4>
+                <div className="notification-scroll">
+                    {notifications.length === 0 ? (
+                      <p className="no-notification">No new notifications</p>
+                    ) : (
+                      notifications.map((note, index) => (
+                        <div key={index} className="notification-item">
+                          <p>{note.message}</p>
+                          <span className="timestamp">{note.timestamp}</span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+              </div>
             )}
           </div>
+        )}
 
-          {notifDropdownOpen && (
-            <div className="dropdown-menu notifications-dropdown">
-              <h4>Notifications</h4>
-              <div className="notification-scroll">
-                  {notifications.length === 0 ? (
-                    <p className="no-notification">No new notifications</p>
-                  ) : (
-                    notifications.map((note, index) => (
-                      <div key={index} className="notification-item">
-                        <p>{note.message}</p>
-                        <span className="timestamp">{note.timestamp}</span>
-                      </div>
-                    ))
-                  )}
-                </div>
-            </div>
-          )}
-        </div>
 
         {/* 👤 User Menu */}
         <div className="user-menu">
