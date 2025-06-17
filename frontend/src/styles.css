@@ -2698,8 +2698,8 @@ transform: translateZ(0);
 }
 
 [data-selected-theme="dark"] .custom-event-box {
-  background-color: #1e1e2f;        /* dark background */
-  border: 1px solid #3a3a5a;        /* softer border */
+  background-color: #1e1e74;        /* dark background */
+  border: 1px solid #3737ff;        /* softer border */
   color: #ffffff;                   /* light blue text */
 }
 
