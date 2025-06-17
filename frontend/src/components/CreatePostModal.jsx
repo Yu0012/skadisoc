@@ -257,11 +257,21 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     console.log("🛰️ Submitting with formValues:", formValues);
     const now = new Date();
     if (scheduledDate && scheduledDate < now) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Invalid Date',
-        text: 'Scheduled date must be in the future.',
-      });
+      onClose(); // ❌ Close the modal first
+
+      setTimeout(() => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid Date',
+          text: 'Scheduled date must be in the future.',
+        }).then(() => {
+          // ✅ Reopen the modal after the user clicks OK
+          if (typeof window.reopenCreatePostModal === "function") {
+            window.reopenCreatePostModal();
+          }
+        });
+      }, 300);
+
       return;
     }
 

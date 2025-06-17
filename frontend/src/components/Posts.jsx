@@ -342,6 +342,17 @@ useEffect(() => {
   return () => document.body.removeAttribute("data-page");
 }, []);
 
+    useEffect(() => {
+      window.reopenCreatePostModal = () => {
+        setIsModalOpen(true);
+      };
+
+      return () => {
+        window.reopenCreatePostModal = null; // cleanup
+      };
+    }, []);
+
+
 
   //pagination logic
   const indexOfLastPost = currentPage * postsPerPage;
