@@ -2944,6 +2944,12 @@ transform: translateZ(0);
 
 }
 
+[data-selected-theme="dark"] .platform-dropdown-horizontal {
+  background-color: var(--menu-page); /* Or a custom dark background like #1e1e2f */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); /* deeper shadow for dark mode */
+}
+
+
 .platform-dropdown-horizontal {
   display: flex;
   flex-wrap: wrap;
@@ -3470,7 +3476,7 @@ transform: translateZ(0);
   --dropdown-hover: #ddd;
   --dropdown-text:white;
 
-  --menu-page: #272831;
+  --menu-page: #37373b;
   --menu-border: #6c7789;
   --menu-color: white;
 
@@ -4101,6 +4107,12 @@ label {
 }
 
 /* 📌 Dark mode: Posts Table Styling */
+[data-selected-theme="dark"] .posts-table th {
+  background-color: #3a3d4a; /* slightly lighter than body background */
+  color: #f1f1f1; /* optional: improve contrast */
+}
+
+
 [data-selected-theme="dark"] .posts-table thead {
   background-color: #3a3b44 !important;  /* Unified lighter header */
 }
@@ -4735,6 +4747,19 @@ body.dark-theme {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+.notification-item p,
+.notification-item .timestamp {
+  color: black;
+}
+
+/* Dark mode overrides */
+
+
+[data-selected-theme="dark"] .notification-item p,
+[data-selected-theme="dark"] .notification-item .timestamp {
+  color: white;
 }
 
 .notification-scroll {
