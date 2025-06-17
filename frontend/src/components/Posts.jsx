@@ -291,7 +291,7 @@ useEffect(() => {
       setPostMenuDropdown(null);
     } else {
       const rect = event.currentTarget.getBoundingClientRect();
-      setMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left });
+      setMenuPosition({ top: rect.top + window.scrollY, left: rect.left - 150 }); // adjust -150 based on dropdown width
       setPostMenuDropdown(postID);
     }
   };
@@ -329,6 +329,12 @@ useEffect(() => {
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+  document.body.setAttribute("data-page", "posts");
+  return () => document.body.removeAttribute("data-page");
+}, []);
+
 
   //pagination logic
   const indexOfLastPost = currentPage * postsPerPage;

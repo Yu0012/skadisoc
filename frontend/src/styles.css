@@ -1008,6 +1008,8 @@ body.theme-transition {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* Modal Header */
@@ -2370,6 +2372,7 @@ input::-webkit-inner-spin-button {
   display: block;      /* Ensures no weird spacing */
 }
 
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -2381,7 +2384,12 @@ input::-webkit-inner-spin-button {
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  overflow: hidden;
+transform: translateZ(0);
+
 }
+
+
 
 .vertical-detail-modal {
   width: 600px;
@@ -2392,7 +2400,31 @@ input::-webkit-inner-spin-button {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   position: relative;
   font-family: 'Segoe UI', sans-serif;
+  border: none;
+  box-sizing: border-box;
+  overflow: hidden; /* ✅ added */
 }
+
+.vertical-detail-modal img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+
+
+[data-selected-theme="dark"] .vertical-detail-modal {
+  background-color: var(--table-bg); /* Or any dark background you use */
+  color: var(--text-color);          /* Ensures text remains readable */
+}
+
+[data-selected-theme="dark"] .modal-note {
+  color: white;
+}
+
 
 .modal-title {
   font-size: 20px;
@@ -2443,10 +2475,10 @@ input::-webkit-inner-spin-button {
 
 .fb-post-container {
   width: 500px;
-  background: white;
+  background: transparent;
   border-radius: 8px;
-  padding: 16px 16px 5px 16px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  padding: 0;
+  box-shadow: none;
   font-family: 'Segoe UI', sans-serif;
 }
 
@@ -4771,7 +4803,12 @@ body.dark-theme {
 .preview-section.compact-preview {
   padding: 0 !important;
   margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
 }
+
 
 
 [data-selected-theme="dark"] .form-group label,
@@ -4895,3 +4932,21 @@ body.modal-open {
   width: 70%;
   padding-left: 16%;
 }
+
+/*Disable Posts scrolling*/
+html, body {
+  height: auto;
+  min-height: 100vh;
+  overflow-y: auto; /* allow scroll globally */
+  margin: 0;
+  padding: 0;
+}
+
+body[data-page="posts"] {
+  overflow: hidden; /* disable scroll only for posts page */
+}
+
+.posts-page-wrapper, .posts-container {
+  overflow: hidden !important;
+}
+
