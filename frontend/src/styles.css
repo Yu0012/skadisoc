@@ -2679,10 +2679,8 @@ transform: translateZ(0);
   overflow: hidden;
   text-overflow: ellipsis;
   transition: background-color 0.2s;
-
-  /* ✅ 强制宽度一致 */
-  width: 100%;             /* 占据整格宽度 */
-  justify-content: center; /* 居中内容 */
+  width: 100%;             
+  justify-content: center; 
   text-align: center;
   box-sizing: border-box;
 }
@@ -2691,13 +2689,24 @@ transform: translateZ(0);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 100px; /* 你也可以设为 100% */
+  max-width: 100px; 
 }
 
 
 .custom-event-box:hover {
   background-color: #d6ecff;         
 }
+
+[data-selected-theme="dark"] .custom-event-box {
+  background-color: #1e1e2f;        /* dark background */
+  border: 1px solid #3a3a5a;        /* softer border */
+  color: #ffffff;                   /* light blue text */
+}
+
+[data-selected-theme="dark"] .custom-event-box:hover {
+  background-color: #2a2a40;        /* hover background */
+}
+
 
 .custom-event-time {
   margin-right: 6px;
@@ -4002,12 +4011,18 @@ body.swal-blur .posts-container {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  background: var(--table-bg);
-  border: 1px solid var(--table-border);
-  border-radius: 8px;
+  background: var(--table-bg);  /* Keep or change if needed */
+  border-radius: 8px;           /* Optional: keep rounded corners */
   padding: 12px;
   margin-bottom: 16px;
 }
+
+.assign-users-container {
+  border: none !important;
+  background: transparent !important; /* optional */
+  box-shadow: none !important;
+}
+
 
 .assign-users-container label {
   display: flex;
