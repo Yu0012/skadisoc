@@ -31,6 +31,13 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add("modal-open");
+
+      if (isOpen && !scheduledDate) {
+        const now = new Date();
+        now.setSeconds(0, 0); // Round seconds
+        setScheduledDate(now);
+      }
+
     } else {
       document.body.classList.remove("modal-open");
     }

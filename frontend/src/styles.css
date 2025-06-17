@@ -1215,6 +1215,19 @@ body.theme-transition {
   color: white !important;
 }
 
+.react-datepicker__time-list-item--disabled {
+  color: #555 !important;       /* dark grey text */
+  background-color: #222 !important; /* dark bg */
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Scoped for dark mode if using Tailwind's dark class strategy */
+.dark .react-datepicker__time-list-item--disabled {
+  color: #888 !important;
+  background-color: #2a2a2a !important;
+  opacity: 0.4 !important;
+}
 
 .two-column-layout {
   display: flex;
@@ -3628,7 +3641,6 @@ transform: translateZ(0);
   left: 4px;
   width: calc(100% - 8px);
   height: calc(100% - 8px);
-  border: 2px solid black;
   box-sizing: border-box;
   z-index: -1;
 }
