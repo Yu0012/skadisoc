@@ -4854,3 +4854,7 @@ body.modal-open {
   border: 1px solid #7d2e2e !important;  /* Deep green */
   color: #5e1b1b !important;             /* Text color */
 }
+
+.modal-body .left-column .input-field {
+  width: 93.5% !important;
+}

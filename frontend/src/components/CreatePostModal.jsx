@@ -112,18 +112,27 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     // Validate by platform
     switch (selectedPlatformName) {
       case "Instagram":
-        isValidType = ["image/jpeg", "image/png"].includes(fileType);
-        maxSize = 8 * 1024 * 1024;
+        isValidType = [
+          "image/jpeg", "image/png",
+          "video/mp4", "video/quicktime" // ✅ support MP4 and MOV
+        ].includes(fileType);
+        maxSize = fileType.startsWith("video/") ? 100 * 1024 * 1024 : 8 * 1024 * 1024; // up to 100MB for videos
         break;
 
       case "Facebook":
-        isValidType = ["image/jpeg", "image/png", "image/gif"].includes(fileType);
-        maxSize = 25 * 1024 * 1024;
+        isValidType = [
+          "image/jpeg", "image/png", "image/gif",
+          "video/mp4", "video/quicktime"
+        ].includes(fileType);
+        maxSize = fileType.startsWith("video/") ? 1024 * 1024 * 1024 : 25 * 1024 * 1024; // up to 1GB for videos
         break;
 
       case "Twitter":
-        isValidType = ["image/jpeg", "image/png", "image/gif"].includes(fileType);
-        maxSize = fileType === "image/gif" ? 15 * 1024 * 1024 : 5 * 1024 * 1024;
+        isValidType = [
+          "image/jpeg", "image/png", "image/gif",
+          "video/mp4", "video/quicktime"
+        ].includes(fileType);
+        maxSize = fileType.startsWith("video/") ? 512 * 1024 * 1024 : (fileType === "image/gif" ? 15 * 1024 * 1024 : 5 * 1024 * 1024);
         break;
 
       default:
