@@ -208,6 +208,26 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
       return;
     }
 
+    if (
+      selectedPlatforms.includes("instagram") &&
+      !attachedFile &&
+      !existingFilePath
+    ) {
+      // Close modal first
+      onClose();
+
+      // Wait for modal to close before showing alert
+      setTimeout(() => {
+        Swal.fire({
+          icon: "error",
+          title: "Media Required for Instagram",
+          text: "Instagram posts must include an image or video.",
+        });
+      }, 300); // 300ms is usually safe for unmount transitions
+
+      return;
+    }
+
     const selectedClient = clients.find((c) => c._id === client);
     const finalClientName = selectedClient?.companyName || selectedClient?.pageName || selectedClient?.username || selectedClient?.name || "";
 
