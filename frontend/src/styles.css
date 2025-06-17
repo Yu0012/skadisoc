@@ -1498,6 +1498,7 @@ input:checked + .slider:before {
   background-color: transparent;
   color: var(--search-bar-color);
   width: 100%;
+  box-shadow: none !important; 
 }
 
 .search-box input::placeholder {
@@ -5010,4 +5011,19 @@ body[data-page="posts"] {
 .posts-page-wrapper, .posts-container {
   overflow: hidden !important;
 }
+
+.dashboard-bar-chart {
+  scrollbar-width: thin;
+  scrollbar-color: #999 transparent;
+}
+
+.dashboard-bar-chart::-webkit-scrollbar {
+  height: 8px;
+}
+
+.dashboard-bar-chart::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
 

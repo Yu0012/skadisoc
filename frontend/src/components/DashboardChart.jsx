@@ -37,10 +37,12 @@ const DashboardCharts = ({ posts }) => {
     return () => observer.disconnect();
   }, []);
 
-  const labels = posts.map((p) => p.title || "Untitled");
-  const likes = posts.map((p) => p.insights?.likes || 0);
-  const comments = posts.map((p) => p.insights?.comments || 0);
-  const shares = posts.map((p) => p.insights?.shares || 0);
+  const limitedPosts = [...posts].slice(0, 10); 
+
+  const labels = limitedPosts.map((p) => p.title || "Untitled");
+  const likes = limitedPosts.map((p) => p.insights?.likes || 0);
+  const comments = limitedPosts.map((p) => p.insights?.comments || 0);
+  const shares = limitedPosts.map((p) => p.insights?.shares || 0);
 
   return (
     <motion.div
@@ -57,62 +59,52 @@ const DashboardCharts = ({ posts }) => {
         margin: "2rem auto",
       }}
     >
-      <Bar
-        data={{
-          labels,
-          datasets: [
-            {
-              label: "Likes",
-              data: likes,
-              backgroundColor: "#4267B2",
-            },
-            {
-              label: "Comments",
-              data: comments,
-              backgroundColor: "#00aced",
-            },
-            {
-              label: "Shares",
-              data: shares,
-              backgroundColor: "#8b9dc3",
-            },
-          ],
-        }}
-        options={{
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: {
-            duration: 800,
-            easing: "easeOutCubic",
-            delay: (ctx) => ctx.dataIndex * 100,
-          },
-          plugins: {
-            legend: {
-              labels: {
-                color: textColor,
+      <div style={{ overflowX: "auto", paddingBottom: "1rem" }}>
+        <div style={{ minWidth: `${posts.length * 120}px`, paddingRight: "1rem" }}>
+          <Bar
+            data={{
+              labels,
+              datasets: [
+                { label: "Likes", data: likes, backgroundColor: "#4267B2" },
+                { label: "Comments", data: comments, backgroundColor: "#00aced" },
+                { label: "Shares", data: shares, backgroundColor: "#8b9dc3" },
+              ],
+            }}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: {
+                duration: 800,
+                easing: "easeOutCubic",
+                delay: (ctx) => ctx.dataIndex * 100,
               },
-              position: "top",
-            },
-            tooltip: {
-              enabled: true,
-              backgroundColor: "#222",
-              titleColor: "#fff",
-              bodyColor: "#eee",
-            },
-          },
-          scales: {
-            x: {
-              ticks: { color: textColor },
-              grid: { color: gridColor },
-            },
-            y: {
-              ticks: { color: textColor },
-              grid: { color: gridColor },
-            },
-          },
-        }}
-        height={400}
-      />
+              plugins: {
+                legend: {
+                  labels: { color: textColor },
+                  position: "top",
+                },
+                tooltip: {
+                  enabled: true,
+                  backgroundColor: "#222",
+                  titleColor: "#fff",
+                  bodyColor: "#eee",
+                },
+              },
+              scales: {
+                x: {
+                  ticks: { color: textColor },
+                  grid: { color: gridColor },
+                },
+                y: {
+                  ticks: { color: textColor },
+                  grid: { color: gridColor },
+                },
+              },
+            }}
+            height={400}
+          />
+        </div>
+      </div>
     </motion.div>
   );
 };
