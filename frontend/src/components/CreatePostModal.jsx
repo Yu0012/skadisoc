@@ -206,43 +206,38 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     }
 
     if (!client || client === "" || client === "No Client Selected") {
-    onClose(); // Optional: close modal first for better flow
+      onClose(); // Optional: close modal first for better flow
 
-    setTimeout(() => {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Client Not Selected',
-        text: 'Please select a client before creating a post.',
-        confirmButtonColor: '#6A5ACD',
-        backdrop: `
-          rgba(0, 0, 0, 0.4)
-          left top
-          no-repeat
-          fixed
-        `,
-        showClass: {
-          popup: 'swal2-show animate__animated animate__fadeInDown',
-        },
-        hideClass: {
-          popup: 'swal2-hide animate__animated animate__fadeOutUp',
-        },
-      }).then(() => {
-        // Reopen modal after confirming
-        if (typeof window.reopenCreatePostModal === "function") {
-          window.reopenCreatePostModal();
-        }
-      });
-    }, 300);
+      setTimeout(() => {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Client Not Selected',
+          text: 'Please select a client before creating a post.',
+          confirmButtonColor: '#6A5ACD',
+          backdrop: `
+            rgba(0, 0, 0, 0.4)
+            left top
+            no-repeat
+            fixed
+          `,
+          showClass: {
+            popup: 'swal2-show animate__animated animate__fadeInDown',
+          },
+          hideClass: {
+            popup: 'swal2-hide animate__animated animate__fadeOutUp',
+          },
+        }).then(() => {
+          // Reopen modal after confirming
+          if (typeof window.reopenCreatePostModal === "function") {
+            window.reopenCreatePostModal();
+          }
+        });
+      }, 300);
 
-    return;
-  }
+      return;
+    }
 
-
-    if (
-      selectedPlatforms.includes("instagram") &&
-      !attachedFile &&
-      !existingFilePath
-    ) {
+    if (selectedPlatforms.includes("instagram") && !attachedFile && !existingFilePath) {
       // Close modal first
       onClose();
 
@@ -299,6 +294,28 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
           if (typeof window.reopenCreatePostModal === "function") {
             window.reopenCreatePostModal();
           }
+        });
+      }, 300);
+
+      return;
+    }
+
+    // 🚫 Block video scheduling for Facebook and Instagram
+    const isVideo = attachedFile?.type?.startsWith("video/");
+    const selectedVideoPlatforms = selectedPlatforms.filter((p) =>
+      ["facebook", "instagram"].includes(p)
+    );
+
+    if (scheduledDate && isVideo && selectedVideoPlatforms.length > 0) {
+      onClose();
+
+      setTimeout(() => {
+        Swal.fire({
+          icon: "error",
+          title: "Video Scheduling Not Supported",
+          text: `Scheduled video posts are not allowed on: ${selectedVideoPlatforms
+            .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+            .join(", ")}.`,
         });
       }, 300);
 
