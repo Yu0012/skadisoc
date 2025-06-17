@@ -7,6 +7,8 @@ import Preview from "./Preview";
 import Swal from "sweetalert2";
 import config from '../config';
 import 'animate.css';
+import Select from "react-select";
+
 
 
 const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onSave, platform }) => {
@@ -452,18 +454,74 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                 {/* Right */}
                 <div className="client-column">
                   <label>Client</label>
-                  <select
-                    className="dropdown-field"
-                    value={client}
-                    onChange={(e) => setClient(e.target.value)}
-                  >
-                    <option value="">Select a Client</option>
-                    {clients.map((c) => (
-                      <option key={c._id} value={c._id}>
-                        {c.companyName || c.pageName || c.username || c.name}
-                      </option>
-                    ))}
-                  </select>
+                  <div style={{ width: "98.5%" }}>
+                  <Select
+                    options={clients.map((c) => ({
+                      value: c._id,
+                      label: c.companyName || c.pageName || c.username || c.name || c._id,
+                    }))}
+                    value={
+                      clients
+                        .map((c) => ({
+                          value: c._id,
+                          label: c.companyName || c.pageName || c.username || c.name || c._id,
+                        }))
+                        .find((opt) => opt.value === client) || null
+                    }
+                    onChange={(selected) => setClient(selected.value)}
+                    placeholder="Select a Client"
+                    menuPlacement="top"
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        backgroundColor: "var(--category-dropdown)",
+                        border: "none",
+                        borderRadius: "8px",
+                        minHeight: "44px",
+                        color: "white",
+                        boxShadow: "none",
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        color: "white",
+                      }),
+                      dropdownIndicator: (base) => ({
+                        ...base,
+                        color: "white",
+                        padding: "4px",
+                      }),
+                      indicatorSeparator: () => ({
+                        display: "none",
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        backgroundColor: "var(--category-dropdown)",
+                        borderRadius: "8px",
+                        marginTop: 4,
+                        zIndex: 9999,
+                      }),
+                      menuList: (base) => ({
+                        ...base,
+                        maxHeight: "220px", // Limit to ~5 items if each is ~44px tall
+                        overflowY: "auto",
+                        padding: 0,
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: state.isFocused
+                          ? "var(--button-hover)"
+                          : "var(--category-dropdown)",
+                        color: "white",
+                        cursor: "pointer",
+                        padding: "10px 16px",
+                      }),
+                      placeholder: (base) => ({
+                        ...base,
+                        color: "white",
+                      }),
+                    }}
+                  />
+                  </div>
                 </div>
               </div>
 
