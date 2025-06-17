@@ -6,6 +6,8 @@ import DashboardCharts from "./DashboardChart";
 import TopPostsWidget from "./TopPostsWidget";
 import DashboardChartSection from "./DashboardChartSection";
 import config from '../config'; 
+import Select from "react-select";
+
 
 const Dashboard = () => {
   // State management for selected platform and client
@@ -273,23 +275,83 @@ const Dashboard = () => {
 
             {/* Client dropdown selector (only shown when platform is selected) */}
             {selectedPlatform && (
-              <select
-                onChange={(e) => {
-                  const client = e.target.value;
-                  setSelectedClient(client);
-                  localStorage.setItem("selectedClient", client);
+            <div style={{ minWidth: "200px" }}>
+              <Select
+                options={filteredClients.map((client) => ({
+                  value: client._id,
+                  label:
+                    client.pageName || client.username || client.name || client._id,
+                }))}
+                value={
+                  filteredClients
+                    .map((client) => ({
+                      value: client._id,
+                      label:
+                        client.pageName || client.username || client.name || client._id,
+                    }))
+                    .find((opt) => opt.value === selectedClient) || null
+                }
+                onChange={(selected) => {
+                  setSelectedClient(selected.value);
+                  localStorage.setItem("selectedClient", selected.value);
                 }}
-                value={selectedClient}
-                className="dashboard-dropdown"
-              >
-                <option value="">Select Client</option>
-                {(filteredClients || []).map((client) => (
-                  <option key={client._id} value={client._id}>
-                    {client.pageName || client.username || client.name || client._id}
-                  </option>
-                ))}
-              </select>
-            )}
+                placeholder="Select Client"
+                styles={{
+                control: (base, state) => ({
+                  ...base,
+                  backgroundColor: "var(--category-dropdown)", // ✅ match Facebook style
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  minHeight: "40px",
+                  boxShadow: "none",
+                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: "var(--button-hover)",
+                  },
+                }),
+                singleValue: (base) => ({
+                  ...base,
+                  color: "white",
+                }),
+                dropdownIndicator: (base) => ({
+                  ...base,
+                  color: "white",
+                  padding: "4px",
+                }),
+                indicatorSeparator: () => ({
+                  display: "none",
+                }),
+                menu: (base) => ({
+                  ...base,
+                  backgroundColor: "var(--category-dropdown)", // ✅ same dropdown background
+                  borderRadius: "8px",
+                  marginTop: 4,
+                  zIndex: 9999,
+                }),
+                menuList: (base) => ({
+                  ...base,
+                  maxHeight: "200px",
+                  overflowY: "auto",
+                  padding: 0,
+                }),
+                option: (base, state) => ({
+                  ...base,
+                  backgroundColor: state.isFocused
+                    ? "var(--button-hover)"
+                    : "var(--category-dropdown)",
+                  color: "white",
+                  cursor: "pointer",
+                  padding: "10px 16px",
+                }),
+                placeholder: (base) => ({
+                  ...base,
+                  color: "white",
+                }),
+              }}
+            />
+            </div>
+          )}
           </div>
         </div>
       </div>
