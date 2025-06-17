@@ -322,13 +322,20 @@ useEffect(() => {
   //close dropdown menu in outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (!event.target.closest(".post-actions-dropdown")) {
+      const isInsideDropdown = event.target.closest(".post-actions-dropdown");
+      const isInsidePlatform = event.target.closest(".platform-dropdown-wrapper");
+      const isInsidePostsActions = event.target.closest(".posts-actions");
+
+      if (!isInsideDropdown && !isInsidePlatform && !isInsidePostsActions) {
         setPostMenuDropdown(null);
+        setIsPlatformSelectOpen(false);
       }
     };
+
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
+
 
   useEffect(() => {
   document.body.setAttribute("data-page", "posts");
