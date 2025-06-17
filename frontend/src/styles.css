@@ -2679,7 +2679,7 @@ transform: translateZ(0);
   overflow: hidden;
   text-overflow: ellipsis;
   transition: background-color 0.2s;
-  width: 100%;             
+  width: 160px;             
   justify-content: center; 
   text-align: center;
   box-sizing: border-box;
