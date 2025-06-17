@@ -202,6 +202,17 @@ useEffect(() => {
   // Delete Post with enhanced SweetAlert2 confirmation
   const handleDeletePost = async (postId) => {
     setPostMenuDropdown(null); // 🔄 Close dropdown immediately
+    const post = posts.find((p) => p._id === postId);
+    if (post?.selectedPlatforms?.includes("instagram") && post?.status === "posted") {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Instagram deletion not supported',
+        text: 'Instagram Graph API does not allow deleting published posts. The post will only be removed from your dashboard.',
+        confirmButtonColor: '#0D286E',
+        background: 'white',
+        color: '#0a0f5c',
+      });
+    }
 
     const result = await Swal.fire({
       title: 'Delete this post?',
@@ -341,6 +352,17 @@ useEffect(() => {
   document.body.setAttribute("data-page", "posts");
   return () => document.body.removeAttribute("data-page");
 }, []);
+
+    useEffect(() => {
+      window.reopenCreatePostModal = () => {
+        setIsModalOpen(true);
+      };
+
+      return () => {
+        window.reopenCreatePostModal = null; // cleanup
+      };
+    }, []);
+
 
 
   //pagination logic

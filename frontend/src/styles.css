@@ -1428,16 +1428,17 @@ input:checked + .slider:before {
 .dropdown {
   background-color: var(--category-dropdown);
   color: white;
-  font-weight: bold;
-  padding: 12px 15px;
+  font-weight: 500;
+  padding: 8px 16px;             /* ⬅️ Slightly smaller padding */
   border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
-  width: 250px; /* Match with search bar width */
-  height: 44px; /* Match search bar height */
+  font-size: 15px;               /* ⬅️ Match react-select font */
+  width: 250px;
+  height: 40px;                  /* ⬅️ Match react-select height */
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border: none;                  /* ⬅️ Optional: remove border to match react-select */
 }
 
 .dropdown:hover {
@@ -2679,7 +2680,7 @@ transform: translateZ(0);
   overflow: hidden;
   text-overflow: ellipsis;
   transition: background-color 0.2s;
-  width: 100%;             
+  width: 160px;             
   justify-content: center; 
   text-align: center;
   box-sizing: border-box;
@@ -3069,7 +3070,7 @@ transform: translateZ(0);
 }
 
 .attach-file-btn:hover {
-  background-color: #f5f5f5;
+  background-color: #0004ff;
   border-color: #1a237e;
 }
 
@@ -4318,8 +4319,9 @@ label {
   margin-bottom: 2rem;
 }
 
+
 .dashboard-dropdown {
-  padding: 12px 16px;
+  padding: 10.5px 10.5px;
   font-size: 15px;
   border-radius: 10px;
   border: 1px solid var(--dropdown-border, #ccc);
@@ -4335,7 +4337,12 @@ label {
   background-size: 16px;
   cursor: pointer;
   transition: 0.2s;
+
+  /* ✨ Add these lines for scroll */
+  max-height: 150px;
+  overflow-y: auto;
 }
+
 
 .dashboard-dropdown:hover {
   background-color: var(--button-hover);

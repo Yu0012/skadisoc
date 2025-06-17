@@ -236,10 +236,6 @@ const Accounts = () => {
           return account.username?.toLowerCase().includes(query.toLowerCase());
         case "Email":
           return account.email?.toLowerCase().includes(query.toLowerCase());
-        case "Phone":
-          return (account.phoneNum || "").toLowerCase().includes(query.toLowerCase());
-        case "Address":
-          return (account.address || "").toLowerCase().includes(query.toLowerCase());
         default:
           return true;
       }
@@ -356,8 +352,6 @@ const Accounts = () => {
               <option value="ID">ID</option>
               <option value="Username">Username</option>
               <option value="Email">Email</option>
-              <option value="Phone">Phone</option>
-              <option value="Address">Address</option>
             </select>
 
             <div className="search-box">

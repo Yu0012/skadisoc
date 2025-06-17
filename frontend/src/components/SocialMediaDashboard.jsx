@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {FaXTwitter, FaMeta, FaLinkedin, FaArrowLeft} from 'react-icons/fa6';
 import clientLogo from '../assets/skadilogo_light.png';
 import styles from "../components/SocialMediaDashboard.module.css"; // Import your CSS file for styling
+import { useNavigate } from 'react-router-dom';
 import config from '../config';
 
 const handleFBLogin = () => {
@@ -16,8 +17,10 @@ const handleLinkedInLogin = () => {
   window.location.href = `${config.API_BASE}/auth/linkedin`; // Redirect to backend auth route
 };
 
-const SocialMediaDashboard = () => {
 
+
+const SocialMediaDashboard = () => {
+  const navigate = useNavigate();
     return (
       <div className={styles.pageWrapper}>
         <div className={styles.backButton} onClick={() => navigate('/login')}>
