@@ -109,7 +109,6 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     if (!file) return;
 
     const selectedPlatformName = platform; // Instagram / Facebook / Twitter
-
     const fileType = file.type;
     const fileSize = file.size;
 
@@ -120,16 +119,14 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     switch (selectedPlatformName) {
       case "Instagram":
         isValidType = [
-          "image/jpeg", "image/png",
-          "video/mp4", "video/quicktime" // ✅ support MP4 and MOV
+          "image/jpeg", "image/png"
         ].includes(fileType);
         maxSize = fileType.startsWith("video/") ? 100 * 1024 * 1024 : 8 * 1024 * 1024; // up to 100MB for videos
         break;
 
       case "Facebook":
         isValidType = [
-          "image/jpeg", "image/png", "image/gif",
-          "video/mp4", "video/quicktime"
+          "image/jpeg", "image/png", "image/gif"
         ].includes(fileType);
         maxSize = fileType.startsWith("video/") ? 1024 * 1024 * 1024 : 25 * 1024 * 1024; // up to 1GB for videos
         break;
@@ -157,6 +154,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
         title: "Invalid File Type",
         text: `The selected file format is not allowed for ${platform}.`,
       });
+      onClose(); // Close modal if invalid type
       return;
     }
 
@@ -166,6 +164,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
         title: "File Too Large",
         text: `The selected file exceeds the size limit for ${platform}.`,
       });
+      onClose(); // Close modal if file too large
       return;
     }
 
