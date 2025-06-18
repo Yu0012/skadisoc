@@ -25,7 +25,7 @@ import "./styles.css";
 // 🧠 Create a sub-component inside Router
 const AppContent = () => {
   const location = useLocation();
-  const hideNavbarOn = ["/client-login", "/", "/authform", "/forgotpassword"];
+  const hideNavbarOn = ["/", "/login", "/authform", "/forgotpassword", "/client-login"];
 
   return (
     <>
