@@ -92,6 +92,14 @@ const Accounts = () => {
     fetchAccounts();
   }, []);
 
+    useEffect(() => {
+    const interval = setInterval(() => {
+      fetchAccounts();
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
   const fetchUserInfo = async () => {
     const token = localStorage.getItem("token");

@@ -7,6 +7,8 @@ import Preview from "./Preview";
 import Swal from "sweetalert2";
 import config from '../config';
 import 'animate.css';
+import Select from "react-select";
+
 
 
 const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onSave, platform }) => {
@@ -206,43 +208,38 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     }
 
     if (!client || client === "" || client === "No Client Selected") {
-    onClose(); // Optional: close modal first for better flow
+      onClose(); // Optional: close modal first for better flow
 
-    setTimeout(() => {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Client Not Selected',
-        text: 'Please select a client before creating a post.',
-        confirmButtonColor: '#6A5ACD',
-        backdrop: `
-          rgba(0, 0, 0, 0.4)
-          left top
-          no-repeat
-          fixed
-        `,
-        showClass: {
-          popup: 'swal2-show animate__animated animate__fadeInDown',
-        },
-        hideClass: {
-          popup: 'swal2-hide animate__animated animate__fadeOutUp',
-        },
-      }).then(() => {
-        // Reopen modal after confirming
-        if (typeof window.reopenCreatePostModal === "function") {
-          window.reopenCreatePostModal();
-        }
-      });
-    }, 300);
+      setTimeout(() => {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Client Not Selected',
+          text: 'Please select a client before creating a post.',
+          confirmButtonColor: '#6A5ACD',
+          backdrop: `
+            rgba(0, 0, 0, 0.4)
+            left top
+            no-repeat
+            fixed
+          `,
+          showClass: {
+            popup: 'swal2-show animate__animated animate__fadeInDown',
+          },
+          hideClass: {
+            popup: 'swal2-hide animate__animated animate__fadeOutUp',
+          },
+        }).then(() => {
+          // Reopen modal after confirming
+          if (typeof window.reopenCreatePostModal === "function") {
+            window.reopenCreatePostModal();
+          }
+        });
+      }, 300);
 
-    return;
-  }
+      return;
+    }
 
-
-    if (
-      selectedPlatforms.includes("instagram") &&
-      !attachedFile &&
-      !existingFilePath
-    ) {
+    if (selectedPlatforms.includes("instagram") && !attachedFile && !existingFilePath) {
       // Close modal first
       onClose();
 
@@ -299,6 +296,28 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
           if (typeof window.reopenCreatePostModal === "function") {
             window.reopenCreatePostModal();
           }
+        });
+      }, 300);
+
+      return;
+    }
+
+    // 🚫 Block video scheduling for Facebook and Instagram
+    const isVideo = attachedFile?.type?.startsWith("video/");
+    const selectedVideoPlatforms = selectedPlatforms.filter((p) =>
+      ["facebook", "instagram"].includes(p)
+    );
+
+    if (scheduledDate && isVideo && selectedVideoPlatforms.length > 0) {
+      onClose();
+
+      setTimeout(() => {
+        Swal.fire({
+          icon: "error",
+          title: "Video Scheduling Not Supported",
+          text: `Scheduled video posts are not allowed on: ${selectedVideoPlatforms
+            .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+            .join(", ")}.`,
         });
       }, 300);
 
@@ -435,18 +454,74 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                 {/* Right */}
                 <div className="client-column">
                   <label>Client</label>
-                  <select
-                    className="dropdown-field"
-                    value={client}
-                    onChange={(e) => setClient(e.target.value)}
-                  >
-                    <option value="">Select a Client</option>
-                    {clients.map((c) => (
-                      <option key={c._id} value={c._id}>
-                        {c.companyName || c.pageName || c.username || c.name}
-                      </option>
-                    ))}
-                  </select>
+                  <div style={{ width: "98.5%" }}>
+                  <Select
+                    options={clients.map((c) => ({
+                      value: c._id,
+                      label: c.companyName || c.pageName || c.username || c.name || c._id,
+                    }))}
+                    value={
+                      clients
+                        .map((c) => ({
+                          value: c._id,
+                          label: c.companyName || c.pageName || c.username || c.name || c._id,
+                        }))
+                        .find((opt) => opt.value === client) || null
+                    }
+                    onChange={(selected) => setClient(selected.value)}
+                    placeholder="Select a Client"
+                    menuPlacement="top"
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        backgroundColor: "var(--category-dropdown)",
+                        border: "none",
+                        borderRadius: "8px",
+                        minHeight: "44px",
+                        color: "white",
+                        boxShadow: "none",
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        color: "white",
+                      }),
+                      dropdownIndicator: (base) => ({
+                        ...base,
+                        color: "white",
+                        padding: "4px",
+                      }),
+                      indicatorSeparator: () => ({
+                        display: "none",
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        backgroundColor: "var(--category-dropdown)",
+                        borderRadius: "8px",
+                        marginTop: 4,
+                        zIndex: 9999,
+                      }),
+                      menuList: (base) => ({
+                        ...base,
+                        maxHeight: "220px", // Limit to ~5 items if each is ~44px tall
+                        overflowY: "auto",
+                        padding: 0,
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: state.isFocused
+                          ? "var(--button-hover)"
+                          : "var(--category-dropdown)",
+                        color: "white",
+                        cursor: "pointer",
+                        padding: "10px 16px",
+                      }),
+                      placeholder: (base) => ({
+                        ...base,
+                        color: "white",
+                      }),
+                    }}
+                  />
+                  </div>
                 </div>
               </div>
 

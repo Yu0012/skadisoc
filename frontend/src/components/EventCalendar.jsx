@@ -45,6 +45,15 @@ const EventCalendar = () => {
 
   const [username, setUsername] = useState("");
 
+  useEffect(() => {
+  const darkMode = localStorage.getItem("darkMode");
+  if (darkMode === "true") {
+    document.body.classList.add("dark-theme");
+  } else {
+    document.body.classList.remove("dark-theme");
+  }
+  }, []);
+
   const fetchPostsAndClients = async () => {
     try {
       // Fetch posts
@@ -120,6 +129,7 @@ const EventCalendar = () => {
     fetchUserInfo();
   }, []);
 
+  
   // Format API response to FullCalendar-compatible objects
   const formatEvents = (posts) => {
     return posts.map(post => ({
