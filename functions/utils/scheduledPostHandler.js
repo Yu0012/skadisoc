@@ -269,7 +269,7 @@ const checkAndPostScheduledPosts = async () => {
         }
       }
 
-      if (platforms.includes("instagram"))
+      else if (platforms.includes("instagram"))
       {
         const client = await InstagramClient.findOne ({ username: post.clientName });
         if (!client) 
@@ -285,7 +285,7 @@ const checkAndPostScheduledPosts = async () => {
         }
       }
 
-      if (platforms.includes("twitter"))
+      else if (platforms.includes("twitter"))
       {
         const client = await TwitterClient.findOne({ username: post.clientName });
         if (!client) 
