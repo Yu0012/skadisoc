@@ -23,10 +23,6 @@ const SocialMediaDashboard = () => {
   const navigate = useNavigate();
     return (
       <div className={styles.pageWrapper}>
-      <div className={styles.backButton} onClick={() => navigate('/login')}>
-              <FaArrowLeft style={{ marginRight: '6px' }} />
-              Back to Login
-            </div>
         <div class={styles.CenteredContainer}>
             <div>
                 <img src={clientLogo} alt="Skadi Logo" className={styles.clientLogo} />
