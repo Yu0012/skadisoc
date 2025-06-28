@@ -14,7 +14,7 @@ const postSchema = new mongoose.Schema({
   selectedPlatforms: [String],
   filePath: String, // Store file path if uploaded
   posted: { type: Boolean, default: false },
-  status: { type: String, enum: ['draft', 'scheduled', 'posted'], default: 'draft' },
+  status: { type: String, enum: ['draft', 'scheduled', 'posted', "failed"], default: 'draft' },
   platformPostIds: {
     facebook: String,
     instagram: String,

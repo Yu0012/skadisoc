@@ -315,6 +315,7 @@ const EventCalendar = () => {
               {/* FullCalendar Component */}
               <div className="calendar-toolbar">
                 <FullCalendar
+                  timeZone="local"
                   ref={calendarRef}
                   plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                   initialView="dayGridMonth"
@@ -339,7 +340,7 @@ const EventCalendar = () => {
                       _id: info.event.id, // ✅ this is the fix
                     };
 
-                    if (eventProps.status === "posted") {
+                    if (eventProps.status === "posted" || eventProps.status === "failed") {
                       setSelectedEvent(eventProps);
                       setIsModalOpen(true);
                     } else {

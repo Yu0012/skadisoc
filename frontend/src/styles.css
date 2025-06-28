@@ -810,8 +810,7 @@ body.theme-transition {
 .fc-event {
   background-color: transparent !important;
   color: black !important;
-  border-radius: 5px;
-  border-color: #0D286E;
+  border: none !important;
   padding: 5px;
   font-weight: bold;
 }
@@ -3097,6 +3096,12 @@ transform: translateZ(0);
 
 .status-highlight.scheduled {
   color: #007bff; /* Bootstrap blue */
+  font-weight: 600;
+  font-weight: bold;
+}
+
+.status-highlight.failed {
+  color: #ff0000; /* red */
   font-weight: 600;
   font-weight: bold;
 }
