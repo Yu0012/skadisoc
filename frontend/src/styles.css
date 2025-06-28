@@ -4852,6 +4852,9 @@ body.dark-theme {
   box-shadow: none !important;
   border: none !important;
   border-radius: 0 !important;
+  background-color: var(--preview-bg);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .post-preview.compact-preview .post-header,
