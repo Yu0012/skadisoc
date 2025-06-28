@@ -543,7 +543,7 @@ body.theme-transition {
 }
 
 /* 🔍 Search Box */
-.search-box {
+/* .search-box {
   display: flex;
   align-items: center;
   background: white;
@@ -565,7 +565,7 @@ body.theme-transition {
 
 .search-box input::placeholder {
   color: #ccc;
-}
+} */
 
 /* 🔍 Search Icon */
 .search-icon {
@@ -1492,6 +1492,7 @@ input:checked + .slider:before {
 .search-box input {
   border: none;
   outline: none;
+  box-shadow: none;
   flex: 1;
   padding: 10px;
   font-size: 16px;
