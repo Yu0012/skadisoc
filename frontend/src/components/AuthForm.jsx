@@ -85,7 +85,7 @@ const AuthForm = () => {
 
   // Navigate to guest login
   const handleGuestLogin = () => {
-    navigate('/client-login');
+    window.open('/client-login', '_blank');
   };
 
   return (

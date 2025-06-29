@@ -182,11 +182,7 @@ const postToTwitter = async (post, client) => {
       if (post.filePath.includes('cloudinary')) {
           const ext = post.filePath.includes('.mp4') ? '.mp4' : '.jpg';
           imagePath = await downloadMediaFromUrl(post.filePath, ext);
-      } else {
-        const tempImagePath = path.join(__dirname, '..', `${post._id}.jpg`);
-        await downloadImageFromUrl(post.filePath, tempImagePath);
-        imagePath = tempImagePath;
-      }
+      } 
     }
 
     if (hasFile && ['.jpg', '.jpeg', '.png'].includes(path.extname(imagePath).toLowerCase())) {
@@ -230,10 +226,12 @@ const postToTwitter = async (post, client) => {
     if (tweetId) {
       console.log(`Tweet ID: ${tweetId}`);
       // 🧹 Clean up downloaded image file
-      fs.unlink(imagePath, (err) => {
-        if (err) console.error("Failed to delete temp image:", err);
-        else console.log("🧹 Temp image deleted:", imagePath);
-      });
+      if (imagePath) {
+        fs.unlink(imagePath, (err) => {
+          if (err) console.error("Failed to delete temp image:", err);
+          else console.log("🧹 Temp image deleted:", imagePath);
+        });
+      }
       return tweetId; // ⬅️ Return tweet ID
     }
 
@@ -247,7 +245,7 @@ const postToTwitter = async (post, client) => {
 const checkAndPostScheduledPosts = async () => {
   try {
     const now = new Date();
-    const posts = await Post.find({ scheduledDate: { $lte: now }, posted: false });
+    const posts = await Post.find({ scheduledDate: { $lte: now }, status: 'scheduled' });
 
     for (const post of posts) {
       const platforms = post.selectedPlatforms;
@@ -306,6 +304,13 @@ const checkAndPostScheduledPosts = async () => {
         post.posted = true;
         post.status = 'posted';
         await post.save();
+      }
+
+      else 
+      {
+        post.status = 'failed';
+        await post.save();
+        console.error(`Failed to post on all platforms for post: ${post._id}`);
       }
     } 
   } catch (error) {
