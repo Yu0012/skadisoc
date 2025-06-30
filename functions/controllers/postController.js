@@ -4,7 +4,6 @@ const axios = require('axios');
 const FacebookClient = require('../models/FacebookClientSchema');
 const InstagramClient = require('../models/InstagramClientSchema');
 const TwitterClient = require('../models/TwitterClientSchema');
-const LinkedInClient = require('../models/LinkedInClientSchema');
 const Notification = require('../models/Notification');
 const now = new Date();
 const day = String(now.getDate()).padStart(2, '0');
@@ -44,7 +43,6 @@ exports.getAllPosts = async (req, res) => {
       ...(requestingUser.assignedFacebookClients || []),
       ...(requestingUser.assignedInstagramClients || []),
       ...(requestingUser.assignedTwitterClients || []),
-      ...(requestingUser.assignedLinkedInClients || [])
     ].map(id => id.toString());
 
     const posts = await Post.find({
@@ -130,7 +128,6 @@ exports.createPost = async (req, res) => {
         ...requestingUser.assignedFacebookClients,
         ...requestingUser.assignedInstagramClients,
         ...requestingUser.assignedTwitterClients,
-        ...requestingUser.assignedLinkedInClients
       ].map(id => id.toString());
 
       if (!assignedClients.includes(client)) {

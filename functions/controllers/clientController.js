@@ -3,13 +3,11 @@ const User = require('../models/User');
 const FacebookClient = require('../models/FacebookClientSchema');
 const InstagramClient = require('../models/InstagramClientSchema');
 const TwitterClient = require('../models/TwitterClientSchema');
-const LinkedInClient = require('../models/LinkedInClientSchema');
 
 const platformModels = {
   facebook: FacebookClient,
   instagram: InstagramClient,
   twitter: TwitterClient,
-  linkedin: LinkedInClient,
 };
 
 // Utility to capitalize first letter
