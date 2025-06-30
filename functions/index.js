@@ -11,7 +11,7 @@ const mime = require("mime-types");
 const axios = require("axios");
 const FacebookClient = require('./models/FacebookClientSchema');
 const InstagramClient = require('./models/InstagramClientSchema');
-const TwitterClient = require('./models/TwitterClientSchema'); // ✅ Required
+const TwitterClient = require('./models/TwitterClientSchema'); 
 const {TwitterApi} = require("twitter-api-v2");
 const FormData = require("form-data");
 const passport = require('passport');
@@ -51,21 +51,6 @@ mongoose.connect(process.env.MONGO_URI, {
 })
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.error("MongoDB Connection Error:", err));
-
-// Multer setup for file uploads
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     const uploadPath = "uploads/";
-//     if (!fs.existsSync(uploadPath)) {
-//       fs.mkdirSync(uploadPath, { recursive: true }); // Ensure upload directory exists
-//     }
-//     cb(null, uploadPath);
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, `${Date.now()}-${file.originalname}`);
-//   },
-// });
-// const upload = multer({ storage });
 
 // Step 1: OAuth Login Route
 app.get('/auth/facebook', (req, res) => {
@@ -123,7 +108,7 @@ app.get('/auth/facebook/callback', async (req, res) => {
 
     const userResponse = await axios.get(`https://graph.facebook.com/me?fields=id,name,email&access_token=${longLivedAccessToken}`);
     console.log("User Details:", userResponse.data);
-    const userId = userResponse.data.id; // ✅ Add this line
+    const userId = userResponse.data.id; 
 
     // Save Facebook pages
     for (const page of pagesResponse.data.data) {
@@ -164,7 +149,6 @@ app.get('/auth/facebook/callback', async (req, res) => {
       }
     }
 
-    // ✅ Only one response here
     return res.json({
       message: 'Facebook pages saved successfully.',
       pageId: page.id,
@@ -177,7 +161,6 @@ app.get('/auth/facebook/callback', async (req, res) => {
     res.status(500).json({ error: "Failed to authenticate with Facebook" });
   }
 });
-
 
 // Express session
 app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: true }));
@@ -194,8 +177,6 @@ passport.use(new TwitterStrategy({
   callbackURL: process.env.TWITTER_CALLBACK_URL,
 },
 function(token, tokenSecret, profile, done) {
-  // Save tokens to DB for future requests
-  // console.log('Twitter Profile:', profile);
   console.log('Access Token:', token);
   console.log('Token Secret:', tokenSecret);
   profile.accessToken = token;
@@ -230,7 +211,7 @@ app.get('/auth/twitter/callback',
       );
 
       res.json({
-        message: "✅ Twitter client saved",
+        message: "Twitter client saved",
         user: {
           id: twitterProfile.id,
           username: twitterProfile.username,
@@ -239,7 +220,7 @@ app.get('/auth/twitter/callback',
       });
 
     } catch (err) {
-      console.error("❌ Failed to save Twitter client:", err);
+      console.error("Failed to save Twitter client:", err);
       res.status(500).json({ error: "Failed to save Twitter client" });
     }
   }
@@ -274,7 +255,7 @@ app.get("/auth/linkedin/callback", async (req, res) => {
     res.send(`Access Token: ${accessToken} \n Now you can store this and schedule posts.`);
 
   } catch (error) {
-    console.error("❌ Error:", error.response?.data || error.message);
+    console.error("Error:", error.response?.data || error.message);
     res.status(500).send("OAuth failed");
   }
 });
@@ -299,9 +280,9 @@ const refreshFacebookToken = async (client) => {
       expiresAt: newExpiresAt
     });
 
-    console.log(`🔄 Refreshed token for page "${client.pageName}"`);
+    console.log(`Refreshed token for page "${client.pageName}"`);
   } catch (error) {
-    console.error(`❌ Failed to refresh token for "${client.pageName}":`, error.response?.data || error.message);
+    console.error(`Failed to refresh token for "${client.pageName}":`, error.response?.data || error.message);
   }
 };
 
@@ -333,13 +314,13 @@ exports.scheduledPostHandler = onSchedule(
 );
 
 
-// 🔁 Check Facebook tokens once a day
+// Check Facebook tokens once a day
 setInterval(checkAndRefreshTokens, 24 * 60 * 60 * 1000); // Every 24 hours
 checkAndRefreshTokens(); // Run immediately on server start
 
 // Test routes
 app.get('/test', (req, res) => {
-  res.send('✅ Test route works!');
+  res.send('Test route works!');
 });
 
 app.get('/', (req, res) => {
@@ -347,11 +328,11 @@ app.get('/', (req, res) => {
 });
 
 // ===============================
-// 📌 **Start Server**
+//  **Start Server**
 // ===============================
 
 
-// ✅ Initialize Passport and use JWT strategy
+// Initialize Passport and use JWT strategy
 require('./config/passport')(passport); // ← Load passport config
 app.use(passport.initialize());         // ← Initialize passport
 
@@ -367,14 +348,9 @@ app.use('/api/clients', clientRoutes);
 
 app.use('/api/notifications', notificationRoutes);
 
-app.get('/api/test', (req, res) => res.send('✅ API LIVE'));
+app.get('/api/test', (req, res) => res.send('API LIVE'));
 
-app.get('/test', (req, res) => res.send('✅ Test route working'));
-
-// app.listen(PORT, () => {
-//   console.log(`✅ Server running on http://localhost:${PORT}`);
-// });
-
+app.get('/test', (req, res) => res.send('Test route working'));
 
 if (process.env.MODE === "local") {
   app.listen(PORT, () => {

@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
-/* 🌍 Global Styling */
+/*  Global Styling */
 
 html, body, #root {
   height: auto;
@@ -58,12 +58,12 @@ body {
   padding: 0;
 }
 
-/* 📦 General Container */
+/* General Container */
 .container {
   padding: 20px;
 }
 
-/* 📊 Dashboard Layout */
+/* Dashboard Layout */
 .dashboard-container {
   display: flex;
   flex-direction: column;
@@ -88,7 +88,7 @@ body {
   font-weight: bold;
 }
 
-/* 🏠 Navbar Styling */
+/* Navbar Styling */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -98,7 +98,7 @@ body {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* 🔷 Logo Styling */
+/* Logo Styling */
 .logo {
   height: 60px;        
   max-height: 60px;
@@ -108,7 +108,7 @@ body {
 }
 
 
-/* 🔗 Navigation Links */
+/* Navigation Links */
 .nav-links {
   display: flex;
   flex: 1;
@@ -140,7 +140,7 @@ body {
   background-color: transparent;
 }
 
-/* 🔔 Right Side Icons */
+/* Right Side Icons */
 .nav-icons {
   display: flex;
   gap: 15px;
@@ -160,7 +160,7 @@ body {
   height: 30px;
 }
 
-/* 🛎 Notification Dropdown */
+/* Notification Dropdown */
 .notification-dropdown {
   position: absolute;
   top: 45px;
@@ -178,7 +178,6 @@ body {
 .notifications-notifs p{
   text-align: center;
 }
-
 
 .notification-button{
   background: var(--options);
@@ -204,7 +203,7 @@ body {
   border-bottom: none;
 }
 
-/* 👤 User Profile & Dropdown */
+/* User Profile & Dropdown */
 /* User Menu Wrapper */
 .user-menu {
   position: relative;
@@ -275,7 +274,7 @@ body {
   color: white;
 }
 
-/* 📂 Dropdown Menu */
+/* Dropdown Menu */
 .dropdown-menu {
   position: absolute;
   right: 0;
@@ -365,7 +364,7 @@ body {
   margin: 0px !important;
 }
 
-/* 🔽 Export Button Styling */
+/* Export Button Styling */
 .export-btn {
   background-color: #0a0f5c;
   color: white;
@@ -408,7 +407,7 @@ body {
 }
 
 
-/* 📌 **Posts Page Styles** */
+/* **Posts Page Styles** */
 
 body,
 .posts-page-wrapper,
@@ -428,7 +427,7 @@ body.theme-transition {
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* 🏠 **Header Section (Welcome, Refresh, Create Post)** */
+/* **Header Section (Welcome, Refresh, Create Post)** */
 .posts-header {
   display: flex;
   justify-content: space-between;
@@ -488,7 +487,7 @@ body.theme-transition {
   color: #CF6679;
 }
 
-/* ➕ Create Post Button */
+/* Create Post Button */
 .create-post-btn {
   background-color: var(--button-bg) !important;
   color: white !important;
@@ -508,7 +507,7 @@ body.theme-transition {
   border: 1px solid var(--button-hover);
 }
 
-/* 🔍 Search Bar + Dropdown + Export in One Line */
+/* Search Bar + Dropdown + Export in One Line */
 .search-container {
   display: flex;
   align-items: center;
@@ -526,7 +525,7 @@ body.theme-transition {
 }
 
 
-/* 🟦 Category Dropdown */
+/* Category Dropdown */
 .dropdown {
   background-color: var(--category-dropdown);
   color: white;
@@ -542,32 +541,7 @@ body.theme-transition {
   outline: none;
 }
 
-/* 🔍 Search Box */
-/* .search-box {
-  display: flex;
-  align-items: center;
-  background: white;
-  border-radius: 8px;
-  padding: 8px;
-  border: 1px solid #ddd;
-  width: 300px;
-}
-
-.search-box input {
-  border: none;
-  outline: none;
-  flex: 1;
-  padding: 8px;
-  font-size: 16px;
-  background-color: transparent;
-  color: #555;
-}
-
-.search-box input::placeholder {
-  color: #ccc;
-} */
-
-/* 🔍 Search Icon */
+/* Search Icon */
 .search-icon {
   color: var(--icon-color);
   font-size: 18px;
@@ -575,7 +549,7 @@ body.theme-transition {
   padding: 5px;
 }
 
-/* 📄 Posts Table */
+/* Posts Table */
 .posts-table {
   width: 100%;
   background: var(--table-bg);
@@ -866,9 +840,6 @@ body.theme-transition {
   border: 1px solid var(--table-border) !important; /* Inner borders */
 }
 
-
-
-
 /* End of Calendar Design */
 
 /* Toggle between block and table view in Client Page */
@@ -1107,7 +1078,7 @@ body.theme-transition {
   border-radius: 8px;
 }
 
-/* 🔹 Schedule Post Button - Align to the Right */
+/* Schedule Post Button - Align to the Right */
 .schedule-container {
   position: relative;
   margin-top: 1rem;
@@ -1181,7 +1152,7 @@ body.theme-transition {
   color: #333;
 }
 
-/* 📅 Make Date Section Bigger */
+/* Make Date Section Bigger */
 .react-datepicker {
   display: flex !important;
   flex-direction: row !important;
@@ -1281,7 +1252,7 @@ body.theme-transition {
 }
 
 
-/* 🔹 Platform Selection - Side by Side */
+/* Platform Selection - Side by Side */
 .platform-container {
   display: flex;
   flex-direction: row;
@@ -1307,7 +1278,7 @@ body.theme-transition {
   color: var(--menu-color);
 }
 
-/* 🔄 Toggle Switch */
+/* Toggle Switch */
 .switch {
   position: relative;
   display: inline-block;
@@ -1421,23 +1392,23 @@ input:checked + .slider:before {
 
 
 /* ============================= */
-/* 📌 Dropdown Button (Dark Blue) */
+/* Dropdown Button (Dark Blue) */
 /* ============================= */
 
 .dropdown {
   background-color: var(--category-dropdown);
   color: white;
   font-weight: 500;
-  padding: 8px 16px;             /* ⬅️ Slightly smaller padding */
+  padding: 8px 16px;             /* ⬅Slightly smaller padding */
   border-radius: 8px;
   cursor: pointer;
-  font-size: 15px;               /* ⬅️ Match react-select font */
+  font-size: 15px;               /*  Match react-select font */
   width: 250px;
-  height: 40px;                  /* ⬅️ Match react-select height */
+  height: 40px;                  /*  Match react-select height */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: none;                  /* ⬅️ Optional: remove border to match react-select */
+  border: none;                  /* Optional: remove border to match react-select */
 }
 
 .dropdown:hover {
@@ -1449,7 +1420,7 @@ input:checked + .slider:before {
 }
 
 /* ============================= */
-/* 🔄 Refresh Button */
+/* Refresh Button */
 /* ============================= */
 
 .refresh-btn {
@@ -1474,7 +1445,7 @@ input:checked + .slider:before {
 
 
 /* ============================= */
-/* 🔍 Search Box Improvements */
+/* Search Box Improvements */
 /* ============================= */
 
 .search-box {
@@ -1505,7 +1476,7 @@ input:checked + .slider:before {
 }
 
 /* ============================= */
-/* 📌 Pagination (Bottom-Right) */
+/* Pagination (Bottom-Right) */
 /* ============================= */
 
 .pagination-container {
@@ -1526,13 +1497,13 @@ input:checked + .slider:before {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  overflow-y: auto; /* ✅ enable vertical scroll */
+  overflow-y: auto; /* enable vertical scroll */
   padding: 20px;
 }
 
 .posts-table-container {
   flex: 1;
-  overflow: hidden; /* ✅ 禁止滚动 */
+  overflow: hidden; 
 }
 
 [data-selected-theme="dark"] .pagination-container p {
@@ -1714,7 +1685,7 @@ input::-webkit-inner-spin-button {
 
 
 /* ============================= */
-/* 🔽 Adjustments for Mobile View */
+/* Adjustments for Mobile View */
 /* ============================= */
 
 @media screen and (max-width: 768px) {
@@ -1730,7 +1701,7 @@ input::-webkit-inner-spin-button {
 
 }
 
-/* 🔽 Post Actions Dropdown (3-dot menu) */
+/* Post Actions Dropdown (3-dot menu) */
 .post-actions-dropdown {
   position: absolute;
   top: 30px; /* Adjusts dropdown below the dots */
@@ -1859,17 +1830,17 @@ input::-webkit-inner-spin-button {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
   width: 100%;
   max-width: 420px;
-  text-align: center;         /* ✅ Center all inner content */
+  text-align: center;         /* Center all inner content */
   display: flex;
   flex-direction: column;
-  align-items: center;        /* ✅ Center horizontally */
+  align-items: center;        /* Center horizontally */
 }
 
 .profile-card p {
   margin: 4px 0;
   font-size: 14px;
   color: var(--user-text);
-  text-align: center;         /* ✅ Make sure paragraph is centered */
+  text-align: center;         /* Make sure paragraph is centered */
 }
 
 .edit-btn {
@@ -1952,11 +1923,11 @@ input::-webkit-inner-spin-button {
 .user-stats {
   margin-top: 28px;
   background: var(--user-stats);
-  padding: 30px 50px;          /* ✅ Increased vertical and horizontal padding */
+  padding: 30px 50px;          /* Increased vertical and horizontal padding */
   border-radius: 16px;         /* Optional: softer corners */
   text-align: left;
   font-size: 14px;
-  color: var(--user-text);     /* ✅ Match theme text color */
+  color: var(--user-text);     /* Match theme text color */
 }
 
 
@@ -2380,8 +2351,8 @@ input::-webkit-inner-spin-button {
 
 
 .insert-icon {
-  width: 18px;         /* ⬅ Adjust width here */
-  height: 18px;        /* ⬅ Adjust height here */
+  width: 18px;         /* Adjust width here */
+  height: 18px;        /* Adjust height here */
   object-fit: contain; /* Keeps proportions clean */
   display: block;      /* Ensures no weird spacing */
 }
@@ -2416,7 +2387,7 @@ transform: translateZ(0);
   font-family: 'Segoe UI', sans-serif;
   border: none;
   box-sizing: border-box;
-  overflow: hidden; /* ✅ added */
+  overflow: hidden; 
 }
 
 .vertical-detail-modal img {
@@ -2935,7 +2906,6 @@ transform: translateZ(0);
   color: var(--textarea-placeholder);
 }
 
-
 #send-btn
 {
   align-self: flex-end;
@@ -2949,7 +2919,7 @@ transform: translateZ(0);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px; /* ⬅️ This adds spacing below the header */
+  margin-bottom: 20px; /* This adds spacing below the header */
 }
 
 .page-controls {
@@ -3004,7 +2974,6 @@ transform: translateZ(0);
   }
 }
 
-
 .platform-dropdown-horizontal button:hover {
   background-color: var(--button-hover);
 }
@@ -3041,7 +3010,6 @@ transform: translateZ(0);
   }
 }
 
-
 .file-schedule-row {
   display: flex;
   align-items:flex-end;
@@ -3050,7 +3018,6 @@ transform: translateZ(0);
   margin-bottom: 0;
   width: 98.5%;
 }
-
 
 .attach-file-btn {
   width: 35px;
@@ -3687,7 +3654,6 @@ transform: translateZ(0);
   border-radius: 12px !important;
 }
 
-
 /* === CreatePostModal Styles === */
 .createpost-modal {
   position: fixed;
@@ -4078,7 +4044,7 @@ body.swal-blur .posts-container {
   background-color: var(--button-hover);
 }
 
-/* 🔲 Full-page layout wrapper */
+/* Full-page layout wrapper */
 .account-page-wrapper {
   display: flex;
   flex-direction: column;
@@ -4086,7 +4052,7 @@ body.swal-blur .posts-container {
   overflow: hidden;
 }
 
-/* 📦 Main content container without scroll */
+/* Main content container without scroll */
 .posts-container {
   flex: 1;
   overflow: hidden; /* 💥 Disable content scroll */
@@ -4094,14 +4060,14 @@ body.swal-blur .posts-container {
   box-sizing: border-box;
 }
 
-/* 🌫️ Blur when modal is open */
+/* Blur when modal is open */
 .posts-container.blurred,
 .pagination-fixed.blurred {
   filter: blur(5px);
   transition: filter 0.2s ease;
 }
 
-/* 📌 Fixed pagination bar */
+/* Fixed pagination bar */
 .pagination-fixed {
   position: fixed;
   bottom: 0;
@@ -4124,7 +4090,7 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden; /* 💥 Disable page scroll */
+  overflow: hidden; /* Disable page scroll */
 }
 
 [data-selected-theme="dark"] {
@@ -4140,7 +4106,7 @@ label {
   color: var(--label-color);
 }
 
-/* 📌 Dark mode: Posts Table Styling */
+/* Dark mode: Posts Table Styling */
 [data-selected-theme="dark"] .posts-table th {
   background-color: #3a3d4a; /* slightly lighter than body background */
   color: #f1f1f1; /* optional: improve contrast */
@@ -4166,13 +4132,13 @@ label {
   border-color: #4a4a4a;
 }
 
-/* 📅 FullCalendar: Day Cell Background */
+/* FullCalendar: Day Cell Background */
 [data-selected-theme="dark"] .fc .fc-daygrid-day {
   background-color: #2b2c34 !important;  /* Match with table body */
   border-color: #444;
 }
 
-/* 📅 Optional: FullCalendar Day Hover */
+/* Optional: FullCalendar Day Hover */
 [data-selected-theme="dark"] .fc .fc-daygrid-day:hover {
   background-color: #3c3c47 !important;
   cursor: pointer;
@@ -4183,7 +4149,7 @@ label {
   --dropdown-hover: #3c3c47;
 }
 
-/* ✅ 模糊背景用在 SweetAlert2 弹窗显示时 */
+/* SweetAlert2 popup */
 .swal-blur .client-list,
 .swal-blur .search-container,
 .swal-blur .posts-header,
@@ -4194,7 +4160,6 @@ label {
   user-select: none;
 }
 
-/* ✅ SweetAlert2 样式优化（可选） */
 .swal2-popup.swal-popup {
   border-radius: 12px;
   padding: 25px;
@@ -4344,7 +4309,7 @@ label {
   cursor: pointer;
   transition: 0.2s;
 
-  /* ✨ Add these lines for scroll */
+  /* Add these lines for scroll */
   max-height: 150px;
   overflow-y: auto;
 }
@@ -4562,7 +4527,7 @@ html.theme-transition {
   transition: all 0.4s ease !important;
 }
 
-/* 📅 Limit each calendar date box to show max 3 events with vertical scrolling */
+/* Limit each calendar date box to show max 3 events with vertical scrolling */
 .fc-daygrid-day-frame {
   display: flex;
   flex-direction: column;
@@ -4745,14 +4710,6 @@ html.theme-transition {
   background: #f0f0f0;
 }
 
-
-/* Global dark mode */
-body.dark-theme {
-  --bg-color: #121212;   /* or #0d1117 */
-  --text-color: #f5f5f5;
-}
-
-
 .eye-toggle {
   position: absolute;
   top: 50%;
@@ -4796,7 +4753,6 @@ body.dark-theme {
 
 /* Dark mode overrides */
 
-
 [data-selected-theme="dark"] .notification-item p,
 [data-selected-theme="dark"] .notification-item .timestamp {
   color: white;
@@ -4832,7 +4788,7 @@ body.dark-theme {
 }
 
 
-/* 🧼 Remove unwanted spacing when used in calendar */
+/* Remove unwanted spacing when used in calendar */
 .compact-preview .post-preview {
   margin: 0 !important;
   padding: 0 !important;
@@ -4913,7 +4869,7 @@ body.modal-open {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-y: auto; /* ✅ Make scrollable */
+  overflow-y: auto; /* Make scrollable */
   flex: 1 0 auto;
 }
 
@@ -5019,4 +4975,3 @@ body[data-page="posts"] {
 .posts-page-wrapper, .posts-container {
   overflow: hidden !important;
 }
-
