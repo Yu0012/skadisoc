@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext"; // ✅ Your context provider
 import AuthForm from "./components/AuthForm";
-import ForgotPassword from "./components/ForgotPassword";
 import Navbar from "./components/Navbar";
 import Dashboard from "./components/Dashboard";
 import Posts from "./components/Posts"; 
@@ -12,10 +11,7 @@ import Client from "./components/Client";
 import EventCalendar from "./components/EventCalendar";
 import UserProfile from "./components/UserProfile";
 import UserSettings from "./components/UserSettings"; 
-import HelpSupport from "./components/HelpSupport";
-import FacebookPreview from "./components/FacebookPreview";
-import InstagramPreview from "./components/InstagramPreview";
-import TwitterPreview from "./components/TwitterPreview";
+import HelpSupport from "./components/HelpSupport"; 
 import SocialMediaDashboard from './components/SocialMediaDashboard';
 import AssignClients from './components/AssignClients';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -33,7 +29,7 @@ const AppContent = () => {
       <Routes>
         <Route path="/" element={<AuthForm />} />
         <Route path="/authform" element={<AuthForm />} />
-        <Route path="/forgotpassword" element={<ForgotPassword />} />
+
         <Route path="/login" element={<AuthForm />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/posts" element={<Posts />} />
@@ -43,9 +39,6 @@ const AppContent = () => {
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/settings" element={<UserSettings />} />
         <Route path="/support" element={<HelpSupport />} />
-        <Route path="/facebook-preview/:postId" element={<FacebookPreview />} />
-        <Route path="/instagram-preview/:postId" element={<InstagramPreview />} />
-        <Route path="/twitter-preview/:postId" element={<TwitterPreview />} />
         <Route path="/client-login" element={<SocialMediaDashboard />} />
         <Route path="/assign-clients/:userId" element={<AssignClients />} />
         <Route path="/Privacy-Policy" element={<PrivacyPolicy />} />

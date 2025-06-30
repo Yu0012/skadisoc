@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import PostTable from "./PostTable";
 import "../styles.css";
 import SummaryCards from "./SummaryCards";
 import DashboardCharts from "./DashboardChart";
