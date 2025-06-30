@@ -100,10 +100,6 @@ exports.register = async (req, res) => {
     role,
     roleType,
     permissions: userPermissions,
-    // fullName,
-    // birthday,
-    // gender,
-    // profilePicture,
   });
 
   await newUser.save();
@@ -123,7 +119,6 @@ exports.getUsers = async (req, res) => {
 
   try {
     const users = await User.find().sort({ createdAt: -1 });
-    // res.json(users);
     res.json({
       count: users.length,
       users
@@ -206,9 +201,7 @@ exports.exportUsers = async (req, res) => {
 
   try {
     const users = await User.find().lean(); // All users
-
-    const format = req.query.format || 'json'; // Default to JSON
-
+    const format = req.query.format || 'json'; 
     if (format === 'csv') {
       const fields = ['_id', 'username', 'email', 'role', 'roleType', 'status', 'isActive', 'lastLogin', 'createdAt', 'updatedAt'];
       const parser = new Parser({ fields });
@@ -378,8 +371,7 @@ exports.getMe = async (req, res) => {
     }
 
     // Fetch post stats for this user
-    const posts = await Post.find({ createdBy: req.user._id }).lean(); // or use user._id if you're using user ID instead
-
+    const posts = await Post.find({ createdBy: req.user._id }).lean(); 
     const postStats = {
       total: posts.length,
       draft: posts.filter(p => p.status === "draft").length,

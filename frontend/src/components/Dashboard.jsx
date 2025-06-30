@@ -64,7 +64,7 @@ const Dashboard = () => {
         
         const matchedClientObjs = allClients; // Show all available clients
 
-        // 🔁 STEP 3: Random default selection on first load
+        // Random default selection on first load
         if (!localStorage.getItem("selectedPlatform")) {
           const platforms = ["Facebook", "Instagram"];
           const randomPlatform = platforms[Math.floor(Math.random() * platforms.length)];
@@ -299,7 +299,7 @@ const Dashboard = () => {
                 styles={{
                 control: (base, state) => ({
                   ...base,
-                  backgroundColor: "var(--category-dropdown)", // ✅ match Facebook style
+                  backgroundColor: "var(--category-dropdown)", // match Facebook style
                   color: "white",
                   border: "none",
                   borderRadius: "8px",
@@ -324,7 +324,7 @@ const Dashboard = () => {
                 }),
                 menu: (base) => ({
                   ...base,
-                  backgroundColor: "var(--category-dropdown)", // ✅ same dropdown background
+                  backgroundColor: "var(--category-dropdown)", // same dropdown background
                   borderRadius: "8px",
                   marginTop: 4,
                   zIndex: 9999,

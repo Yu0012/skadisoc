@@ -5,7 +5,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
 const DashboardChartSection = ({ posts }) => {
-  const [view, setView] = useState("chart"); // 'chart' or 'top'
+  const [view, setView] = useState("chart");
 
   const handleToggle = () => {
     setView(prev => (prev === "chart" ? "top" : "chart"));

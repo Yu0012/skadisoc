@@ -9,8 +9,6 @@ const TwitterClientSchema = new mongoose.Schema({
   userId: { type: String, required: true },           // Twitter user ID
   username: { type: String, required: true },         // @username
   name: { type: String },  
-  // createdAt: { type: Date, default: () => getMalaysiaTime() },
-  // updatedAt: { type: Date, default: () => getMalaysiaTime() },
   appKey: { type: String, required: true },
   appSecret: { type: String, required: true },                           // Display name
   accessToken: { type: String, required: true },

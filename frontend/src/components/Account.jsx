@@ -437,7 +437,7 @@ const Accounts = () => {
         </table>
       </div>
 
-      {/* ✅ Fixed Pagination Section */}
+      {/* Fixed Pagination Section */}
       <div className="pagination-fixed">
         <div className="pagination-container">
           <p>
@@ -481,7 +481,7 @@ const Accounts = () => {
         </div>
       </div>
 
-      {/* ✅ Modal Portals - rendered outside main content */}
+      {/* Modal Portals - rendered outside main content */}
       {createUserDropdown && createPortal(
         <CreateUserForm
           username={username}

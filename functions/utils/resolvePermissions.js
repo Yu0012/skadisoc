@@ -22,7 +22,7 @@ const resolvePermissions = (permissions, role, roleType) => {
   const allowedActionsByRole = rolePermissions[role] || [];
 
 
-  // ✅ SUPERADMIN bypass
+  // SUPERADMIN bypass
   const resolvedMenus =
     roleType === 'superadmin'
       ? allMenus

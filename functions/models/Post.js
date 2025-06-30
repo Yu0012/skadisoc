@@ -25,21 +25,6 @@ const postSchema = new mongoose.Schema({
   updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true }); // Add createdAt and updatedAt automatically
 
-// Pre-save hook to handle Malaysia timezone and updatedBy
-// postSchema.pre('save', function(next) {
-//   const now = new Date();
-//   this.updatedAt = toMalaysiaTime(now);
-//   if (!this.createdAt) {
-//       this.createdAt = toMalaysiaTime(now);
-//   }
-//   if (this.scheduledDate) {
-//       this.scheduledDate = toMalaysiaTime(this.scheduledDate);
-//   }
-//   // Set updatedBy to the current user if not set
-//   if (this.isModified() && !this.isNew && this.$locals.user) {
-//     this.updatedBy = this.$locals.user._id;
-//   }
-//   next();
-// });
+
 
 module.exports = mongoose.model("Post", postSchema);

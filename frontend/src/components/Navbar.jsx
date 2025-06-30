@@ -152,7 +152,7 @@ const Navbar = () => {
           />
         </div>
 
-        {/* 🔔 Notification Bell */}
+        {/* Notification Bell */}
         {user?.roleType === "superadmin" && (
           <div className="notification-menu">
             <div onClick={() => setNotifDropdownOpen(!notifDropdownOpen)} className="bell-container">
@@ -184,7 +184,7 @@ const Navbar = () => {
         )}
 
 
-        {/* 👤 User Menu */}
+        {/* User Menu */}
         <div className="user-menu">
           <img
             src={userIcon}

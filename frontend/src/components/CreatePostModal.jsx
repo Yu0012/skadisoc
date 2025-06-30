@@ -71,7 +71,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     }
   }, [client, clients]);
 
-  // Fetch clients based on selected platform NEW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // Fetch clients based on selected platform 
   useEffect(() => {
     const fetchClients = async () => {
       if (!platform) return;
@@ -178,7 +178,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
   const toBase64 = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.readAsDataURL(file); // ⬅️ This gives base64 string
+    reader.readAsDataURL(file); 
     reader.onload = () => resolve(reader.result);
     reader.onerror = (err) => reject(err);
   });
@@ -198,7 +198,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     });
 
     const data = await res.json();
-    return data.filePath; // 🟢 Cloudinary URL
+    return data.filePath; // Cloudinary URL
   };
 
   const handleSubmit = async () => {
@@ -208,7 +208,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     }
 
     if (!client || client === "" || client === "No Client Selected") {
-      onClose(); // Optional: close modal first for better flow
+      onClose(); 
 
       setTimeout(() => {
         Swal.fire({
@@ -262,7 +262,7 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
 
     if (attachedFile) {
       try {
-        filePath = await handleUpload(attachedFile); // 🔥 Use Cloudinary uploader
+        filePath = await handleUpload(attachedFile); // Use Cloudinary uploader
       } catch (err) {
         console.error("❌ Upload error:", err);
         alert("Failed to upload file.");
@@ -278,13 +278,13 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
       clientName: finalClientName,
       scheduledDate,
       selectedPlatforms,
-      filePath, // 🔗 ✅ Cloudinary URL
+      filePath, // Cloudinary URL
     };
 
     console.log("🛰️ Submitting with formValues:", formValues);
     const now = new Date();
     if (scheduledDate && scheduledDate < now) {
-      onClose(); // ❌ Close the modal first
+      onClose(); // Close the modal first
 
       setTimeout(() => {
         Swal.fire({
@@ -328,22 +328,6 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     onClose();
   };
 
-  const handlePlatformChange = (platformId) => {
-    setSelectedPlatforms((prev) => {
-      if (prev.includes(platformId)) {
-        return prev.filter((p) => p !== platformId);
-      } else {
-        return [...prev, platformId];
-      }
-    });
-  };
-
-  const handleToggle = (platformKey) => {
-    setPlatformToggles((prev) => ({
-      ...prev,
-      [platformKey]: !prev[platformKey],
-    }));
-  };
 
   const toggleDatePicker = (e) => {
     e.stopPropagation();
@@ -361,10 +345,6 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
     fileInputRef.current.click();
   };
 
-  // const handleFileChange = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) setAttachedFile(file);
-  // };
 
   if (!isOpen) return null;
 
@@ -428,15 +408,15 @@ const CreatePostModal = ({ isOpen, onClose, onPostCreated, initialData = {}, onS
                         selected={scheduledDate}
                         onChange={(date) => setScheduledDate(date)}
                         showTimeSelect
-                        timeIntervals={10} // ⏱️ Allows flexible 10-minute steps
+                        timeIntervals={10} // ⏱Allows flexible 10-minute steps
                         dateFormat="MMMM d, yyyy h:mm aa"
                         minTime={
                           scheduledDate?.toDateString() === new Date().toDateString()
                             ? new Date()
-                            : new Date(new Date().setHours(0, 0, 0, 0)) // ✅ wrap back to Date
+                            : new Date(new Date().setHours(0, 0, 0, 0)) // wrap back to Date
                         }
-                        maxTime={new Date(new Date().setHours(23, 59, 59, 999))} // ✅ also wrap
-                        minDate={new Date()} // 🚫 Disables past dates
+                        maxTime={new Date(new Date().setHours(23, 59, 59, 999))} //  also wrap
+                        minDate={new Date()} //  Disables past dates
                         inline
                         onClickOutside={() => setShowDatePicker(false)}
                         dayClassName={(date) => {

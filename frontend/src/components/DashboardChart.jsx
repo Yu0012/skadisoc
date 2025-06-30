@@ -8,7 +8,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { motion } from "framer-motion"; // ✅ 动画容器导入
+import { motion } from "framer-motion";
 
 // Register chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);

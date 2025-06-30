@@ -1,14 +1,3 @@
-// import mongoose from "mongoose";
-
-// const clientSchema = new mongoose.Schema({
-//     name: { type: String, required: true },
-//     email: { type: String, required: true },
-//     detail: { type: String, required: true },
-//     platform: { type: String, enum: ["facebook", "twitter", "instagram"], required: true }
-// });
-
-// const Client = mongoose.model("Client", clientSchema);
-// export default Client;
 
 const mongoose = require('mongoose');
 
@@ -53,8 +42,6 @@ const clientSchema = new mongoose.Schema({
     logo: { type: String },
     notes: { type: String },
     isActive: { type: Boolean, default: true },
-    // createdAt: { type: Date, default: Date.now },
-    // updatedAt: { type: Date, default: Date.now }
     }, { timestamps: true });
 
 // Pre-save hook to handle Malaysia timezone

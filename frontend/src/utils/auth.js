@@ -40,7 +40,7 @@ export const login = async (email, password) => {
   }
 };
 
-// Add this to src/utils/auth.js
+
 export const logout = async () => {
   try {
     const response = await axios.post(`${config.API_BASE}/api/auth/logout`, {}, {

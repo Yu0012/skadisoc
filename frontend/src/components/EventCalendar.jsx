@@ -285,7 +285,7 @@ const EventCalendar = () => {
 
                   const match = events.some(
                     (e) =>
-                      activeClients.has(e.extendedProps.clientName) && // ✅ use clientName (shown in checkbox)
+                      activeClients.has(e.extendedProps.clientName) && // use clientName (shown in checkbox)
                       new Date(e.start).toDateString() === dayString
                   );
 
@@ -526,7 +526,7 @@ const EventCalendar = () => {
                 showConfirmButton: false
               });
 
-              await fetchPostsAndClients(); // 👈 Refresh after saving
+              await fetchPostsAndClients(); // Refresh after saving
             } catch (err) {
               console.error("❌ Failed to save post from calendar:", err);
               Swal.fire({

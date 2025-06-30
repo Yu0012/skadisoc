@@ -32,25 +32,7 @@ const HelpSupport = () => {
     setExpanded(expanded === index ? null : index);
   };
 
-  // Handle contact form field changes
-  const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
 
-  // Handle contact form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Basic validation
-    if (!formData.name || !formData.email || !formData.message) {
-      setFeedback("❌ Please fill in all fields.");
-      return;
-    }
-
-    // Simulate sending message (could be replaced with API call)
-    setFeedback("✅ Your message has been sent!");
-    setFormData({ name: "", email: "", message: "" }); // Reset form
-  };
 
   return (
     <div className="support-container">

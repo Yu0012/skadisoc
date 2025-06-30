@@ -24,7 +24,7 @@ exports.getAllPosts = async (req, res) => {
   try {
     console.log('🟢 Fetching posts based on user role & assignments');
 
-    const requestingUser = await User.findById(req.user._id).lean(); // ✅ fetch fresh data
+    const requestingUser = await User.findById(req.user._id).lean(); // fetch fresh data
 
     if (!requestingUser) {
       return res.status(401).json({ message: "User not found" });
@@ -83,14 +83,6 @@ exports.getPostById = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
-  // const { 
-  //   content, 
-  //   title, 
-  //   client, 
-  //   scheduledDate, 
-  //   selectedPlatforms, 
-  //   filePath 
-  // } = req.body;
   const content = req.body.content;
   const title = req.body.title;
   const client = typeof req.body.client === "string" ? req.body.client.trim() : req.body.client;
@@ -108,26 +100,6 @@ exports.createPost = async (req, res) => {
     selectedPlatforms = req.body.selectedPlatforms;
   }
   const filePath = req.body.filePath || null;
-  // const base64File = req.body.base64File || null;
-  
-  // if (base64File) {
-  //   const matches = base64File.match(/^data:(.+);base64,(.+)$/);
-  //   if (!matches) throw new Error("Invalid base64 format");
-
-  //   const mimeType = matches[1];
-  //   const extension = mimeType.split("/")[1];
-  //   const buffer = Buffer.from(matches[2], "base64");
-
-  //   const uploadsDir = path.join(__dirname, "..", "uploads");
-  //   if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
-
-  //   const filename = `${Date.now()}.${extension}`;
-  //   filePath = `/uploads/${filename}`;
-
-  //   fs.writeFileSync(path.join(uploadsDir, filename), buffer);
-  // }
-
-  //const filePath = req.file ? `in-memory:${req.file.originalname}` : null;
 
   try {
     const requestingUser = req.user;
@@ -136,7 +108,6 @@ exports.createPost = async (req, res) => {
     console.log("Body:", req.body);
     console.log("🔥 DEBUG client:", req.body.client, typeof req.body.client);
 
-    //console.log("File:", req.file);
 
     // Check if user is viewer - viewers can't create posts
     if (requestingUser.role === 'viewer') {
@@ -174,7 +145,7 @@ exports.createPost = async (req, res) => {
       content,
       title,
       client,
-      clientName, // ✅ Add this
+      clientName, 
       scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
       selectedPlatforms,
       filePath,
@@ -211,56 +182,6 @@ exports.createPost = async (req, res) => {
   }
 };
 
-// Add this new updatePost function
-// exports.updatePost = async (req, res) => {
-//   const { id } = req.params;
-//   const updateData = req.body;
-
-//   try {
-//     const requestingUser = req.user;
-//     const post = await Post.findById(id);
-
-//     if (!post) {
-//       return res.status(404).json({ message: 'Post not found' });
-//     }
-
-//     // Check permissions
-//     if (requestingUser.role === 'viewer') {
-//       return res.status(403).json({ message: 'Viewers cannot update posts' });
-//     }
-
-//     if (requestingUser.role === 'editor') {
-//       // Editors can only update their own posts
-//       if (!post.createdBy.equals(requestingUser._id)) {
-//         return res.status(403).json({ message: 'You can only update your own posts' });
-//       }
-//     }
-
-//     // Set updatedBy before saving
-//     post._locals = { updatedBy: requestingUser._id };
-
-//     // Update the post
-//     const updatedPost = await Post.findByIdAndUpdate(
-//       id, 
-//       { 
-//         ...updateData,
-//         updatedBy: requestingUser._id,
-//         status: updateData.scheduledDate ? 'scheduled' : 'draft'
-//       }, 
-//       { new: true }
-//     )
-//     .populate('createdBy', 'username email role')
-//     .populate('updatedBy', 'username email role');
-
-//     res.json({
-//       message: 'Post updated successfully',
-//       post: updatedPost
-//     });
-//   } catch (err) {
-//     console.error('❌ Error updating post:', err);
-//     res.status(500).json({ message: 'Failed to update post' });
-//   }
-// };
 // UPDATE POST
 exports.updatePost = async (req, res) => {
   const { id } = req.params;
@@ -270,7 +191,6 @@ exports.updatePost = async (req, res) => {
       ? req.body.selectedPlatforms
       : JSON.parse(req.body.selectedPlatforms || "[]"),
     scheduledDate: req.body.scheduledDate || null,
-    //Path: req.file ? `/uploads/${req.file.filename}` : undefined,
   };
 
   try {
@@ -371,7 +291,7 @@ exports.deletePost = async (req, res) => {
       }
     }
 
-    // 📸 Delete Instagram post
+    // Delete Instagram post
     if (post.platformPostIds?.instagram) {
       const igClient = await InstagramClient.findOne({ username: post.clientName });
       if (igClient && igClient.accessToken) {
@@ -387,7 +307,7 @@ exports.deletePost = async (req, res) => {
       }
     }
 
-    // 🐦 Delete Twitter post
+    // Delete Twitter post
     if (post.platformPostIds?.twitter) {
       const twClient = await TwitterClient.findOne({ username: post.clientName });
       if (twClient) {
@@ -417,7 +337,7 @@ exports.deletePost = async (req, res) => {
       }
     }
 
-    // 🚮 Delete MongoDB post
+    // Delete MongoDB post
     await Post.findByIdAndDelete(id);
 
     console.log('✅ Deleted post from DB:', post._id);

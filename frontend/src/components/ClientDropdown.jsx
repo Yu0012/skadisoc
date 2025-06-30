@@ -8,7 +8,7 @@ const ClientDropdown = ({ onSelect }) => {
     fetch(`${config.API_BASE}/api/clients`)
       .then(res => res.json())
       .then(data => {
-        console.log("Clients fetched:", data); // 🔍 Add this line
+        console.log("Clients fetched:", data); // Add this line
         setClients(data);
       })
       .catch(err => console.error("Client fetch error:", err));

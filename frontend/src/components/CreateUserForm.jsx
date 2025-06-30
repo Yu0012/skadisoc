@@ -22,7 +22,7 @@ const CreateUserForm = ({
   instagramClients,
   twitterClients,
 }) => {
-  // 🔐 Local states for handling form fields and platform clients
+  //  Local states for handling form fields and platform clients
   const [selectedPlatform, setSelectedPlatform] = useState("facebook");
   const [platformClients, setPlatformClients] = useState([]);
   const [availableMenus, setAvailableMenus] = useState([]);
@@ -38,7 +38,7 @@ const CreateUserForm = ({
   const isRoleAutoAssigned = roleType === 'superadmin' || roleType === 'admin';
 
 
-  // 🔒 Check if the user is a superadmin + admin before allowing creation
+  // Check if the user is a superadmin + admin before allowing creation
   useEffect(() => {
     try {
       const token = localStorage.getItem('token');
@@ -54,7 +54,7 @@ const CreateUserForm = ({
     }
   }, []);
 
-  // 🧠 Load available menus and actions based on role/roleType
+  // Load available menus and actions based on role/roleType
   useEffect(() => {
     if (roleType) {
       setAvailableMenus(roleTypePermissions[roleType]?.menus || []);
@@ -65,7 +65,7 @@ const CreateUserForm = ({
   }, [role, roleType]);
 
 
-  // 🎯 Auto-assign role based on roleType selection
+  // Auto-assign role based on roleType selection
   useEffect(() => {
     if (roleType === 'superadmin') {
       setRole('admin');
@@ -75,7 +75,7 @@ const CreateUserForm = ({
   }, [roleType]);
 
 
-  // 🌐 Load unassigned clients for the selected platform
+  // Load unassigned clients for the selected platform
   const handlePlatformChange = async (platform) => {
     setSelectedPlatform(platform);
     setPlatformClients([]);
@@ -93,7 +93,7 @@ const CreateUserForm = ({
     }
   };
 
-  // 📦 Load Facebook clients by default
+  // Load Facebook clients by default
   useEffect(() => {
     handlePlatformChange("facebook");
   }, []);
@@ -115,19 +115,19 @@ const CreateUserForm = ({
 
   return (
     <div className="newUserMenu">
-      {/* ❌ Close button */}
+      {/* Close button */}
       <ImCross className="exitButton" onClick={onClose} />
 
-      {/* 📋 Form start */}
+      {/* Form start */}
       <form className="form-group" onSubmit={handleSubmit}>
         <a className="form-title">{isEditing ? "Edit User" : "Create New User"}</a>
 
-        {/* 🛑 Error or ✅ success messages */}
+        {/* Error or success messages */}
         {error && <div className="error-message">{error}</div>}
         {success && <div className="success-message">{success}</div>}
 
         <div className="form-two-column">
-          {/* ⬅️ Left column: User details */}
+          {/* ⬅Left column: User details */}
           <div className="form-left-column">
             <label>Username:
               <input type="text" className="newAccountForm" value={username} onChange={(e) => setName(e.target.value)} required />
@@ -145,7 +145,7 @@ const CreateUserForm = ({
               <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
             </label>
 
-            {/* 🔽 Styled Role Type dropdown */}
+            {/* Styled Role Type dropdown */}
             <div className="role-select-wrapper">
               <label>Role Type:</label>
               <select value={roleType} onChange={(e) => setRoleType(e.target.value)} required>
@@ -155,7 +155,7 @@ const CreateUserForm = ({
               </select>
             </div>
 
-            {/* 🔽 Styled Role dropdown */}
+            {/* Styled Role dropdown */}
             <div className="role-select-wrapper">
               <label>Role:</label>
               <select value={role} onChange={(e) => setRole(e.target.value)} required disabled={isRoleAutoAssigned}>
@@ -166,7 +166,7 @@ const CreateUserForm = ({
             </div>
           </div>
 
-          {/* ➡️ Right column: Permission summary */}
+          {/* Right column: Permission summary */}
           <div className="form-right-column">
             <div className="permissions-display">
               <h4>Assigned Permissions</h4>
@@ -194,7 +194,7 @@ const CreateUserForm = ({
           </div>
         </div>
 
-        {/* 💾 Save button */}
+        {/* Save button */}
         <input className="create-post-btn" type="submit" value="Save" style={{ color: "white" }} />
       </form>
     </div>

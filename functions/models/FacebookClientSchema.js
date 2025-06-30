@@ -10,8 +10,6 @@ const FacebookClientSchema = new mongoose.Schema({
   pageId: { type: String, required: true },
   pageAccessToken: { type: String, required: true },
   pageName: { type: String },
-  // createdAt: { type: Date, default: () => getMalaysiaTime() },
-  // updatedAt: { type: Date, default: () => getMalaysiaTime() },
   expiresAt: { type: Date },
   permissions: [String],
   assignedAdmins: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

@@ -93,12 +93,12 @@ useEffect(() => {
   }, []);
 
   
-  // 📌 Handle search input
+  // Handle search input
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
 
-  // 📌 Handle Post Creation - Update UI After New Post
+  // Handle Post Creation - Update UI After New Post
   const handlePostCreated = () => {
     fetchPosts(); // Reload posts after a new post is added
     setIsModalOpen(false);
@@ -183,7 +183,7 @@ useEffect(() => {
   
   // Edit Post
   const handleEditPost = async (postId) => {
-    setPostMenuDropdown(null); // 👈 Close dropdown
+    setPostMenuDropdown(null); // Close dropdown
     const fullPost = await fetchPostById(postId);
     if (!fullPost) {
       alert("Failed to load post");
@@ -201,7 +201,7 @@ useEffect(() => {
 
   // Delete Post with enhanced SweetAlert2 confirmation
   const handleDeletePost = async (postId) => {
-    setPostMenuDropdown(null); // 🔄 Close dropdown immediately
+    setPostMenuDropdown(null); // Close dropdown immediately
     const post = posts.find((p) => p._id === postId);
     if (post?.selectedPlatforms?.includes("instagram") && post?.status === "posted") {
       await Swal.fire({
@@ -371,18 +371,8 @@ useEffect(() => {
   const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
-//refresh state
-    const [isRefreshing, setIsRefreshing] = useState(false);
 
 
-  //handle single checkbox change
-  const handleCheckboxChange = (postID) => {
-    setSelectedPosts((prevSelected) =>
-      prevSelected.includes(postID)
-        ? prevSelected.filter((id) => id !== postID)
-        : [...prevSelected, postID]
-    );
-  };
 
   const handleSort = (key) => {
     setSortConfig((prev) => {

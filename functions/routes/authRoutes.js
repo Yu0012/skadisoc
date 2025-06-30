@@ -14,9 +14,6 @@ router.get('/ping', (req, res) => {
   res.send('Auth route is working ✅');
 });
 
-
-
-
 // Login
 router.post('/login', authController.login);
 

@@ -10,7 +10,7 @@ const { getLatestNotifications } = require('../controllers/notificationControlle
 const cloudinary = require('../utils/cloudinary');
 
 router.use(express.json());
-// ✅ Enable CORS properly for Cloud Functions
+// Enable CORS properly for Cloud Functions
 router.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*"); // 👈 Or use specific origin
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE");

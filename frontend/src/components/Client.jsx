@@ -164,7 +164,7 @@ const Client = () => {
           text: `${clientName} has been removed.`,
           confirmButtonText: 'OK'
         }).then(() => {
-          // ✅ Clean up dropdowns after confirmation
+          // Clean up dropdowns after confirmation
           setPopupOpen(null);
           setClientMenuDropdown(null);
         });

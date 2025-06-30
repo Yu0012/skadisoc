@@ -22,7 +22,7 @@ import PrivacyPolicy from './components/PrivacyPolicy';
 import "./styles.css";
 
 
-// 🧠 Create a sub-component inside Router
+
 const AppContent = () => {
   const location = useLocation();
   const hideNavbarOn = ["/", "/login", "/authform", "/forgotpassword", "/client-login"];
@@ -54,7 +54,7 @@ const AppContent = () => {
   );
 };
 
-// 👇 Final exported App wrapped in Router
+
 const App = () => (
   <div className="app-scroll-wrapper">
     <AuthProvider>

@@ -12,11 +12,11 @@ module.exports = (passport) => {
   passport.use(
     new JwtStrategy(options, async (jwt_payload, done) => {
       try {
-        console.log('JWT Payload:', jwt_payload); // ✅ LOG HERE
+        console.log('JWT Payload:', jwt_payload);
 
         const user = await User.findById(jwt_payload.id);
         if (user) {
-          console.log('✅ Authenticated user:', user.username); // ✅ LOG HERE
+          console.log('✅ Authenticated user:', user.username); 
           return done(null, user);
         }
         return done(null, false);

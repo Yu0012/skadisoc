@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ImCross } from "react-icons/im";
-import "../styles.css"; // Assuming you have a styles.css file for basic styles
+import "../styles.css"; 
 import "./CreateUserForm.css";
 import Swal from 'sweetalert2';
 import config from '../config';

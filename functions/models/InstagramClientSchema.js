@@ -10,8 +10,6 @@ const InstagramClientSchema = new mongoose.Schema({
   instagramBusinessId: { type: String, required: true }, 
   accessToken: { type: String, required: true },
   username: { type: String },
-  // createdAt: { type: Date, default: () => getMalaysiaTime() },
-  // updatedAt: { type: Date, default: () => getMalaysiaTime() },
   accountType: { type: String }, // e.g., BUSINESS or CREATOR
   expiresAt: { type: Date },
   permissions: [String],

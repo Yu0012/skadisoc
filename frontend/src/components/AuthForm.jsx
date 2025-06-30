@@ -3,9 +3,9 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { BsMoon, BsSun } from 'react-icons/bs';
 import logoLight from '../assets/skadiLogo_light.png';
 import logoDark from '../assets/skadiLogo.png';
-import facebookIcon from '../assets/facebook.png';     // ✅ Ensure these are imported
-import instagramIcon from '../assets/instagram.png';   // ✅ Required for icon usage
-import twitterIcon from '../assets/twitter.png';       // ✅ Required for icon usage
+import facebookIcon from '../assets/facebook.png';     
+import instagramIcon from '../assets/instagram.png';   
+import twitterIcon from '../assets/twitter.png';       
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../utils/auth';
@@ -91,7 +91,7 @@ const AuthForm = () => {
   return (
     <> {/* Fragment wrapper required for multiple root-level elements */}
 
-      {/* 🌟 Floating background icons */}
+      {/* Floating background icons */}
       <div className={styles.bgIcons}>
         {/* Facebook icons */}
         <img src={facebookIcon} className={`${styles.bgIcon} ${styles.facebook1}`} alt="facebook" />
@@ -115,7 +115,7 @@ const AuthForm = () => {
         <img src={twitterIcon} className={`${styles.bgIcon} ${styles.twitter3}`} alt="twitter" />
       </div>
 
-      {/* 🌗 Auth card with dark/light theme */}
+      {/* Auth card with dark/light theme */}
       <div className={`${styles.wrapper} ${isDarkMode ? styles.dark : styles.light}`}>
         <div className={styles.themeToggle} onClick={toggleTheme}>
           {isDarkMode ? <BsSun /> : <BsMoon />}
@@ -126,7 +126,7 @@ const AuthForm = () => {
           <h2>Welcome Back</h2>
           <p className={styles.subtitle}>Please enter your details to login</p>
 
-          {/* 📝 Login Form */}
+          {/* Login Form */}
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.formGroup}>
               <label className={styles.label}>Email</label>
@@ -158,7 +158,7 @@ const AuthForm = () => {
             <button type="submit" className={styles.loginBtn}>Login</button>
           </form>
 
-          {/* 🔁 Guest or alternative login */}
+          {/* Guest or alternative login */}
           <div className={styles.actions}>
             <div className={styles.divider}>
               <hr />

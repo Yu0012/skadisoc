@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-// ✅ Scheduled Facebook Post
+// Scheduled Facebook Post
 async function scheduleFacebookPost() {
     const url = `https://graph.facebook.com/v22.0/${868746506554059}/feed`;
     const params = {

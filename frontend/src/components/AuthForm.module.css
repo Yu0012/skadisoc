@@ -133,8 +133,8 @@ input:focus {
 
 .formGroup input {
   width: 100%;
-  max-width: 366px;      /* ✅ shrink width */
-  margin-left: auto;     /* ✅ center the input */
+  max-width: 366px;      /* shrink width */
+  margin-left: auto;     /* center the input */
   margin-right: auto;
   display: block;
 }
@@ -188,8 +188,8 @@ input:focus {
 /*Icons*/
 .bgIcons {
   position: absolute;
-  z-index: 0; /* ✅ Make sure it's below the card */
-  pointer-events: none; /* ✅ Allow clicks to pass through */
+  z-index: 0; /* Make sure it's below the card */
+  pointer-events: none; /* Allow clicks to pass through */
   width: 100%;
   height: 100%;
   overflow: hidden;

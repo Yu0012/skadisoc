@@ -9,10 +9,9 @@ import Swal from "sweetalert2";
 
 const UserProfile = () => {
   const [editMode, setEditMode] = useState(false);
-  const [originalUser, setOriginalUser] = useState(null);
   const [updatedData, setUpdatedData] = useState({ username: '', email: '' });
   const [user, setUser] = useState({});
-  const [UserId, setUserId] = useState(null);
+
   
 
 
