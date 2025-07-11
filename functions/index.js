@@ -269,7 +269,7 @@ const checkAndRefreshTokens = async () => {
 };
 
 
-exports.scheduledPostHandler = onSchedule(
+exports.scheduledPostHandler = onSchedule(    // Every 1 minute check for scheduled posts
   {
     schedule: 'every 1 minutes',
     timeZone: 'Asia/Kuala_Lumpur',

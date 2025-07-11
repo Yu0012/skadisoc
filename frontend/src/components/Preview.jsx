@@ -10,10 +10,12 @@ const Preview = ({ platform, content, client, attachedFile, imageURL,compact = f
             attachedFile.type?.startsWith("image/") ? (
               <img src={URL.createObjectURL(attachedFile)} alt="Attachment Preview" />
             ) : (
-              <p>{attachedFile.name}</p>
+              <video src={URL.createObjectURL(attachedFile)} controls style={{ maxWidth: '100%', borderRadius: '8px' }} />
             )
           ) : (
-            <img src={imageURL} alt="Attachment Preview" />
+            imageURL.endsWith(".mp4") || imageURL.includes("video")
+              ? <video src={imageURL} controls style={{ maxWidth: '100%', borderRadius: '8px' }} />
+              : <img src={imageURL} alt="Attachment Preview" />
           )}
         </div>
       );
